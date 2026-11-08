@@ -1,3 +1,4 @@
+import 'thinking_block.dart';
 import 'worker/chat_store.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -1015,7 +1016,9 @@ class _MainAppState extends State<MainApp> {
                                     const TextStyle(color: Colors.white);
                                 bool greyed = false;
                                 String text = p0.text;
-                                if (text.trim() == "") {
+                                final thinking = thinkingOf(p0.metadata);
+                                final isAnswering = text.trim().isNotEmpty;
+                                if (!isAnswering && thinking == null) {
                                   text =
                                       "_Empty AI response, try restarting conversation_";
                                   greyed = true;
@@ -1033,155 +1036,178 @@ class _MainAppState extends State<MainApp> {
                                                   thumbColor:
                                                       WidgetStatePropertyAll(
                                                           Colors.grey))),
-                                      child: MarkdownBody(
-                                          data: text,
-                                          onTapLink: (text, href, title) async {
-                                            selectionHaptic();
-                                            try {
-                                              var url = Uri.parse(href!);
-                                              if (await canLaunchUrl(url)) {
-                                                launchUrl(
-                                                    mode: LaunchMode
-                                                        .inAppBrowserView,
-                                                    url);
-                                              } else {
-                                                throw Exception();
-                                              }
-                                            } catch (_) {
-                                              // ignore: use_build_context_synchronously
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(SnackBar(
-                                                      content: Text(
-                                                          AppLocalizations.of(
-                                                                  // ignore: use_build_context_synchronously
-                                                                  context)!
-                                                              .settingsHostInvalid(
-                                                                  "url")),
-                                                      showCloseIcon: true));
-                                            }
-                                          },
-                                          extensionSet: md.ExtensionSet(
-                                            md.ExtensionSet.gitHubFlavored
-                                                .blockSyntaxes,
-                                            <md.InlineSyntax>[
-                                              md.EmojiSyntax(),
-                                              ...md.ExtensionSet.gitHubFlavored
-                                                  .inlineSyntaxes
-                                            ],
-                                          ),
-                                          imageBuilder: (uri, title, alt) {
-                                            Widget errorImage = InkWell(
-                                                onTap: () {
-                                                  selectionHaptic();
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(SnackBar(
-                                                          content: Text(
-                                                              AppLocalizations.of(
+                                      child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            if (thinking != null)
+                                              ThinkingBlock(
+                                                  thinking: thinking,
+                                                  isAnswering: isAnswering),
+                                            if (isAnswering || thinking == null)
+                                              MarkdownBody(
+                                                  data: text,
+                                                  onTapLink: (text, href,
+                                                      title) async {
+                                                    selectionHaptic();
+                                                    try {
+                                                      var url =
+                                                          Uri.parse(href!);
+                                                      if (await canLaunchUrl(
+                                                          url)) {
+                                                        launchUrl(
+                                                            mode: LaunchMode
+                                                                .inAppBrowserView,
+                                                            url);
+                                                      } else {
+                                                        throw Exception();
+                                                      }
+                                                    } catch (_) {
+                                                      ScaffoldMessenger.of(
+                                                              // ignore: use_build_context_synchronously
+                                                              context)
+                                                          .showSnackBar(SnackBar(
+                                                              content: Text(AppLocalizations.of(
+                                                                      // ignore: use_build_context_synchronously
                                                                       context)!
-                                                                  .notAValidImage),
-                                                          showCloseIcon: true));
-                                                },
-                                                child: Container(
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8),
-                                                        color: Theme.of(context)
-                                                                    .brightness ==
-                                                                Brightness.light
-                                                            ? Colors.white
-                                                            : Colors.black),
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 100,
-                                                            right: 100,
-                                                            top: 32),
-                                                    child: const Image(
-                                                        image: AssetImage(
-                                                            "assets/logo512error.png"))));
-                                            if (uri.isAbsolute) {
-                                              return Image.network(
-                                                  uri.toString(), errorBuilder:
-                                                      (context, error,
-                                                          stackTrace) {
-                                                return errorImage;
-                                              });
-                                            } else {
-                                              return errorImage;
-                                            }
-                                          },
-                                          styleSheet: (p0.author == user)
-                                              ? MarkdownStyleSheet(
-                                                  p: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                  blockquoteDecoration:
-                                                      BoxDecoration(
-                                                    color: Colors.grey[800],
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
+                                                                  .settingsHostInvalid(
+                                                                      "url")),
+                                                              showCloseIcon:
+                                                                  true));
+                                                    }
+                                                  },
+                                                  extensionSet: md.ExtensionSet(
+                                                    md
+                                                        .ExtensionSet
+                                                        .gitHubFlavored
+                                                        .blockSyntaxes,
+                                                    <md.InlineSyntax>[
+                                                      md.EmojiSyntax(),
+                                                      ...md
+                                                          .ExtensionSet
+                                                          .gitHubFlavored
+                                                          .inlineSyntaxes
+                                                    ],
                                                   ),
-                                                  code: const TextStyle(
-                                                      color: Colors.black,
-                                                      backgroundColor:
-                                                          Colors.white),
-                                                  codeblockDecoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius: BorderRadius.circular(
-                                                          8)),
-                                                  h1: white,
-                                                  h2: white,
-                                                  h3: white,
-                                                  h4: white,
-                                                  h5: white,
-                                                  h6: white,
-                                                  listBullet: white,
-                                                  horizontalRuleDecoration: BoxDecoration(
-                                                      border: Border(
-                                                          top: BorderSide(
-                                                              color: Colors
-                                                                  .grey[800]!,
-                                                              width: 1))),
-                                                  tableBorder: TableBorder.all(
-                                                      color: Colors.white),
-                                                  tableBody: white)
-                                              : (Theme.of(context).brightness ==
-                                                      Brightness.light)
-                                                  ? MarkdownStyleSheet(
-                                                      p: TextStyle(
-                                                          color: greyed
-                                                              ? Colors.grey
-                                                              : Colors.black,
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.w500),
-                                                      blockquoteDecoration:
-                                                          BoxDecoration(
-                                                        color: Colors.grey[200],
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8),
-                                                      ),
-                                                      code: const TextStyle(
-                                                          color: Colors.white,
-                                                          backgroundColor: Colors.black),
-                                                      codeblockDecoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(8)),
-                                                      horizontalRuleDecoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.grey[200]!, width: 1))))
-                                                  : MarkdownStyleSheet(
-                                                      p: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
-                                                      blockquoteDecoration: BoxDecoration(
-                                                        color:
-                                                            Colors.grey[800]!,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8),
-                                                      ),
-                                                      code: const TextStyle(color: Colors.black, backgroundColor: Colors.white),
-                                                      codeblockDecoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
-                                                      horizontalRuleDecoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.grey[200]!, width: 1))))),
+                                                  imageBuilder:
+                                                      (uri, title, alt) {
+                                                    Widget errorImage = InkWell(
+                                                        onTap: () {
+                                                          selectionHaptic();
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(SnackBar(
+                                                                  content: Text(
+                                                                      AppLocalizations.of(
+                                                                              context)!
+                                                                          .notAValidImage),
+                                                                  showCloseIcon:
+                                                                      true));
+                                                        },
+                                                        child: Container(
+                                                            decoration: BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            8),
+                                                                color: Theme.of(context)
+                                                                            .brightness ==
+                                                                        Brightness
+                                                                            .light
+                                                                    ? Colors
+                                                                        .white
+                                                                    : Colors
+                                                                        .black),
+                                                            padding:
+                                                                const EdgeInsets.only(
+                                                                    left: 100,
+                                                                    right: 100,
+                                                                    top: 32),
+                                                            child: const Image(
+                                                                image: AssetImage(
+                                                                    "assets/logo512error.png"))));
+                                                    if (uri.isAbsolute) {
+                                                      return Image.network(
+                                                          uri.toString(),
+                                                          errorBuilder:
+                                                              (context, error,
+                                                                  stackTrace) {
+                                                        return errorImage;
+                                                      });
+                                                    } else {
+                                                      return errorImage;
+                                                    }
+                                                  },
+                                                  styleSheet: (p0.author ==
+                                                          user)
+                                                      ? MarkdownStyleSheet(
+                                                          p: const TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500),
+                                                          blockquoteDecoration:
+                                                              BoxDecoration(
+                                                            color: Colors
+                                                                .grey[800],
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8),
+                                                          ),
+                                                          code: const TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              backgroundColor:
+                                                                  Colors.white),
+                                                          codeblockDecoration:
+                                                              BoxDecoration(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  borderRadius:
+                                                                      BorderRadius.circular(
+                                                                          8)),
+                                                          h1: white,
+                                                          h2: white,
+                                                          h3: white,
+                                                          h4: white,
+                                                          h5: white,
+                                                          h6: white,
+                                                          listBullet: white,
+                                                          horizontalRuleDecoration:
+                                                              BoxDecoration(border: Border(top: BorderSide(color: Colors.grey[800]!, width: 1))),
+                                                          tableBorder: TableBorder.all(color: Colors.white),
+                                                          tableBody: white)
+                                                      : (Theme.of(context).brightness == Brightness.light)
+                                                          ? MarkdownStyleSheet(
+                                                              p: TextStyle(color: greyed ? Colors.grey : Colors.black, fontSize: 16, fontWeight: FontWeight.w500),
+                                                              blockquoteDecoration: BoxDecoration(
+                                                                color: Colors
+                                                                    .grey[200],
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            8),
+                                                              ),
+                                                              code: const TextStyle(color: Colors.white, backgroundColor: Colors.black),
+                                                              codeblockDecoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(8)),
+                                                              horizontalRuleDecoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.grey[200]!, width: 1))))
+                                                          : MarkdownStyleSheet(
+                                                              p: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+                                                              blockquoteDecoration: BoxDecoration(
+                                                                color: Colors
+                                                                    .grey[800]!,
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            8),
+                                                              ),
+                                                              code: const TextStyle(color: Colors.black, backgroundColor: Colors.white),
+                                                              codeblockDecoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
+                                                              horizontalRuleDecoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.grey[200]!, width: 1))))),
+                                          ]),
                                     ));
                               },
                               imageMessageBuilder: (p0,

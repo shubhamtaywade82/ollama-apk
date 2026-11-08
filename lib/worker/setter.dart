@@ -1,4 +1,5 @@
 import 'chat_store.dart';
+import '../thinking_block.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -609,9 +610,11 @@ void saveChat(String uuid, Function setState) async {
   List<Map<String, String>> history = [];
   for (var i = 0; i < messages.length; i++) {
     if ((jsonDecode(jsonEncode(messages[i])) as Map).containsKey("text")) {
+      final thinking = thinkingOf(messages[i].metadata);
       history.add({
         "role": (messages[i].author == user) ? "user" : "assistant",
-        "content": jsonDecode(jsonEncode(messages[i]))["text"]
+        "content": jsonDecode(jsonEncode(messages[i]))["text"],
+        if (thinking != null) "thinking": thinking,
       });
     } else {
       var uri = jsonDecode(jsonEncode(messages[i]))["uri"] as String;
@@ -700,7 +703,10 @@ void loadChat(String uuid, Function setState) {
             types.TextMessage(
                 author: (history[i]["role"] == "user") ? user : assistant,
                 id: const Uuid().v4(),
-                text: history[i]["content"]));
+                text: history[i]["content"],
+                metadata: history[i]["thinking"] is String
+                    ? {"thinking": history[i]["thinking"]}
+                    : null));
       }
     }
   }

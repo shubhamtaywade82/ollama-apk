@@ -655,4 +655,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get hostsLoopbackWarning =>
       'On a phone, localhost is the phone itself. Use your computer\'s address, e.g. http://192.168.1.100:11434, and start Ollama with OLLAMA_HOST=0.0.0.0.';
+
+  @override
+  String get thinkingActive => 'Thinking…';
+
+  @override
+  String get thinkingDone => 'Thought process';
 }

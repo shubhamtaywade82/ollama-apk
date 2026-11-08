@@ -221,7 +221,10 @@ Future<String> send(String value, BuildContext context, Function setState,
   String newId = const Uuid().v4();
 
   var hasFailedOver = false;
+  String thinking = "";
   while (true) {
+    // A failover retry starts the reasoning over on the new host.
+    thinking = "";
     try {
       // ponytail: tool rounds are non-streaming; stream the final answer
       // too if waiting on long tool chains feels slow.
@@ -259,6 +262,7 @@ Future<String> send(String value, BuildContext context, Function setState,
 
         await for (final res in stream) {
           text += (res.message.content);
+          thinking += res.message.thinking ?? "";
           for (var i = 0; i < messages.length; i++) {
             if (messages[i].id == newId) {
               messages.removeAt(i);
@@ -267,7 +271,12 @@ Future<String> send(String value, BuildContext context, Function setState,
           }
           if (chatAllowed) return "";
           messages.insert(
-              0, types.TextMessage(author: assistant, id: newId, text: text));
+              0,
+              types.TextMessage(
+                  author: assistant,
+                  id: newId,
+                  text: text,
+                  metadata: thinkingMetadata(thinking)));
           //TODO: add functionality
           //
           // chatKey!.currentState!.scrollToMessage(messages[1].id,
@@ -296,12 +305,22 @@ Future<String> send(String value, BuildContext context, Function setState,
                             .round())))
                 .message;
         // A copy, so a failover retry does not resend this attempt's tool turns.
+        final turns = List.of(history);
         final reply = useTools
-            ? await runToolLoop(List.of(history), callModel, toolSet.run)
-            : (await callModel(history)).content;
+            ? await runToolLoop(turns, callModel, toolSet.run)
+            : (await callModel(turns).then((message) {
+                turns.add(message);
+                return message.content;
+              }));
+        thinking = turns.last.thinking ?? "";
         if (chatAllowed) return "";
         messages.insert(
-            0, types.TextMessage(author: assistant, id: newId, text: reply));
+            0,
+            types.TextMessage(
+                author: assistant,
+                id: newId,
+                text: reply,
+                metadata: thinkingMetadata(thinking)));
         text = reply;
         setState(() {});
         heavyHaptic();
@@ -364,3 +383,8 @@ Future<String> send(String value, BuildContext context, Function setState,
   chatAllowed = true;
   return text;
 }
+
+/// Message metadata carrying the model's reasoning, or null when there is
+/// none, so plain replies stay unchanged.
+Map<String, dynamic>? thinkingMetadata(String thinking) =>
+    thinking.trim().isEmpty ? null : {"thinking": thinking};

@@ -39,7 +39,9 @@
     "hostsTest",
     "hostsTestOk",
     "hostsTestFailed",
-    "hostsLoopbackWarning"
+    "hostsLoopbackWarning",
+    "thinkingActive",
+    "thinkingDone"
   ],
 
   "fa": [
@@ -82,7 +84,9 @@
     "hostsTest",
     "hostsTestOk",
     "hostsTestFailed",
-    "hostsLoopbackWarning"
+    "hostsLoopbackWarning",
+    "thinkingActive",
+    "thinkingDone"
   ],
 
   "it": [
@@ -125,7 +129,9 @@
     "hostsTest",
     "hostsTestOk",
     "hostsTestFailed",
-    "hostsLoopbackWarning"
+    "hostsLoopbackWarning",
+    "thinkingActive",
+    "thinkingDone"
   ],
 
   "tr": [
@@ -168,7 +174,9 @@
     "hostsTest",
     "hostsTestOk",
     "hostsTestFailed",
-    "hostsLoopbackWarning"
+    "hostsLoopbackWarning",
+    "thinkingActive",
+    "thinkingDone"
   ],
 
   "zh": [
@@ -211,6 +219,8 @@
     "hostsTest",
     "hostsTestOk",
     "hostsTestFailed",
-    "hostsLoopbackWarning"
+    "hostsLoopbackWarning",
+    "thinkingActive",
+    "thinkingDone"
   ]
 }

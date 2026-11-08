@@ -1239,6 +1239,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'On a phone, localhost is the phone itself. Use your computer\'s address, e.g. http://192.168.1.100:11434, and start Ollama with OLLAMA_HOST=0.0.0.0.'**
   String get hostsLoopbackWarning;
+
+  /// No description provided for @thinkingActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking…'**
+  String get thinkingActive;
+
+  /// No description provided for @thinkingDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Thought process'**
+  String get thinkingDone;
 }
 
 class _AppLocalizationsDelegate
