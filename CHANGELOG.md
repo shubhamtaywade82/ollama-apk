@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/shubhamtaywade82/ollama-apk/compare/v1.4.1...v1.5.0) (2026-11-08)
+
+
+### Features
+
+* copy, read aloud and regenerate actions under replies ([a5b2fd9](https://github.com/shubhamtaywade82/ollama-apk/commit/a5b2fd965234a4b22007ae750a91b5a06b230912))
+
 ## [1.4.1](https://github.com/shubhamtaywade82/ollama-apk/compare/v1.4.0...v1.4.1) (2026-11-08)
 
 
