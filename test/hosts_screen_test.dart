@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ollama_app/l10n/gen/app_localizations.dart';
@@ -45,5 +46,27 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Add host'));
     await tester.pump();
     expect(find.textContaining('full URL'), findsOneWidget);
+  });
+
+  testWidgets('should warn about localhost on a phone and report test result',
+      (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    SharedPreferences.setMockInitialValues({});
+    app.prefs = await SharedPreferences.getInstance();
+    await pumpScreen(tester);
+    await tester.tap(find.text('Add host'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+        find.byType(TextField).at(1), 'http://localhost:11434');
+    await tester.pump();
+    expect(
+        find.textContaining('localhost is the phone itself'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField).at(1), 'http://127.0.0.1:1');
+    await tester.tap(find.text('Test connection'));
+    await tester.runAsync(() => Future.delayed(const Duration(seconds: 1)));
+    await tester.pump();
+    expect(find.textContaining('Failed:'), findsOneWidget);
+    debugDefaultTargetPlatformOverride = null;
   });
 }

@@ -1215,6 +1215,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Lets models that support it reason before answering. The reasoning is not shown. Models without the feature ignore this setting; web and market tools likewise only run on models that support tools.'**
   String get settingsThinkingDescription;
+
+  /// No description provided for @hostsTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Test connection'**
+  String get hostsTest;
+
+  /// No description provided for @hostsTestOk.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected ({ms} ms)'**
+  String hostsTestOk(int ms);
+
+  /// No description provided for @hostsTestFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed: {error}'**
+  String hostsTestFailed(String error);
+
+  /// No description provided for @hostsLoopbackWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'On a phone, localhost is the phone itself. Use your computer\'s address, e.g. http://192.168.1.100:11434, and start Ollama with OLLAMA_HOST=0.0.0.0.'**
+  String get hostsLoopbackWarning;
 }
 
 class _AppLocalizationsDelegate

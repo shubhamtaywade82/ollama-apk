@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
 
 import '../main.dart';
@@ -146,6 +147,8 @@ class _AddHostDialogState extends State<_AddHostDialog> {
   final url = TextEditingController(text: 'http://');
   final apiKey = TextEditingController();
   String? urlError;
+  String? testResult;
+  bool testing = false;
 
   @override
   void dispose() {
@@ -168,9 +171,39 @@ class _AddHostDialogState extends State<_AddHostDialog> {
         OllamaHost(name: label.isEmpty ? uri.host : label, url: normalized));
   }
 
+  Future<void> testConnection() async {
+    final l10n = AppLocalizations.of(context)!;
+    final normalized = normalizeHostUrl(url.text);
+    final uri = Uri.tryParse(normalized);
+    if (uri == null || !uri.isAbsolute || uri.host.isEmpty) {
+      setState(() => urlError = l10n.hostsInvalidUrl);
+      return;
+    }
+    setState(() {
+      urlError = null;
+      testing = true;
+      testResult = null;
+    });
+    final key = apiKey.text.trim();
+    final health = await pingHost(
+        OllamaHost(name: uri.host, url: normalized), httpClient,
+        headers: isCloudHost(normalized) && key.isNotEmpty
+            ? {'Authorization': 'Bearer $key'}
+            : null);
+    if (!mounted) return;
+    setState(() {
+      testing = false;
+      testResult = health.isUp
+          ? l10n.hostsTestOk(health.latency!.inMilliseconds)
+          : l10n.hostsTestFailed(health.error!);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final showLoopbackWarning =
+        isLoopbackOnPhone(url.text, defaultTargetPlatform);
     return AlertDialog(
       title: Text(l10n.hostsAdd),
       content: SingleChildScrollView(
@@ -181,12 +214,32 @@ class _AddHostDialogState extends State<_AddHostDialog> {
           TextField(
               controller: url,
               keyboardType: TextInputType.url,
+              onChanged: (_) => setState(() => testResult = null),
               decoration: InputDecoration(
                   labelText: l10n.hostsUrl, errorText: urlError)),
+          if (showLoopbackWarning)
+            Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(l10n.hostsLoopbackWarning,
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.error))),
           TextField(
               controller: apiKey,
               obscureText: true,
               decoration: InputDecoration(labelText: l10n.settingsApiKey)),
+          const SizedBox(height: 8),
+          Row(children: [
+            OutlinedButton(
+                onPressed: testing ? null : testConnection,
+                child: Text(l10n.hostsTest)),
+            const SizedBox(width: 12),
+            if (testing)
+              const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2)),
+            if (testResult != null) Expanded(child: Text(testResult!)),
+          ]),
         ]),
       ),
       actions: [

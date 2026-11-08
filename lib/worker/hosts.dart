@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show TargetPlatform;
+
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -94,13 +96,17 @@ Future<void> activateHost(SharedPreferences prefs, OllamaHost host) async {
 
 /// Local Ollama answers "Ollama is running" at `/`; Cloud has no such root
 /// route, so its key is verified against `/api/tags` instead.
+///
+/// [headers] overrides the saved credentials, so a key can be tested before
+/// it is saved.
 Future<HostHealth> pingHost(OllamaHost host, http.Client client,
-    {Duration timeout = _pingTimeout}) async {
+    {Duration timeout = _pingTimeout, Map<String, String>? headers}) async {
   final uri = Uri.parse(host.isCloud ? '$cloudOrigin/api/tags' : host.url);
   final stopwatch = Stopwatch()..start();
   try {
-    final response =
-        await client.get(uri, headers: host.headers).timeout(timeout);
+    final response = await client
+        .get(uri, headers: headers ?? host.headers)
+        .timeout(timeout);
     if (response.statusCode == 401 || response.statusCode == 403) {
       return const HostHealth.down('unauthorized');
     }
@@ -154,4 +160,14 @@ Future<bool> failoverActiveHost(Object error) async {
   if (next == null) return false;
   host = next.url;
   return true;
+}
+
+/// On a phone `localhost` is the phone itself, never the computer running
+/// Ollama, so saving it is almost always a mistake.
+bool isLoopbackOnPhone(String url, TargetPlatform platform) {
+  if (platform != TargetPlatform.android && platform != TargetPlatform.iOS) {
+    return false;
+  }
+  final host = Uri.tryParse(normalizeHostUrl(url))?.host ?? '';
+  return host == 'localhost' || host == '127.0.0.1' || host == '::1';
 }

@@ -618,4 +618,21 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get settingsThinkingDescription =>
       'Lets models that support it reason before answering. The reasoning is not shown. Models without the feature ignore this setting; web and market tools likewise only run on models that support tools.';
+
+  @override
+  String get hostsTest => 'Test connection';
+
+  @override
+  String hostsTestOk(int ms) {
+    return 'Connected ($ms ms)';
+  }
+
+  @override
+  String hostsTestFailed(String error) {
+    return 'Failed: $error';
+  }
+
+  @override
+  String get hostsLoopbackWarning =>
+      'On a phone, localhost is the phone itself. Use your computer\'s address, e.g. http://192.168.1.100:11434, and start Ollama with OLLAMA_HOST=0.0.0.0.';
 }

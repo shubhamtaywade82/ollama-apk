@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show TargetPlatform;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -13,6 +14,7 @@ MockClient fakeServers(Map<String, http.Response> byUrl) =>
         byUrl[req.url.toString()] ?? (throw http.ClientException('refused')));
 
 void main() {
+  loopbackTests();
   test('should migrate legacy single host when no host list saved', () async {
     SharedPreferences.setMockInitialValues({'host': 'http://10.0.0.2:11434'});
     final prefs = await SharedPreferences.getInstance();
@@ -64,5 +66,30 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     await saveHosts(prefs, [local, router]);
     expect(await failoverFrom(prefs, fakeServers({}), local.url), isNull);
+  });
+}
+
+void loopbackTests() {
+  group('isLoopbackOnPhone', () {
+    test('should flag localhost variants on Android and iOS only', () {
+      for (final url in [
+        'http://localhost:11434',
+        'http://127.0.0.1:11434',
+        'http://[::1]:11434'
+      ]) {
+        expect(isLoopbackOnPhone(url, TargetPlatform.android), isTrue,
+            reason: url);
+        expect(isLoopbackOnPhone(url, TargetPlatform.iOS), isTrue);
+        expect(isLoopbackOnPhone(url, TargetPlatform.linux), isFalse);
+      }
+    });
+
+    test('should not flag LAN or cloud addresses', () {
+      expect(
+          isLoopbackOnPhone('http://192.168.1.5:11434', TargetPlatform.android),
+          isFalse);
+      expect(isLoopbackOnPhone('https://ollama.com', TargetPlatform.android),
+          isFalse);
+    });
   });
 }
