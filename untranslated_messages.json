@@ -55,7 +55,8 @@
     "modelsOperationFailed",
     "mcpToolsEnabled",
     "attachFile",
-    "attachFileFailed"
+    "attachFileFailed",
+    "modelSearchHint"
   ],
 
   "fa": [
@@ -114,7 +115,8 @@
     "modelsOperationFailed",
     "mcpToolsEnabled",
     "attachFile",
-    "attachFileFailed"
+    "attachFileFailed",
+    "modelSearchHint"
   ],
 
   "it": [
@@ -173,7 +175,8 @@
     "modelsOperationFailed",
     "mcpToolsEnabled",
     "attachFile",
-    "attachFileFailed"
+    "attachFileFailed",
+    "modelSearchHint"
   ],
 
   "tr": [
@@ -232,7 +235,8 @@
     "modelsOperationFailed",
     "mcpToolsEnabled",
     "attachFile",
-    "attachFileFailed"
+    "attachFileFailed",
+    "modelSearchHint"
   ],
 
   "zh": [
@@ -291,6 +295,7 @@
     "modelsOperationFailed",
     "mcpToolsEnabled",
     "attachFile",
-    "attachFileFailed"
+    "attachFileFailed",
+    "modelSearchHint"
   ]
 }

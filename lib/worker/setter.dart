@@ -1,4 +1,5 @@
 import 'chat_store.dart';
+import '../settings/models.dart' show formatBytes;
 import '../thinking_block.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -10,7 +11,6 @@ import 'desktop.dart';
 import 'haptic.dart';
 import '../main.dart';
 import 'sender.dart';
-import 'theme.dart';
 import 'clients.dart';
 
 import 'package:ollama_app/l10n/gen/app_localizations.dart';
@@ -60,6 +60,8 @@ void setModel(BuildContext context, Function setState) {
   List<String> models = [];
   List<String> modelsReal = [];
   List<bool> modal = [];
+  List<String> facts = [];
+  String query = "";
   int usedIndex = -1;
   int oldIndex = -1;
   int addIndex = -1;
@@ -78,9 +80,17 @@ void setModel(BuildContext context, Function setState) {
         visionFlags.addAll(await Future.wait(batch.map(supportsVisionInput)));
       }
       for (var i = 0; i < list.models!.length; i++) {
-        models.add(list.models![i].model!.split(":")[0]);
-        modelsReal.add(list.models![i].model!);
+        final entry = list.models![i];
+        models.add(entry.model!.split(":")[0]);
+        modelsReal.add(entry.model!);
         modal.add(visionFlags[i]);
+        facts.add([
+          if (entry.details?.parameterSize != null)
+            entry.details!.parameterSize!,
+          if (entry.details?.quantizationLevel != null)
+            entry.details!.quantizationLevel!,
+          if ((entry.size ?? 0) > 0) formatBytes(entry.size!),
+        ].join("  ·  "));
       }
 
       addIndex = models.length;
@@ -89,6 +99,7 @@ void setModel(BuildContext context, Function setState) {
       // ignore: use_build_context_synchronously
       modelsReal.add(AppLocalizations.of(context)!.modelDialogAddModel);
       modal.add(false);
+      facts.add("");
 
       for (var i = 0; i < modelsReal.length; i++) {
         if (modelsReal[i] == model) {
@@ -128,6 +139,54 @@ void setModel(BuildContext context, Function setState) {
   selectionHaptic();
 
   load();
+
+  /// One picker row: name (tag greyed), size facts, capability icons and a
+  /// check on the current model. Tapping selects and closes the sheet.
+  Widget modelRow(BuildContext context, int index, StateSetter setLocalState) {
+    final isAdd = index == addIndex;
+    final isSelected = usedIndex == index;
+    final parts = modelsReal[index].split(":");
+    final showTag = (prefs!.getBool("modelTags") ?? true) && parts.length > 1;
+    final muted = Theme.of(context).colorScheme.onSurfaceVariant;
+    return ListTile(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      selected: isSelected,
+      leading: isAdd ? const Icon(Icons.add_rounded) : null,
+      title: Text.rich(TextSpan(children: [
+        TextSpan(
+            text: models[index],
+            style: const TextStyle(fontWeight: FontWeight.w600)),
+        if (showTag && !isAdd)
+          TextSpan(text: ":${parts[1]}", style: TextStyle(color: muted)),
+      ])),
+      subtitle: facts[index].isEmpty ? null : Text(facts[index]),
+      trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+        if (recommendedModels.contains(models[index]))
+          Icon(Icons.star_rounded, size: 18, color: muted),
+        if (modal[index])
+          Padding(
+              padding: const EdgeInsets.only(left: 6),
+              child: Icon(Icons.image_outlined, size: 18, color: muted)),
+        if (isSelected)
+          const Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Icon(Icons.check_rounded)),
+      ]),
+      onTap: () {
+        selectionHaptic();
+        if (isAdd) {
+          usedIndex = oldIndex;
+          Navigator.of(context).pop();
+          addModel(context, setState);
+          return;
+        }
+        if (!chatAllowed && model != null) return;
+        setLocalState(() => usedIndex = index);
+        // maybePop goes through PopScope, which applies the selection.
+        Navigator.of(context).maybePop();
+      },
+    );
+  }
 
   var content = StatefulBuilder(builder: (context, setLocalState) {
     setModalState = setLocalState;
@@ -222,102 +281,32 @@ void setModel(BuildContext context, Function setState) {
                     width: desktopLayout(context) ? 300 : double.infinity,
                     child: const LinearProgressIndicator())
                 : Column(mainAxisSize: MainAxisSize.min, children: [
+                    if (models.length > 9)
+                      Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: TextField(
+                              autofocus: false,
+                              decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.search_rounded),
+                                  hintText: AppLocalizations.of(context)!
+                                      .modelSearchHint,
+                                  border: const OutlineInputBorder(),
+                                  isDense: true),
+                              onChanged: (value) => setLocalState(
+                                  () => query = value.trim().toLowerCase()))),
                     Container(
-                        width: desktopLayout(context) ? 300 : double.infinity,
+                        width: desktopLayout(context) ? 360 : double.infinity,
                         constraints: BoxConstraints(
                             maxHeight:
-                                MediaQuery.of(context).size.height * 0.4),
-                        child: SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: Wrap(
-                              spacing: desktopLayout(context) ? 10.0 : 5.0,
-                              runSpacing:
-                                  desktopFeature(web: true) ? 10.0 : 0.0,
-                              alignment: WrapAlignment.center,
-                              children: List<Widget>.generate(
-                                models.length,
-                                (int index) {
-                                  return ChoiceChip(
-                                    label: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(models[index]),
-                                          ((prefs!.getBool("modelTags") ??
-                                                      false) &&
-                                                  modelsReal[index]
-                                                          .split(":")
-                                                          .length >
-                                                      1)
-                                              ? Text(
-                                                  ":${modelsReal[index].split(":")[1]}",
-                                                  style: const TextStyle(
-                                                      color: Colors.grey))
-                                              : const SizedBox.shrink()
-                                        ]),
-                                    selected: usedIndex == index,
-                                    avatar: (usedIndex == index)
-                                        ? null
-                                        : (addIndex == index)
-                                            ? const Icon(Icons.add_rounded)
-                                            : ((recommendedModels
-                                                    .contains(models[index]))
-                                                ? const Icon(Icons.star_rounded)
-                                                : ((modal[index])
-                                                    ? const Icon(Icons
-                                                        .collections_rounded)
-                                                    : null)),
-                                    checkmarkColor: (usedIndex == index &&
-                                            !(prefs?.getBool(
-                                                    "useDeviceTheme") ??
-                                                false))
-                                        ? ((MediaQuery.of(context)
-                                                    .platformBrightness ==
-                                                Brightness.light)
-                                            ? themeLight().colorScheme.secondary
-                                            : themeDark().colorScheme.secondary)
-                                        : null,
-                                    labelStyle: (usedIndex == index &&
-                                            !(prefs?.getBool(
-                                                    "useDeviceTheme") ??
-                                                false))
-                                        ? TextStyle(
-                                            color: (MediaQuery.of(context)
-                                                        .platformBrightness ==
-                                                    Brightness.light)
-                                                ? themeLight()
-                                                    .colorScheme
-                                                    .secondary
-                                                : themeDark()
-                                                    .colorScheme
-                                                    .secondary)
-                                        : null,
-                                    selectedColor: (prefs
-                                                ?.getBool("useDeviceTheme") ??
-                                            false)
-                                        ? null
-                                        : (MediaQuery.of(context)
-                                                    .platformBrightness ==
-                                                Brightness.light)
-                                            ? themeLight().colorScheme.primary
-                                            : themeDark().colorScheme.primary,
-                                    onSelected: (bool selected) {
-                                      selectionHaptic();
-                                      if (addIndex == index) {
-                                        usedIndex = oldIndex;
-                                        Navigator.of(context).pop();
-                                        addModel(context, setState);
-                                      }
-                                      if (!chatAllowed && model != null) {
-                                        return;
-                                      }
-                                      setLocalState(() {
-                                        usedIndex = selected ? index : -1;
-                                      });
-                                    },
-                                  );
-                                },
-                              ).toList(),
-                            )))
+                                MediaQuery.of(context).size.height * 0.7),
+                        child: ListView(shrinkWrap: true, children: [
+                          for (var index = 0; index < models.length; index++)
+                            if (index == addIndex ||
+                                query.isEmpty ||
+                                modelsReal[index].toLowerCase().contains(query))
+                              modelRow(context, index, setLocalState),
+                        ])),
+                    const SizedBox(height: 8),
                   ])));
   });
 
@@ -341,8 +330,13 @@ void setModel(BuildContext context, Function setState) {
           );
         });
   } else {
+    // Scroll-controlled so the sheet can grow to the list's 70% cap instead
+    // of the default 9/16, which clipped the bottom rows of long lists.
     showModalBottomSheet(
-        context: context, builder: (context) => Container(child: content));
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        builder: (context) => content);
   }
 }
 

@@ -701,4 +701,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String attachFileFailed(String error) {
     return 'Could not attach: $error';
   }
+
+  @override
+  String get modelSearchHint => 'Search models';
 }

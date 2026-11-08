@@ -1335,6 +1335,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not attach: {error}'**
   String attachFileFailed(String error);
+
+  /// No description provided for @modelSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search models'**
+  String get modelSearchHint;
 }
 
 class _AppLocalizationsDelegate
