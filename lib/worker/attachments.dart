@@ -95,9 +95,16 @@ Future<void> attachFileToChat(
   final file = picked?.files.firstOrNull;
   final bytes = file?.bytes;
   if (file == null || bytes == null) return;
+  if (!context.mounted) return;
+  final l10n = AppLocalizations.of(context)!;
+  final messenger = ScaffoldMessenger.of(context);
+  // PDFs and large files take a moment; say something is happening.
+  messenger.showSnackBar(SnackBar(
+      content: Text(l10n.attachFileReading(file.name)),
+      duration: const Duration(seconds: 30)));
   try {
-    final text =
-        clipAttachmentText(await extractAttachmentText(file.name, bytes));
+    final fullText = await extractAttachmentText(file.name, bytes);
+    final text = clipAttachmentText(fullText);
     messages.insert(
         0,
         types.FileMessage(
@@ -109,10 +116,29 @@ Future<void> attachFileToChat(
             uri: file.name,
             metadata: {'text': text}));
     setState(() {});
+    messenger.hideCurrentSnackBar();
+    messenger.showSnackBar(SnackBar(
+        content: Text(attachedNotice(l10n, file.name, fullText.length)),
+        showCloseIcon: true,
+        duration: const Duration(seconds: 8)));
   } catch (e) {
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(AppLocalizations.of(context)!.attachFileFailed('$e')),
-        showCloseIcon: true));
+    messenger.hideCurrentSnackBar();
+    messenger.showSnackBar(SnackBar(
+        content: Text(l10n.attachFileFailed('$e')), showCloseIcon: true));
   }
+}
+
+/// What the user is told after attaching: that the file goes with the next
+/// message, and how much of it, when it is too long to send whole.
+String attachedNotice(AppLocalizations l10n, String name, int totalChars) {
+  if (totalChars <= maxAttachmentChars) return l10n.attachFileReady(name);
+  final percent = (maxAttachmentChars * 100 / totalChars).floor();
+  return l10n.attachFileTruncated(name, percent);
+}
+
+/// The file waiting to go with the next message, if any: attachments are
+/// inserted newest-first, so it sits at the front of [messages].
+String? pendingAttachmentName() {
+  final latest = messages.firstOrNull;
+  return latest is types.FileMessage ? latest.name : null;
 }

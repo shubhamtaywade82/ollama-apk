@@ -704,4 +704,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get modelSearchHint => 'Search models';
+
+  @override
+  String attachFileReading(String name) {
+    return 'Reading $name…';
+  }
+
+  @override
+  String attachFileReady(String name) {
+    return '$name attached. It will be sent with your next message.';
+  }
+
+  @override
+  String attachFileTruncated(String name, int percent) {
+    return '$name attached, but it is long: only the first $percent% will be sent with your next message.';
+  }
+
+  @override
+  String messageInputAskAbout(String name) {
+    return 'Ask about $name…';
+  }
 }

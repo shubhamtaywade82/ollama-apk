@@ -1341,6 +1341,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search models'**
   String get modelSearchHint;
+
+  /// No description provided for @attachFileReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading {name}…'**
+  String attachFileReading(String name);
+
+  /// No description provided for @attachFileReady.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} attached. It will be sent with your next message.'**
+  String attachFileReady(String name);
+
+  /// No description provided for @attachFileTruncated.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} attached, but it is long: only the first {percent}% will be sent with your next message.'**
+  String attachFileTruncated(String name, int percent);
+
+  /// No description provided for @messageInputAskAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask about {name}…'**
+  String messageInputAskAbout(String name);
 }
 
 class _AppLocalizationsDelegate

@@ -56,7 +56,11 @@
     "mcpToolsEnabled",
     "attachFile",
     "attachFileFailed",
-    "modelSearchHint"
+    "modelSearchHint",
+    "attachFileReading",
+    "attachFileReady",
+    "attachFileTruncated",
+    "messageInputAskAbout"
   ],
 
   "fa": [
@@ -116,7 +120,11 @@
     "mcpToolsEnabled",
     "attachFile",
     "attachFileFailed",
-    "modelSearchHint"
+    "modelSearchHint",
+    "attachFileReading",
+    "attachFileReady",
+    "attachFileTruncated",
+    "messageInputAskAbout"
   ],
 
   "it": [
@@ -176,7 +184,11 @@
     "mcpToolsEnabled",
     "attachFile",
     "attachFileFailed",
-    "modelSearchHint"
+    "modelSearchHint",
+    "attachFileReading",
+    "attachFileReady",
+    "attachFileTruncated",
+    "messageInputAskAbout"
   ],
 
   "tr": [
@@ -236,7 +248,11 @@
     "mcpToolsEnabled",
     "attachFile",
     "attachFileFailed",
-    "modelSearchHint"
+    "modelSearchHint",
+    "attachFileReading",
+    "attachFileReady",
+    "attachFileTruncated",
+    "messageInputAskAbout"
   ],
 
   "zh": [
@@ -296,6 +312,10 @@
     "mcpToolsEnabled",
     "attachFile",
     "attachFileFailed",
-    "modelSearchHint"
+    "modelSearchHint",
+    "attachFileReading",
+    "attachFileReady",
+    "attachFileTruncated",
+    "messageInputAskAbout"
   ]
 }

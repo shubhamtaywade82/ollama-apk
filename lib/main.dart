@@ -1554,13 +1554,19 @@ class _MainAppState extends State<MainApp> {
                                     });
                               },
                               l10n: ChatL10nEn(
-                                  inputPlaceholder: AppLocalizations.of(context)!
-                                      .messageInputPlaceholder,
+                                  inputPlaceholder: pendingAttachmentName() ==
+                                          null
+                                      ? AppLocalizations.of(context)!
+                                          .messageInputPlaceholder
+                                      : AppLocalizations.of(context)!
+                                          .messageInputAskAbout(
+                                              pendingAttachmentName()!),
                                   attachmentButtonAccessibilityLabel:
                                       AppLocalizations.of(context)!
                                           .tooltipAttachment,
-                                  sendButtonAccessibilityLabel: AppLocalizations.of(context)!
-                                      .tooltipSend),
+                                  sendButtonAccessibilityLabel:
+                                      AppLocalizations.of(context)!
+                                          .tooltipSend),
                               inputOptions: InputOptions(
                                   keyboardType: TextInputType.multiline,
                                   onTextChanged: (p0) {
@@ -1578,12 +1584,9 @@ class _MainAppState extends State<MainApp> {
                               theme: (Theme.of(context).brightness ==
                                       Brightness.light)
                                   ? DefaultChatTheme(
-                                      backgroundColor:
-                                          themeLight().colorScheme.surface,
-                                      primaryColor:
-                                          themeLight().colorScheme.primary,
-                                      attachmentButtonIcon:
-                                          Icon(Icons.add_circle_outline_rounded, color: Theme.of(context).iconTheme.color),
+                                      backgroundColor: themeLight().colorScheme.surface,
+                                      primaryColor: themeLight().colorScheme.primary,
+                                      attachmentButtonIcon: Icon(Icons.add_circle_outline_rounded, color: Theme.of(context).iconTheme.color),
                                       sendButtonIcon: SizedBox(
                                         height: 24,
                                         child: CircleAvatar(

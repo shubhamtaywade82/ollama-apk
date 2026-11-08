@@ -901,5 +901,40 @@
             }
         }
     },
-    "modelSearchHint": "Search models"
+    "modelSearchHint": "Search models",
+    "attachFileReading": "Reading {name}…",
+    "@attachFileReading": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "attachFileReady": "{name} attached. It will be sent with your next message.",
+    "@attachFileReady": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "attachFileTruncated": "{name} attached, but it is long: only the first {percent}% will be sent with your next message.",
+    "@attachFileTruncated": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "messageInputAskAbout": "Ask about {name}…",
+    "@messageInputAskAbout": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    }
 }

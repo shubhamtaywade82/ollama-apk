@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ollama_app/l10n/gen/app_localizations.dart';
 import 'package:ollama_app/main.dart' as app;
 import 'package:ollama_app/worker/attachments.dart';
 import 'package:ollama_app/worker/chat_store.dart';
@@ -21,6 +23,7 @@ types.FileMessage fileMessage(String name, String text) => types.FileMessage(
     metadata: {'text': text});
 
 void main() {
+  feedbackTests();
   group('extractAttachmentText', () {
     test('should decode text and code files as UTF-8', () async {
       expect(
@@ -119,5 +122,24 @@ void main() {
     expect(file.name, 'doc.md');
     expect(file.metadata?['text'], '# Doc');
     expect(app.messages.first, isA<types.TextMessage>());
+  });
+}
+
+void feedbackTests() {
+  test('should say how much of a long file will be sent', () async {
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(attachedNotice(l10n, 'a.md', 100), contains('next message'));
+    expect(attachedNotice(l10n, 'docs.md', 415000),
+        contains('only the first 14%'));
+  });
+
+  test('should report the file waiting for the next message', () {
+    app.messages = [fileMessage('docs.md', 'x')];
+    expect(pendingAttachmentName(), 'docs.md');
+    app.messages = [
+      types.TextMessage(author: app.user, id: 'u', text: 'hi'),
+      fileMessage('old.md', 'x'),
+    ];
+    expect(pendingAttachmentName(), isNull);
   });
 }
