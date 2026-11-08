@@ -33,7 +33,7 @@ jobs:
         run: flutter analyze --fatal-infos --fatal-warnings
       - name: Test
         run: flutter test --coverage
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: coverage
           path: coverage/lcov.info
@@ -57,7 +57,7 @@ jobs:
           cache: true
       - run: flutter pub get
       - run: flutter build apk --debug
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ollama-apk-debug
           path: build/app/outputs/flutter-apk/app-debug.apk
