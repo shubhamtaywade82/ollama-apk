@@ -814,5 +814,20 @@
     "cloudRequests": "Requests",
     "cloudSpend": "Spend",
     "cloudTokens": "Tokens",
-    "cloudByModel": "By model"
+    "cloudByModel": "By model",
+    "settingsTitleModels": "Models",
+    "settingsDescriptionModels": "Installed and loaded models, unload, delete",
+    "modelsEmpty": "No models installed on this host.",
+    "modelsLoaded": "loaded",
+    "modelsUnload": "Unload from memory",
+    "modelsDelete": "Delete",
+    "modelsDeleteTitle": "Delete {model}?",
+    "@modelsDeleteTitle": {
+        "placeholders": {
+            "model": {
+                "type": "String"
+            }
+        }
+    },
+    "modelsDeleteBody": "The model is removed from the server and must be downloaded again to use it."
 }

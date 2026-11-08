@@ -1131,6 +1131,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'By model'**
   String get cloudByModel;
+
+  /// No description provided for @settingsTitleModels.
+  ///
+  /// In en, this message translates to:
+  /// **'Models'**
+  String get settingsTitleModels;
+
+  /// No description provided for @settingsDescriptionModels.
+  ///
+  /// In en, this message translates to:
+  /// **'Installed and loaded models, unload, delete'**
+  String get settingsDescriptionModels;
+
+  /// No description provided for @modelsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No models installed on this host.'**
+  String get modelsEmpty;
+
+  /// No description provided for @modelsLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'loaded'**
+  String get modelsLoaded;
+
+  /// No description provided for @modelsUnload.
+  ///
+  /// In en, this message translates to:
+  /// **'Unload from memory'**
+  String get modelsUnload;
+
+  /// No description provided for @modelsDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get modelsDelete;
+
+  /// No description provided for @modelsDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {model}?'**
+  String modelsDeleteTitle(String model);
+
+  /// No description provided for @modelsDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The model is removed from the server and must be downloaded again to use it.'**
+  String get modelsDeleteBody;
 }
 
 class _AppLocalizationsDelegate

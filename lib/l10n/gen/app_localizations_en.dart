@@ -586,4 +586,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cloudByModel => 'By model';
+
+  @override
+  String get settingsTitleModels => 'Models';
+
+  @override
+  String get settingsDescriptionModels =>
+      'Installed and loaded models, unload, delete';
+
+  @override
+  String get modelsEmpty => 'No models installed on this host.';
+
+  @override
+  String get modelsLoaded => 'loaded';
+
+  @override
+  String get modelsUnload => 'Unload from memory';
+
+  @override
+  String get modelsDelete => 'Delete';
+
+  @override
+  String modelsDeleteTitle(String model) {
+    return 'Delete $model?';
+  }
+
+  @override
+  String get modelsDeleteBody =>
+      'The model is removed from the server and must be downloaded again to use it.';
 }

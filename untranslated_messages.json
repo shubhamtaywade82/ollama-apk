@@ -21,7 +21,15 @@
     "cloudRequests",
     "cloudSpend",
     "cloudTokens",
-    "cloudByModel"
+    "cloudByModel",
+    "settingsTitleModels",
+    "settingsDescriptionModels",
+    "modelsEmpty",
+    "modelsLoaded",
+    "modelsUnload",
+    "modelsDelete",
+    "modelsDeleteTitle",
+    "modelsDeleteBody"
   ],
 
   "fa": [
@@ -46,7 +54,15 @@
     "cloudRequests",
     "cloudSpend",
     "cloudTokens",
-    "cloudByModel"
+    "cloudByModel",
+    "settingsTitleModels",
+    "settingsDescriptionModels",
+    "modelsEmpty",
+    "modelsLoaded",
+    "modelsUnload",
+    "modelsDelete",
+    "modelsDeleteTitle",
+    "modelsDeleteBody"
   ],
 
   "it": [
@@ -71,7 +87,15 @@
     "cloudRequests",
     "cloudSpend",
     "cloudTokens",
-    "cloudByModel"
+    "cloudByModel",
+    "settingsTitleModels",
+    "settingsDescriptionModels",
+    "modelsEmpty",
+    "modelsLoaded",
+    "modelsUnload",
+    "modelsDelete",
+    "modelsDeleteTitle",
+    "modelsDeleteBody"
   ],
 
   "tr": [
@@ -96,7 +120,15 @@
     "cloudRequests",
     "cloudSpend",
     "cloudTokens",
-    "cloudByModel"
+    "cloudByModel",
+    "settingsTitleModels",
+    "settingsDescriptionModels",
+    "modelsEmpty",
+    "modelsLoaded",
+    "modelsUnload",
+    "modelsDelete",
+    "modelsDeleteTitle",
+    "modelsDeleteBody"
   ],
 
   "zh": [
@@ -121,6 +153,14 @@
     "cloudRequests",
     "cloudSpend",
     "cloudTokens",
-    "cloudByModel"
+    "cloudByModel",
+    "settingsTitleModels",
+    "settingsDescriptionModels",
+    "modelsEmpty",
+    "modelsLoaded",
+    "modelsUnload",
+    "modelsDelete",
+    "modelsDeleteTitle",
+    "modelsDeleteBody"
   ]
 }
