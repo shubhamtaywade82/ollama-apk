@@ -70,9 +70,27 @@ flutter build apk --debug
 ```
 
 CI runs analyze, tests and a debug APK build on every push and pull request.
-Pushing a `v*` tag builds per-ABI release APKs and publishes a GitHub release.
+
+### Releases
+
+Releases are automated with [release-please](https://github.com/googleapis/release-please),
+driven by [Conventional Commit](https://www.conventionalcommits.org) messages
+on `main` (PR titles, since PRs are squash-merged):
+
+| Commit | Release |
+|---|---|
+| `fix: …` | patch (1.3.1 → 1.3.2) |
+| `feat: …` | minor (1.3.1 → 1.4.0) |
+| `feat!: …` or a `BREAKING CHANGE:` footer | major |
+| `chore:`, `docs:`, `ci:`, `test:`, `refactor:` | none |
+
+release-please keeps one "chore: release x.y.z" PR open with the version bump
+and changelog. Merging it tags the release and builds, signs and attaches the
+APKs (one universal, plus per-ABI). Pushing a `v*` tag by hand does the same.
+
 Release signing needs these repository secrets: `ANDROID_KEYSTORE_BASE64`,
-`ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`.
+`ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`. Without them the release
+job fails rather than publishing a debug-signed APK.
 
 ## License and attribution
 

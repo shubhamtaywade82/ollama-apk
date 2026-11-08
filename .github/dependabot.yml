@@ -1,8 +1,11 @@
 version: 2
 updates:
+  # Conventional prefixes: the PR title check requires them, and chore/ci
+  # updates do not trigger a release on their own.
   - package-ecosystem: pub
     directory: /
     schedule: { interval: weekly }
+    commit-message: { prefix: "chore(deps)" }
     open-pull-requests-limit: 5
     ignore:
       # 2.x is a rewrite of the chat UI; needs a dedicated migration.
@@ -16,6 +19,7 @@ updates:
   - package-ecosystem: gradle
     directory: /android
     schedule: { interval: weekly }
+    commit-message: { prefix: "chore(deps)" }
     ignore:
       # AGP 9 / Gradle 9 / Kotlin 2.4 broke the APK build; upgrade together
       # on a branch, not as separate bumps.
@@ -30,3 +34,4 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule: { interval: weekly }
+    commit-message: { prefix: "ci(deps)" }

@@ -1,16 +1,25 @@
 name: Release
 
-# Tags only: a manual dispatch could sign an APK from any unreviewed branch
-# with the release keystore.
+# Runs for a pushed v* tag, or when release-please.yaml calls it after
+# creating a release (a release created with GITHUB_TOKEN triggers no
+# workflows on its own). No manual dispatch: it could sign an APK from any
+# unreviewed branch with the release keystore.
 on:
   push:
     tags: ["v*"]
+  workflow_call:
+    inputs:
+      tag:
+        description: Release tag to build, e.g. v1.4.0
+        required: true
+        type: string
 
 permissions:
   contents: write
 
 env:
   FLUTTER_VERSION: "3.44.4"
+  TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
   release:
@@ -19,6 +28,8 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
@@ -68,13 +79,22 @@ jobs:
           done
           exit 1
 
+      # One universal APK for simple downloads, plus smaller per-ABI APKs.
       - name: Build release APKs
-        run: flutter build apk --release --split-per-abi --split-debug-info=build/symbols
+        run: |
+          flutter build apk --release --split-debug-info=build/symbols
+          mv build/app/outputs/flutter-apk/app-release.apk build/universal.apk
+          flutter build apk --release --split-per-abi --split-debug-info=build/symbols
 
       - name: Name artifacts by version
         id: meta
         run: |
           version=$(sed -n 's/^version: \([^+]*\).*/\1/p' pubspec.yaml)
+          if [ "v$version" != "$TAG" ]; then
+            echo "::error::pubspec version $version does not match tag $TAG"
+            exit 1
+          fi
+          mv build/universal.apk "build/app/outputs/flutter-apk/ollama-apk-v${version}.apk"
           for f in build/app/outputs/flutter-apk/app-*-release.apk; do
             abi=$(basename "$f" | sed 's/app-\(.*\)-release.apk/\1/')
             mv "$f" "build/app/outputs/flutter-apk/ollama-apk-v${version}-${abi}.apk"
@@ -104,10 +124,13 @@ jobs:
           name: ollama-apk-v${{ steps.meta.outputs.version }}
           path: build/app/outputs/flutter-apk/ollama-apk-v*.apk
 
+      # append_body keeps the changelog release-please wrote and adds the
+      # signing fingerprint below it.
       - name: Publish GitHub release
-        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v3
         with:
+          tag_name: ${{ env.TAG }}
           generate_release_notes: true
+          append_body: true
           body_path: release-notes.md
           files: build/app/outputs/flutter-apk/ollama-apk-v*.apk

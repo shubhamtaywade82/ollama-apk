@@ -1,0 +1,47 @@
+# Automated versioning, as in ollama-sdk and dhanhq-sdk.
+#
+# On every push to main, release-please reads the Conventional Commit
+# subjects since the last release and keeps one release PR open that bumps
+# pubspec.yaml and updates CHANGELOG.md:
+#   fix: -> patch, feat: -> minor, feat!: or a BREAKING CHANGE footer -> major
+#   (chore/docs/test/ci/refactor commits do not trigger a release)
+# A `Release-As: x.y.z` commit footer overrides the computed version.
+# The Dart updater also increments the +build number, which Android needs to
+# accept the update.
+#
+# Merging the release PR tags vX.Y.Z, creates the GitHub release and calls
+# release.yaml directly, which builds, signs and attaches the APKs. A release
+# created with GITHUB_TOKEN would not trigger release.yaml on its own.
+
+name: Release Please
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v5
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  apk:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    uses: ./.github/workflows/release.yaml
+    with:
+      tag: ${{ needs.release-please.outputs.tag_name }}
+    secrets: inherit
+    permissions:
+      contents: write
