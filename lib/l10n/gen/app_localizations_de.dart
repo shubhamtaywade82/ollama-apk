@@ -545,4 +545,48 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get hostsInvalidUrl =>
       'Enter a full URL such as http://192.168.1.5:11434';
+
+  @override
+  String get settingsTitleCloud => 'Ollama Cloud';
+
+  @override
+  String get settingsDescriptionCloud => 'Usage, spend and remaining credits';
+
+  @override
+  String get cloudNoKey =>
+      'Add https://ollama.com with an API key under Hosts to see usage.';
+
+  @override
+  String get cloudUnauthorized =>
+      'Ollama Cloud rejected the API key. Update it under Hosts.';
+
+  @override
+  String get cloudBalance => 'Balance';
+
+  @override
+  String get cloudIncluded => 'Included';
+
+  @override
+  String get cloudPurchased => 'Purchased credit';
+
+  @override
+  String get cloudSession => 'Session';
+
+  @override
+  String get cloudWeekly => 'Weekly';
+
+  @override
+  String get cloudUsage => 'Usage';
+
+  @override
+  String get cloudRequests => 'Requests';
+
+  @override
+  String get cloudSpend => 'Spend';
+
+  @override
+  String get cloudTokens => 'Tokens';
+
+  @override
+  String get cloudByModel => 'By model';
 }

@@ -800,5 +800,19 @@
     "hostsUrl": "URL",
     "hostsEmpty": "No hosts yet. Add your Ollama server, router or Ollama Cloud.",
     "hostsRefresh": "Check hosts",
-    "hostsInvalidUrl": "Enter a full URL such as http://192.168.1.5:11434"
+    "hostsInvalidUrl": "Enter a full URL such as http://192.168.1.5:11434",
+    "settingsTitleCloud": "Ollama Cloud",
+    "settingsDescriptionCloud": "Usage, spend and remaining credits",
+    "cloudNoKey": "Add https://ollama.com with an API key under Hosts to see usage.",
+    "cloudUnauthorized": "Ollama Cloud rejected the API key. Update it under Hosts.",
+    "cloudBalance": "Balance",
+    "cloudIncluded": "Included",
+    "cloudPurchased": "Purchased credit",
+    "cloudSession": "Session",
+    "cloudWeekly": "Weekly",
+    "cloudUsage": "Usage",
+    "cloudRequests": "Requests",
+    "cloudSpend": "Spend",
+    "cloudTokens": "Tokens",
+    "cloudByModel": "By model"
 }

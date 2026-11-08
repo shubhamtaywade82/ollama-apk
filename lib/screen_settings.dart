@@ -13,6 +13,7 @@ import 'worker/setter.dart';
 import 'package:ollama_app/l10n/gen/app_localizations.dart';
 
 import 'settings/behavior.dart';
+import 'settings/cloud.dart';
 import 'settings/hosts.dart';
 import 'settings/interface.dart';
 import 'settings/voice.dart';
@@ -693,6 +694,19 @@ class _ScreenSettingsState extends State<ScreenSettings> {
                         ]);
                         var column2 =
                             Column(mainAxisSize: MainAxisSize.min, children: [
+                          button(
+                              AppLocalizations.of(context)!.settingsTitleCloud,
+                              Icons.cloud_rounded, () {
+                            selectionHaptic();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ScreenSettingsCloud()));
+                          },
+                              context: context,
+                              description:
+                                  "\n${AppLocalizations.of(context)!.settingsDescriptionCloud}"),
                           button(
                               AppLocalizations.of(context)!.settingsTitleHosts,
                               Icons.dns_rounded, () {

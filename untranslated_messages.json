@@ -7,7 +7,21 @@
     "hostsUrl",
     "hostsEmpty",
     "hostsRefresh",
-    "hostsInvalidUrl"
+    "hostsInvalidUrl",
+    "settingsTitleCloud",
+    "settingsDescriptionCloud",
+    "cloudNoKey",
+    "cloudUnauthorized",
+    "cloudBalance",
+    "cloudIncluded",
+    "cloudPurchased",
+    "cloudSession",
+    "cloudWeekly",
+    "cloudUsage",
+    "cloudRequests",
+    "cloudSpend",
+    "cloudTokens",
+    "cloudByModel"
   ],
 
   "fa": [
@@ -18,7 +32,21 @@
     "hostsUrl",
     "hostsEmpty",
     "hostsRefresh",
-    "hostsInvalidUrl"
+    "hostsInvalidUrl",
+    "settingsTitleCloud",
+    "settingsDescriptionCloud",
+    "cloudNoKey",
+    "cloudUnauthorized",
+    "cloudBalance",
+    "cloudIncluded",
+    "cloudPurchased",
+    "cloudSession",
+    "cloudWeekly",
+    "cloudUsage",
+    "cloudRequests",
+    "cloudSpend",
+    "cloudTokens",
+    "cloudByModel"
   ],
 
   "it": [
@@ -29,7 +57,21 @@
     "hostsUrl",
     "hostsEmpty",
     "hostsRefresh",
-    "hostsInvalidUrl"
+    "hostsInvalidUrl",
+    "settingsTitleCloud",
+    "settingsDescriptionCloud",
+    "cloudNoKey",
+    "cloudUnauthorized",
+    "cloudBalance",
+    "cloudIncluded",
+    "cloudPurchased",
+    "cloudSession",
+    "cloudWeekly",
+    "cloudUsage",
+    "cloudRequests",
+    "cloudSpend",
+    "cloudTokens",
+    "cloudByModel"
   ],
 
   "tr": [
@@ -40,7 +82,21 @@
     "hostsUrl",
     "hostsEmpty",
     "hostsRefresh",
-    "hostsInvalidUrl"
+    "hostsInvalidUrl",
+    "settingsTitleCloud",
+    "settingsDescriptionCloud",
+    "cloudNoKey",
+    "cloudUnauthorized",
+    "cloudBalance",
+    "cloudIncluded",
+    "cloudPurchased",
+    "cloudSession",
+    "cloudWeekly",
+    "cloudUsage",
+    "cloudRequests",
+    "cloudSpend",
+    "cloudTokens",
+    "cloudByModel"
   ],
 
   "zh": [
@@ -51,6 +107,20 @@
     "hostsUrl",
     "hostsEmpty",
     "hostsRefresh",
-    "hostsInvalidUrl"
+    "hostsInvalidUrl",
+    "settingsTitleCloud",
+    "settingsDescriptionCloud",
+    "cloudNoKey",
+    "cloudUnauthorized",
+    "cloudBalance",
+    "cloudIncluded",
+    "cloudPurchased",
+    "cloudSession",
+    "cloudWeekly",
+    "cloudUsage",
+    "cloudRequests",
+    "cloudSpend",
+    "cloudTokens",
+    "cloudByModel"
   ]
 }

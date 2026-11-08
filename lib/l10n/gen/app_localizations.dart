@@ -1047,6 +1047,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter a full URL such as http://192.168.1.5:11434'**
   String get hostsInvalidUrl;
+
+  /// No description provided for @settingsTitleCloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Ollama Cloud'**
+  String get settingsTitleCloud;
+
+  /// No description provided for @settingsDescriptionCloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage, spend and remaining credits'**
+  String get settingsDescriptionCloud;
+
+  /// No description provided for @cloudNoKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Add https://ollama.com with an API key under Hosts to see usage.'**
+  String get cloudNoKey;
+
+  /// No description provided for @cloudUnauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Ollama Cloud rejected the API key. Update it under Hosts.'**
+  String get cloudUnauthorized;
+
+  /// No description provided for @cloudBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get cloudBalance;
+
+  /// No description provided for @cloudIncluded.
+  ///
+  /// In en, this message translates to:
+  /// **'Included'**
+  String get cloudIncluded;
+
+  /// No description provided for @cloudPurchased.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchased credit'**
+  String get cloudPurchased;
+
+  /// No description provided for @cloudSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Session'**
+  String get cloudSession;
+
+  /// No description provided for @cloudWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get cloudWeekly;
+
+  /// No description provided for @cloudUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage'**
+  String get cloudUsage;
+
+  /// No description provided for @cloudRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get cloudRequests;
+
+  /// No description provided for @cloudSpend.
+  ///
+  /// In en, this message translates to:
+  /// **'Spend'**
+  String get cloudSpend;
+
+  /// No description provided for @cloudTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Tokens'**
+  String get cloudTokens;
+
+  /// No description provided for @cloudByModel.
+  ///
+  /// In en, this message translates to:
+  /// **'By model'**
+  String get cloudByModel;
 }
 
 class _AppLocalizationsDelegate
