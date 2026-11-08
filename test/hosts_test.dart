@@ -17,6 +17,7 @@ MockClient fakeServers(Map<String, http.Response> byUrl) =>
         byUrl[req.url.toString()] ?? (throw http.ClientException('refused')));
 
 void main() {
+  corruptHostListTests();
   failoverClassificationTests();
   loopbackTests();
   test('should migrate legacy single host when no host list saved', () async {
@@ -134,5 +135,15 @@ void failoverClassificationTests() {
     expect(isHostFailure(http.ClientException('reset')), isTrue);
     expect(isHostFailure(ArgumentError('local bug')), isFalse);
     expect(isHostFailure(StateError('local bug')), isFalse);
+  });
+}
+
+void corruptHostListTests() {
+  test('should fall back to the legacy host when the saved list is corrupt',
+      () async {
+    SharedPreferences.setMockInitialValues(
+        {'hosts': '{not json', 'host': 'http://10.0.0.2:11434'});
+    final prefs = await SharedPreferences.getInstance();
+    expect(loadHosts(prefs).single.url, 'http://10.0.0.2:11434');
   });
 }

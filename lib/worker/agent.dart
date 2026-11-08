@@ -118,6 +118,7 @@ ToolRunner webToolRunner(http.Client client, String apiKey,
 }
 
 const binanceBase = 'https://api.binance.com';
+const _marketTimeout = Duration(seconds: 10);
 const klineIntervals = ['1m', '5m', '15m', '1h', '4h', '1d'];
 
 // Read-only on purpose: these tools only fetch public market data, so a
@@ -177,7 +178,7 @@ ToolRunner marketToolRunner(http.Client client) => (name, arguments) async {
         default:
           return 'Unknown tool $name';
       }
-      final response = await client.get(uri);
+      final response = await client.get(uri).timeout(_marketTimeout);
       if (response.statusCode != 200) {
         throw Exception('Binance ${response.statusCode}: ${response.body}');
       }

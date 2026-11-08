@@ -55,9 +55,14 @@ String normalizeHostUrl(String raw) {
 List<OllamaHost> loadHosts(SharedPreferences prefs) {
   final raw = prefs.getString(_hostsKey);
   if (raw != null) {
-    return (jsonDecode(raw) as List)
-        .map((e) => OllamaHost.fromJson((e as Map).cast<String, dynamic>()))
-        .toList();
+    try {
+      return (jsonDecode(raw) as List)
+          .map((e) => OllamaHost.fromJson((e as Map).cast<String, dynamic>()))
+          .toList();
+    } catch (_) {
+      // Unreadable saved list: fall through to the single legacy host
+      // rather than crash every screen that lists hosts.
+    }
   }
   final legacy = prefs.getString('host');
   if (legacy == null) return [];

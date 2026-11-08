@@ -21,10 +21,15 @@ String formatBytes(int bytes) {
 typedef ModelInventory = (List<llama.Model>, Map<String, int>);
 
 Future<ModelInventory> loadInventory() async {
-  final (installed, running) =
-      await (ollamaClient.listModels(), ollamaClient.listRunningModels()).wait;
+  final installed = await ollamaClient.listModels();
+  // Loaded state is extra detail: some servers and proxies lack /api/ps,
+  // and that must not hide the installed list.
+  final running = await ollamaClient
+      .listRunningModels()
+      .then((r) => r.models ?? <llama.ProcessModel>[])
+      .catchError((Object _) => <llama.ProcessModel>[]);
   final loaded = {
-    for (final m in running.models ?? <llama.ProcessModel>[])
+    for (final m in running)
       if (m.model != null) m.model!: m.sizeVram ?? 0
   };
   return (installed.models ?? <llama.Model>[], loaded);
@@ -42,12 +47,32 @@ class _ScreenSettingsModelsState extends State<ScreenSettingsModels> {
 
   void refresh() => setState(() => inventory = loadInventory());
 
-  Future<void> unload(String name) async {
-    await ollamaClient.generateCompletion(
-        request: llama.GenerateCompletionRequest(
-            model: name, prompt: '', keepAlive: 0));
+  String? busyModel;
+
+  /// Runs a model operation with the row disabled, reporting failures.
+  Future<void> runOperation(
+      String name, Future<void> Function() operation) async {
+    setState(() => busyModel = name);
+    try {
+      await operation();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content:
+                Text(AppLocalizations.of(context)!.modelsOperationFailed('$e')),
+            showCloseIcon: true));
+      }
+    }
+    if (!mounted) return;
+    setState(() => busyModel = null);
     refresh();
   }
+
+  Future<void> unload(String name) => runOperation(
+      name,
+      () => ollamaClient.generateCompletion(
+          request: llama.GenerateCompletionRequest(
+              model: name, prompt: '', keepAlive: 0)));
 
   Future<void> delete(String name) async {
     final l10n = AppLocalizations.of(context)!;
@@ -66,9 +91,10 @@ class _ScreenSettingsModelsState extends State<ScreenSettingsModels> {
                       child: Text(l10n.modelsDelete)),
                 ]));
     if (confirmed != true) return;
-    await ollamaClient.deleteModel(
-        request: llama.DeleteModelRequest(model: name));
-    refresh();
+    await runOperation(
+        name,
+        () => ollamaClient.deleteModel(
+            request: llama.DeleteModelRequest(model: name)));
   }
 
   @override
@@ -119,14 +145,16 @@ class _ScreenSettingsModelsState extends State<ScreenSettingsModels> {
         if (vramBytes != null)
           IconButton(
               tooltip: l10n.modelsUnload,
-              onPressed: () {
-                selectionHaptic();
-                unload(name);
-              },
+              onPressed: busyModel != null
+                  ? null
+                  : () {
+                      selectionHaptic();
+                      unload(name);
+                    },
               icon: const Icon(Icons.eject_rounded)),
         IconButton(
             tooltip: l10n.modelsDelete,
-            onPressed: () => delete(name),
+            onPressed: busyModel != null ? null : () => delete(name),
             icon: const Icon(Icons.delete_outline_rounded)),
       ]),
     );

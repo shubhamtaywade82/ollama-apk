@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 
 const cloudBaseUrl = 'https://ollama.com';
 const usageRanges = ['24h', '7d', '30d'];
+const _cloudTimeout = Duration(seconds: 20);
 
 class CloudApiException implements Exception {
   final int status;
@@ -138,7 +139,7 @@ class CloudBalance {
 Future<Map<String, dynamic>> _getJson(
     http.Client client, String apiKey, String path) async {
   final response = await client.get(Uri.parse('$cloudBaseUrl$path'),
-      headers: {'Authorization': 'Bearer $apiKey'});
+      headers: {'Authorization': 'Bearer $apiKey'}).timeout(_cloudTimeout);
   if (response.statusCode != 200) {
     throw CloudApiException(response.statusCode, path, response.body);
   }
@@ -155,12 +156,14 @@ Future<CloudBalance> fetchBalance(http.Client client, String apiKey) async =>
 
 Future<Map<String, dynamic>> _postJson(http.Client client, String apiKey,
     String path, Map<String, dynamic> body) async {
-  final response = await client.post(Uri.parse('$cloudBaseUrl$path'),
-      headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Content-Type': 'application/json'
-      },
-      body: jsonEncode(body));
+  final response = await client
+      .post(Uri.parse('$cloudBaseUrl$path'),
+          headers: {
+            'Authorization': 'Bearer $apiKey',
+            'Content-Type': 'application/json'
+          },
+          body: jsonEncode(body))
+      .timeout(_cloudTimeout);
   if (response.statusCode != 200) {
     throw CloudApiException(response.statusCode, path, response.body);
   }

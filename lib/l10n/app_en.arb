@@ -872,5 +872,13 @@
             }
         }
     },
-    "hostsPublicHttpWarning": "This is plain http:// over the internet: anyone on the path can read your chats. Use https:// or a VPN such as Tailscale."
+    "hostsPublicHttpWarning": "This is plain http:// over the internet: anyone on the path can read your chats. Use https:// or a VPN such as Tailscale.",
+    "modelsOperationFailed": "Operation failed: {error}",
+    "@modelsOperationFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    }
 }

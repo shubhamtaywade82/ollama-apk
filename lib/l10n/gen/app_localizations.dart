@@ -1311,6 +1311,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This is plain http:// over the internet: anyone on the path can read your chats. Use https:// or a VPN such as Tailscale.'**
   String get hostsPublicHttpWarning;
+
+  /// No description provided for @modelsOperationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation failed: {error}'**
+  String modelsOperationFailed(String error);
 }
 
 class _AppLocalizationsDelegate

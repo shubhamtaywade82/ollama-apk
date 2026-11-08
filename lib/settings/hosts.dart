@@ -51,7 +51,17 @@ class _ScreenSettingsHostsState extends State<ScreenSettingsHosts> {
 
   Future<void> remove(OllamaHost target) async {
     hosts = await removeHost(prefs!, target.url);
+    if (target.url == host) await replaceActive(target);
     refreshHealth();
+  }
+
+  /// The active host was deleted: hand over to the next saved host on the
+  /// same side of the local/Cloud boundary, or disconnect.
+  Future<void> replaceActive(OllamaHost removed) async {
+    final next = hosts.where((h) => h.isCloud == removed.isCloud).firstOrNull;
+    if (next != null) return makeActive(next);
+    await prefs!.remove('host');
+    setState(() => host = null);
   }
 
   Future<void> reorder(int from, int to) async {
@@ -158,7 +168,7 @@ class _AddHostDialogState extends State<_AddHostDialog> {
     super.dispose();
   }
 
-  void submit() {
+  Future<void> submit() async {
     final normalized = normalizeHostUrl(url.text);
     final uri = Uri.tryParse(normalized);
     if (uri == null || !uri.isAbsolute || uri.host.isEmpty) {
@@ -166,7 +176,9 @@ class _AddHostDialogState extends State<_AddHostDialog> {
       return;
     }
     final label = name.text.trim();
-    if (isCloudHost(normalized)) saveCloudApiKey(apiKey.text.trim());
+    // The key must be stored before the host can be activated and used.
+    if (isCloudHost(normalized)) await saveCloudApiKey(apiKey.text.trim());
+    if (!mounted) return;
     Navigator.pop(context,
         OllamaHost(name: label.isEmpty ? uri.host : label, url: normalized));
   }

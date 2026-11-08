@@ -72,10 +72,11 @@ void setModel(BuildContext context, Function setState) {
       var list = await ollamaClient.listModels().timeout(Duration(
           seconds:
               (10.0 * (prefs!.getDouble("timeoutMultiplier") ?? 1.0)).round()));
-      // ponytail: one parallel burst of show calls; batch it if hosts with
-      // hundreds of models start rejecting the burst.
-      final visionFlags =
-          await Future.wait(list.models!.map(supportsVisionInput));
+      final visionFlags = <bool>[];
+      // Batches of 4 so a host with many models is not hit by one burst.
+      for (final batch in list.models!.chunked(4)) {
+        visionFlags.addAll(await Future.wait(batch.map(supportsVisionInput)));
+      }
       for (var i = 0; i < list.models!.length; i++) {
         models.add(list.models![i].model!.split(":")[0]);
         modelsReal.add(list.models![i].model!);

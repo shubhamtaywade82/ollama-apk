@@ -14,6 +14,7 @@ Future<void> pumpScreen(WidgetTester tester) =>
         home: ScreenSettingsHosts()));
 
 void main() {
+  activeHostRemovalTests();
   testWidgets('should show empty state when no hosts saved', (tester) async {
     SharedPreferences.setMockInitialValues({});
     app.prefs = await SharedPreferences.getInstance();
@@ -68,5 +69,44 @@ void main() {
     await tester.pump();
     expect(find.textContaining('Failed:'), findsOneWidget);
     debugDefaultTargetPlatformOverride = null;
+  });
+}
+
+void activeHostRemovalTests() {
+  Future<void> swipeAway(WidgetTester tester, String name) async {
+    await tester.drag(find.text(name), const Offset(-600, 0));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('should hand over to the next local host when active is removed',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    app.prefs = await SharedPreferences.getInstance();
+    await saveHosts(app.prefs!, const [
+      OllamaHost(name: 'laptop', url: 'http://10.0.0.2:11434'),
+      OllamaHost(name: 'cloud', url: 'https://ollama.com'),
+      OllamaHost(name: 'router', url: 'http://10.0.0.2:8080'),
+    ]);
+    app.host = 'http://10.0.0.2:11434';
+    await pumpScreen(tester);
+    await swipeAway(tester, 'laptop');
+    expect(app.host, 'http://10.0.0.2:8080');
+    expect(app.prefs!.getString('host'), 'http://10.0.0.2:8080');
+  });
+
+  testWidgets('should disconnect rather than switch a local chat to Cloud',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    app.prefs = await SharedPreferences.getInstance();
+    await saveHosts(app.prefs!, const [
+      OllamaHost(name: 'laptop', url: 'http://10.0.0.2:11434'),
+      OllamaHost(name: 'cloud', url: 'https://ollama.com'),
+    ]);
+    app.host = 'http://10.0.0.2:11434';
+    await app.prefs!.setString('host', 'http://10.0.0.2:11434');
+    await pumpScreen(tester);
+    await swipeAway(tester, 'laptop');
+    expect(app.host, isNull);
+    expect(app.prefs!.getString('host'), isNull);
   });
 }
