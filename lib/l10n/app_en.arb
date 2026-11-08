@@ -891,5 +891,14 @@
                 "type": "int"
             }
         }
+    },
+    "attachFile": "Attach file (PDF, text, code…)",
+    "attachFileFailed": "Could not attach: {error}",
+    "@attachFileFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
     }
 }

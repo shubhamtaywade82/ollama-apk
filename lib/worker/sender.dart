@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:ollama_app/worker/clients.dart';
 
 import 'agent.dart';
+import 'attachments.dart';
 import 'mcp.dart';
 import 'hosts.dart';
 import 'haptic.dart';
@@ -23,6 +24,11 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 // import 'package:scroll_to_index/scroll_to_index.dart';
 
 List<String> images = [];
+
+/// Files attached since the last text message: they belong to the prompt
+/// being sent now, like leftover [images].
+List<({String name, String text})> pendingFiles = [];
+
 Future<List<llama.Message>> getHistory([String? addToSystem]) async {
   var system = prefs?.getString("system") ?? "You are a helpful assistant";
   if (prefs!.getBool("noMarkdown") ?? false) {
@@ -37,19 +43,26 @@ Future<List<llama.Message>> getHistory([String? addToSystem]) async {
       ? [llama.Message(role: llama.MessageRole.system, content: system)]
       : [];
   images = [];
+  pendingFiles = [];
   // `messages` is newest-first and a turn's images are inserted just before
   // its text, so walk it oldest-first: images then belong to the next text.
   // Images left over at the end belong to the prompt being sent now.
   for (final message in messages.reversed) {
+    if (message is types.FileMessage) {
+      pendingFiles.add(
+          (name: message.name, text: '${message.metadata?['text'] ?? ''}'));
+      continue;
+    }
     final json = jsonDecode(jsonEncode(message));
     if (json["text"] != null) {
       history.add(llama.Message(
           role: (message.author.id == user.id)
               ? llama.MessageRole.user
               : llama.MessageRole.assistant,
-          content: json["text"],
+          content: withAttachments(json["text"], pendingFiles),
           images: (images.isNotEmpty) ? images : null));
       images = [];
+      pendingFiles = [];
     } else {
       var uri = json["uri"] as String;
       String content = (uri.startsWith("data:image/png;base64,"))
@@ -81,6 +94,11 @@ List getHistoryString([String? uuid]) {
       messages[i] = {
         "role": messages[i]["role"]!,
         "content": "<${messages[i]["role"]} inserted an image>"
+      };
+    } else if (messages[i]["type"] == "file") {
+      messages[i] = {
+        "role": "user",
+        "content": "<user attached the file ${messages[i]["name"]}>"
       };
     }
   }
@@ -206,7 +224,7 @@ Future<String> send(String value, BuildContext context, Function setState,
 
   history.add(llama.Message(
       role: llama.MessageRole.user,
-      content: value.trim(),
+      content: withAttachments(value.trim(), pendingFiles),
       images: (images.isNotEmpty) ? images : null));
   messages.insert(
       0,

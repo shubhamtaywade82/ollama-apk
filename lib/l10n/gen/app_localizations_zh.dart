@@ -693,4 +693,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String mcpToolsEnabled(int enabled, int total) {
     return '$enabled of $total tools enabled';
   }
+
+  @override
+  String get attachFile => 'Attach file (PDF, text, code…)';
+
+  @override
+  String attachFileFailed(String error) {
+    return 'Could not attach: $error';
+  }
 }

@@ -610,6 +610,17 @@ void saveChat(String uuid, Function setState) async {
   if (index == -1) return;
   List<Map<String, String>> history = [];
   for (var i = 0; i < messages.length; i++) {
+    final message = messages[i];
+    if (message is types.FileMessage) {
+      history.add({
+        "role": "user",
+        "type": "file",
+        "name": message.name,
+        "size": message.size.toString(),
+        "content": '${message.metadata?['text'] ?? ''}',
+      });
+      continue;
+    }
     if ((jsonDecode(jsonEncode(messages[i])) as Map).containsKey("text")) {
       final thinking = thinkingOf(messages[i].metadata);
       history.add({
@@ -688,7 +699,17 @@ void loadChat(String uuid, Function setState) {
   var history = jsonDecode(jsonDecode(chats[index])["messages"]);
   for (var i = 0; i < history.length; i++) {
     if (history[i]["role"] != "system") {
-      if ((history[i] as Map).containsKey("type") &&
+      if (history[i]["type"] == "file") {
+        messages.insert(
+            0,
+            types.FileMessage(
+                author: user,
+                id: const Uuid().v4(),
+                name: history[i]["name"],
+                size: int.tryParse("${history[i]["size"]}") ?? 0,
+                uri: history[i]["name"],
+                metadata: {"text": history[i]["content"]}));
+      } else if ((history[i] as Map).containsKey("type") &&
           history[i]["type"] == "image") {
         messages.insert(
             0,

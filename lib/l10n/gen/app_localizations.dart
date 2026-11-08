@@ -1323,6 +1323,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{enabled} of {total} tools enabled'**
   String mcpToolsEnabled(int enabled, int total);
+
+  /// No description provided for @attachFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach file (PDF, text, code…)'**
+  String get attachFile;
+
+  /// No description provided for @attachFileFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not attach: {error}'**
+  String attachFileFailed(String error);
 }
 
 class _AppLocalizationsDelegate

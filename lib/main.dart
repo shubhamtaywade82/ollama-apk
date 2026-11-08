@@ -1,4 +1,5 @@
 import 'thinking_block.dart';
+import 'worker/attachments.dart';
 import 'worker/chat_store.dart';
 import 'worker/mcp.dart';
 import 'dart:convert';
@@ -1319,251 +1320,247 @@ class _MainAppState extends State<MainApp> {
                                 );
                                 setState(() {});
                               },
-                              onAttachmentPressed: (!multimodal)
-                                  ? (prefs?.getBool("voiceModeEnabled") ??
-                                          false)
-                                      ? (model != null)
-                                          ? () {
-                                              selectionHaptic();
-                                              setGlobalState = setState;
-                                              settingsOpen = true;
-                                              logoVisible = false;
-                                              Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          const ScreenVoice()));
-                                            }
-                                          : null
-                                      : null
-                                  : () {
-                                      selectionHaptic();
-                                      if (!chatAllowed || model == null) {
-                                        return;
-                                      }
-                                      if (desktopFeature()) {
-                                        FilePicker.platform
-                                            .pickFiles(type: FileType.image)
-                                            .then((value) async {
-                                          if (value == null) return;
-                                          if (!multimodal) return;
+                              onAttachmentPressed: () {
+                                selectionHaptic();
+                                if (!chatAllowed || model == null) {
+                                  return;
+                                }
+                                if (desktopFeature() && !multimodal) {
+                                  attachFileToChat(context, setState);
+                                  return;
+                                }
+                                if (desktopFeature()) {
+                                  FilePicker.platform
+                                      .pickFiles(type: FileType.image)
+                                      .then((value) async {
+                                    if (value == null) return;
+                                    if (!multimodal) return;
 
-                                          var encoded = base64.encode(
-                                              await File(
-                                                      value.files.first.path!)
-                                                  .readAsBytes());
-                                          messages.insert(
-                                              0,
-                                              types.ImageMessage(
-                                                  author: user,
-                                                  id: const Uuid().v4(),
-                                                  name: value.files.first.name,
-                                                  size: value.files.first.size,
-                                                  uri:
-                                                      "data:image/png;base64,$encoded"));
+                                    var encoded = base64.encode(
+                                        await File(value.files.first.path!)
+                                            .readAsBytes());
+                                    messages.insert(
+                                        0,
+                                        types.ImageMessage(
+                                            author: user,
+                                            id: const Uuid().v4(),
+                                            name: value.files.first.name,
+                                            size: value.files.first.size,
+                                            uri:
+                                                "data:image/png;base64,$encoded"));
 
-                                          setState(() {});
-                                        });
+                                    setState(() {});
+                                  });
 
-                                        return;
-                                      }
-                                      showModalBottomSheet(
-                                          context: context,
-                                          builder: (context) {
-                                            return Container(
-                                                width: double.infinity,
-                                                padding: const EdgeInsets.only(
-                                                    left: 16,
-                                                    right: 16,
-                                                    top: 16),
-                                                child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      (prefs?.getBool(
-                                                                  "voiceModeEnabled") ??
-                                                              false)
-                                                          ? SizedBox(
-                                                              width: double
-                                                                  .infinity,
-                                                              child: OutlinedButton
-                                                                  .icon(
-                                                                      onPressed:
-                                                                          () async {
-                                                                        selectionHaptic();
-                                                                        Navigator.of(context)
-                                                                            .pop();
-                                                                        setGlobalState =
-                                                                            setState;
-                                                                        settingsOpen =
-                                                                            true;
-                                                                        logoVisible =
-                                                                            false;
-                                                                        Navigator.of(context).push(MaterialPageRoute(
-                                                                            builder: (context) =>
-                                                                                const ScreenVoice()));
-                                                                      },
-                                                                      icon: const Icon(
-                                                                          Icons
-                                                                              .headphones_rounded),
-                                                                      label: Text(
-                                                                          AppLocalizations.of(context)!
-                                                                              .settingsTitleVoice)))
-                                                          : const SizedBox
-                                                              .shrink(),
-                                                      (prefs?.getBool(
-                                                                  "voiceModeEnabled") ??
-                                                              false)
-                                                          ? const SizedBox(
-                                                              height: 8)
-                                                          : const SizedBox
-                                                              .shrink(),
-                                                      SizedBox(
-                                                          width:
-                                                              double.infinity,
-                                                          child: OutlinedButton
-                                                              .icon(
-                                                                  onPressed:
-                                                                      () async {
-                                                                    selectionHaptic();
+                                  return;
+                                }
+                                showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) {
+                                      return Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.only(
+                                              left: 16, right: 16, top: 16),
+                                          child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                SizedBox(
+                                                    width: double.infinity,
+                                                    child: OutlinedButton.icon(
+                                                        onPressed: () {
+                                                          selectionHaptic();
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                          attachFileToChat(
+                                                              this.context,
+                                                              setState);
+                                                        },
+                                                        icon: const Icon(Icons
+                                                            .attach_file_rounded),
+                                                        label: Text(
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .attachFile))),
+                                                const SizedBox(height: 8),
+                                                (prefs?.getBool(
+                                                            "voiceModeEnabled") ??
+                                                        false)
+                                                    ? SizedBox(
+                                                        width: double.infinity,
+                                                        child:
+                                                            OutlinedButton.icon(
+                                                                onPressed:
+                                                                    () async {
+                                                                  selectionHaptic();
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                  setGlobalState =
+                                                                      setState;
+                                                                  settingsOpen =
+                                                                      true;
+                                                                  logoVisible =
+                                                                      false;
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .push(MaterialPageRoute(
+                                                                          builder: (context) =>
+                                                                              const ScreenVoice()));
+                                                                },
+                                                                icon: const Icon(
+                                                                    Icons
+                                                                        .headphones_rounded),
+                                                                label: Text(AppLocalizations.of(
+                                                                        context)!
+                                                                    .settingsTitleVoice)))
+                                                    : const SizedBox.shrink(),
+                                                (prefs?.getBool(
+                                                            "voiceModeEnabled") ??
+                                                        false)
+                                                    ? const SizedBox(height: 8)
+                                                    : const SizedBox.shrink(),
+                                                if (multimodal) ...[
+                                                  SizedBox(
+                                                      width: double.infinity,
+                                                      child:
+                                                          OutlinedButton.icon(
+                                                              onPressed:
+                                                                  () async {
+                                                                selectionHaptic();
 
-                                                                    Navigator.of(
-                                                                            context)
-                                                                        .pop();
-                                                                    final result =
-                                                                        await ImagePicker()
-                                                                            .pickImage(
-                                                                      source: ImageSource
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop();
+                                                                final result =
+                                                                    await ImagePicker()
+                                                                        .pickImage(
+                                                                  source:
+                                                                      ImageSource
                                                                           .camera,
-                                                                    );
-                                                                    if (result ==
-                                                                        null) {
-                                                                      return;
-                                                                    }
+                                                                );
+                                                                if (result ==
+                                                                    null) {
+                                                                  return;
+                                                                }
 
-                                                                    final bytes =
-                                                                        await result
-                                                                            .readAsBytes();
-                                                                    final image =
-                                                                        await decodeImageFromList(
-                                                                            bytes);
+                                                                final bytes =
+                                                                    await result
+                                                                        .readAsBytes();
+                                                                final image =
+                                                                    await decodeImageFromList(
+                                                                        bytes);
 
-                                                                    final message =
-                                                                        types
-                                                                            .ImageMessage(
-                                                                      author:
-                                                                          user,
-                                                                      createdAt:
-                                                                          DateTime.now()
-                                                                              .millisecondsSinceEpoch,
-                                                                      height: image
-                                                                          .height
-                                                                          .toDouble(),
-                                                                      id: const Uuid()
-                                                                          .v4(),
-                                                                      name: result
-                                                                          .name,
-                                                                      size: bytes
-                                                                          .length,
-                                                                      uri: result
-                                                                          .path,
-                                                                      width: image
-                                                                          .width
-                                                                          .toDouble(),
-                                                                    );
+                                                                final message =
+                                                                    types
+                                                                        .ImageMessage(
+                                                                  author: user,
+                                                                  createdAt: DateTime
+                                                                          .now()
+                                                                      .millisecondsSinceEpoch,
+                                                                  height: image
+                                                                      .height
+                                                                      .toDouble(),
+                                                                  id: const Uuid()
+                                                                      .v4(),
+                                                                  name: result
+                                                                      .name,
+                                                                  size: bytes
+                                                                      .length,
+                                                                  uri: result
+                                                                      .path,
+                                                                  width: image
+                                                                      .width
+                                                                      .toDouble(),
+                                                                );
 
-                                                                    messages.insert(
-                                                                        0,
-                                                                        message);
-                                                                    setState(
-                                                                        () {});
-                                                                    selectionHaptic();
-                                                                  },
-                                                                  icon: const Icon(
-                                                                      Icons
-                                                                          .photo_camera_rounded),
-                                                                  label: Text(AppLocalizations.of(
+                                                                messages.insert(
+                                                                    0, message);
+                                                                setState(() {});
+                                                                selectionHaptic();
+                                                              },
+                                                              icon: const Icon(Icons
+                                                                  .photo_camera_rounded),
+                                                              label: Text(
+                                                                  AppLocalizations.of(
                                                                           context)!
                                                                       .takeImage))),
-                                                      const SizedBox(height: 8),
-                                                      SizedBox(
-                                                          width:
-                                                              double.infinity,
-                                                          child: OutlinedButton
-                                                              .icon(
-                                                                  onPressed:
-                                                                      () async {
-                                                                    selectionHaptic();
+                                                  const SizedBox(height: 8),
+                                                  SizedBox(
+                                                      width: double.infinity,
+                                                      child:
+                                                          OutlinedButton.icon(
+                                                              onPressed:
+                                                                  () async {
+                                                                selectionHaptic();
 
-                                                                    Navigator.of(
-                                                                            context)
-                                                                        .pop();
-                                                                    final result =
-                                                                        await ImagePicker()
-                                                                            .pickImage(
-                                                                      source: ImageSource
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop();
+                                                                final result =
+                                                                    await ImagePicker()
+                                                                        .pickImage(
+                                                                  source:
+                                                                      ImageSource
                                                                           .gallery,
-                                                                    );
-                                                                    if (result ==
-                                                                        null) {
-                                                                      return;
-                                                                    }
+                                                                );
+                                                                if (result ==
+                                                                    null) {
+                                                                  return;
+                                                                }
 
-                                                                    final bytes =
-                                                                        await result
-                                                                            .readAsBytes();
-                                                                    final image =
-                                                                        await decodeImageFromList(
-                                                                            bytes);
+                                                                final bytes =
+                                                                    await result
+                                                                        .readAsBytes();
+                                                                final image =
+                                                                    await decodeImageFromList(
+                                                                        bytes);
 
-                                                                    final message =
-                                                                        types
-                                                                            .ImageMessage(
-                                                                      author:
-                                                                          user,
-                                                                      createdAt:
-                                                                          DateTime.now()
-                                                                              .millisecondsSinceEpoch,
-                                                                      height: image
-                                                                          .height
-                                                                          .toDouble(),
-                                                                      id: const Uuid()
-                                                                          .v4(),
-                                                                      name: result
-                                                                          .name,
-                                                                      size: bytes
-                                                                          .length,
-                                                                      uri: result
-                                                                          .path,
-                                                                      width: image
-                                                                          .width
-                                                                          .toDouble(),
-                                                                    );
+                                                                final message =
+                                                                    types
+                                                                        .ImageMessage(
+                                                                  author: user,
+                                                                  createdAt: DateTime
+                                                                          .now()
+                                                                      .millisecondsSinceEpoch,
+                                                                  height: image
+                                                                      .height
+                                                                      .toDouble(),
+                                                                  id: const Uuid()
+                                                                      .v4(),
+                                                                  name: result
+                                                                      .name,
+                                                                  size: bytes
+                                                                      .length,
+                                                                  uri: result
+                                                                      .path,
+                                                                  width: image
+                                                                      .width
+                                                                      .toDouble(),
+                                                                );
 
-                                                                    messages.insert(
-                                                                        0,
-                                                                        message);
-                                                                    setState(
-                                                                        () {});
-                                                                    selectionHaptic();
-                                                                  },
-                                                                  icon: const Icon(
-                                                                      Icons
-                                                                          .image_rounded),
-                                                                  label: Text(AppLocalizations.of(
+                                                                messages.insert(
+                                                                    0, message);
+                                                                setState(() {});
+                                                                selectionHaptic();
+                                                              },
+                                                              icon: const Icon(Icons
+                                                                  .image_rounded),
+                                                              label: Text(
+                                                                  AppLocalizations.of(
                                                                           context)!
                                                                       .uploadImage)))
-                                                    ]));
-                                          });
-                                    },
+                                                ]
+                                              ]));
+                                    });
+                              },
                               l10n: ChatL10nEn(
                                   inputPlaceholder: AppLocalizations.of(context)!
                                       .messageInputPlaceholder,
                                   attachmentButtonAccessibilityLabel:
                                       AppLocalizations.of(context)!
                                           .tooltipAttachment,
-                                  sendButtonAccessibilityLabel:
-                                      AppLocalizations.of(context)!
-                                          .tooltipSend),
+                                  sendButtonAccessibilityLabel: AppLocalizations.of(context)!
+                                      .tooltipSend),
                               inputOptions: InputOptions(
                                   keyboardType: TextInputType.multiline,
                                   onTextChanged: (p0) {
@@ -1585,11 +1582,8 @@ class _MainAppState extends State<MainApp> {
                                           themeLight().colorScheme.surface,
                                       primaryColor:
                                           themeLight().colorScheme.primary,
-                                      attachmentButtonIcon: !multimodal
-                                          ? (prefs?.getBool("voiceModeEnabled") ?? false)
-                                              ? Icon(Icons.headphones_rounded, color: Theme.of(context).iconTheme.color)
-                                              : null
-                                          : Icon(Icons.add_a_photo_rounded, color: Theme.of(context).iconTheme.color),
+                                      attachmentButtonIcon:
+                                          Icon(Icons.add_circle_outline_rounded, color: Theme.of(context).iconTheme.color),
                                       sendButtonIcon: SizedBox(
                                         height: 24,
                                         child: CircleAvatar(
@@ -1625,11 +1619,7 @@ class _MainAppState extends State<MainApp> {
                                       backgroundColor: themeDark().colorScheme.surface,
                                       primaryColor: themeDark().colorScheme.primary.withAlpha(40),
                                       secondaryColor: themeDark().colorScheme.primary.withAlpha(20),
-                                      attachmentButtonIcon: !multimodal
-                                          ? (prefs?.getBool("voiceModeEnabled") ?? false)
-                                              ? Icon(Icons.headphones_rounded, color: Theme.of(context).iconTheme.color)
-                                              : null
-                                          : Icon(Icons.add_a_photo_rounded, color: Theme.of(context).iconTheme.color),
+                                      attachmentButtonIcon: Icon(Icons.add_circle_outline_rounded, color: Theme.of(context).iconTheme.color),
                                       sendButtonIcon: SizedBox(
                                         height: 24,
                                         child: CircleAvatar(
