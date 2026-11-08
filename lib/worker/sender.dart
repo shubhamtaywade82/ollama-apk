@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:ollama_app/worker/clients.dart';
 
+import 'agent.dart';
 import 'hosts.dart';
 import 'haptic.dart';
 import 'setter.dart';
@@ -225,7 +226,13 @@ Future<String> send(String value, BuildContext context, Function setState,
   var hasFailedOver = false;
   while (true) {
     try {
-      if ((prefs!.getString("requestType") ?? "stream") == "stream") {
+      // ponytail: tool rounds are non-streaming; stream the final answer
+      // too if waiting on long tool chains feels slow.
+      final apiKey = cloudApiKey;
+      final useWebTools =
+          (prefs!.getBool("webTools") ?? false) && apiKey != null;
+      if (!useWebTools &&
+          (prefs!.getString("requestType") ?? "stream") == "stream") {
         final stream = ollamaClient
             .generateChatCompletionStream(
               request: llama.GenerateChatCompletionRequest(
@@ -259,23 +266,30 @@ Future<String> send(String value, BuildContext context, Function setState,
           heavyHaptic();
         }
       } else {
-        llama.GenerateChatCompletionResponse request;
-        request = await ollamaClient
-            .generateChatCompletion(
-              request: llama.GenerateChatCompletionRequest(
-                  model: model!,
-                  messages: history,
-                  keepAlive: int.parse(prefs!.getString("keepAlive") ?? "300")),
-            )
-            .timeout(Duration(
-                seconds: (30.0 * (prefs!.getDouble("timeoutMultiplier") ?? 1.0))
-                    .round()));
+        Future<llama.Message> callModel(List<llama.Message> turns) async =>
+            (await ollamaClient
+                    .generateChatCompletion(
+                      request: llama.GenerateChatCompletionRequest(
+                          model: model!,
+                          messages: turns,
+                          tools: useWebTools ? webTools : null,
+                          keepAlive: int.parse(
+                              prefs!.getString("keepAlive") ?? "300")),
+                    )
+                    .timeout(Duration(
+                        seconds: (30.0 *
+                                (prefs!.getDouble("timeoutMultiplier") ?? 1.0))
+                            .round())))
+                .message;
+        // A copy, so a failover retry does not resend this attempt's tool turns.
+        final reply = useWebTools
+            ? await runToolLoop(
+                List.of(history), callModel, webToolRunner(httpClient, apiKey))
+            : (await callModel(history)).content;
         if (chatAllowed) return "";
         messages.insert(
-            0,
-            types.TextMessage(
-                author: assistant, id: newId, text: request.message.content));
-        text = request.message.content;
+            0, types.TextMessage(author: assistant, id: newId, text: reply));
+        text = reply;
         setState(() {});
         heavyHaptic();
       }

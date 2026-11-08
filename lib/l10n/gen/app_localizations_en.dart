@@ -614,4 +614,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get modelsDeleteBody =>
       'The model is removed from the server and must be downloaded again to use it.';
+
+  @override
+  String get settingsWebTools => 'Web search tools';
+
+  @override
+  String get settingsWebToolsDescription =>
+      'Lets tool-capable models search and read the web through Ollama Cloud. Needs an Ollama Cloud API key. Replies are not streamed while enabled.';
 }

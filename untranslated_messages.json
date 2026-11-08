@@ -29,7 +29,9 @@
     "modelsUnload",
     "modelsDelete",
     "modelsDeleteTitle",
-    "modelsDeleteBody"
+    "modelsDeleteBody",
+    "settingsWebTools",
+    "settingsWebToolsDescription"
   ],
 
   "fa": [
@@ -62,7 +64,9 @@
     "modelsUnload",
     "modelsDelete",
     "modelsDeleteTitle",
-    "modelsDeleteBody"
+    "modelsDeleteBody",
+    "settingsWebTools",
+    "settingsWebToolsDescription"
   ],
 
   "it": [
@@ -95,7 +99,9 @@
     "modelsUnload",
     "modelsDelete",
     "modelsDeleteTitle",
-    "modelsDeleteBody"
+    "modelsDeleteBody",
+    "settingsWebTools",
+    "settingsWebToolsDescription"
   ],
 
   "tr": [
@@ -128,7 +134,9 @@
     "modelsUnload",
     "modelsDelete",
     "modelsDeleteTitle",
-    "modelsDeleteBody"
+    "modelsDeleteBody",
+    "settingsWebTools",
+    "settingsWebToolsDescription"
   ],
 
   "zh": [
@@ -161,6 +169,8 @@
     "modelsUnload",
     "modelsDelete",
     "modelsDeleteTitle",
-    "modelsDeleteBody"
+    "modelsDeleteBody",
+    "settingsWebTools",
+    "settingsWebToolsDescription"
   ]
 }

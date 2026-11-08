@@ -1179,6 +1179,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The model is removed from the server and must be downloaded again to use it.'**
   String get modelsDeleteBody;
+
+  /// No description provided for @settingsWebTools.
+  ///
+  /// In en, this message translates to:
+  /// **'Web search tools'**
+  String get settingsWebTools;
+
+  /// No description provided for @settingsWebToolsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Lets tool-capable models search and read the web through Ollama Cloud. Needs an Ollama Cloud API key. Replies are not streamed while enabled.'**
+  String get settingsWebToolsDescription;
 }
 
 class _AppLocalizationsDelegate

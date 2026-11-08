@@ -152,3 +152,29 @@ Future<UsageReport> fetchUsage(http.Client client, String apiKey,
 
 Future<CloudBalance> fetchBalance(http.Client client, String apiKey) async =>
     CloudBalance.fromJson(await _getJson(client, apiKey, '/api/balance'));
+
+Future<Map<String, dynamic>> _postJson(http.Client client, String apiKey,
+    String path, Map<String, dynamic> body) async {
+  final response = await client.post(Uri.parse('$cloudBaseUrl$path'),
+      headers: {
+        'Authorization': 'Bearer $apiKey',
+        'Content-Type': 'application/json'
+      },
+      body: jsonEncode(body));
+  if (response.statusCode != 200) {
+    throw CloudApiException(response.statusCode, path, response.body);
+  }
+  return (jsonDecode(response.body) as Map).cast<String, dynamic>();
+}
+
+/// Ollama's hosted web search; returns `{results: [{title, url, content}]}`.
+Future<Map<String, dynamic>> webSearch(
+        http.Client client, String apiKey, String query,
+        {int maxResults = 5}) =>
+    _postJson(client, apiKey, '/api/web_search',
+        {'query': query, 'max_results': maxResults});
+
+/// Ollama's hosted page fetch; returns `{title, content, links}`.
+Future<Map<String, dynamic>> webFetch(
+        http.Client client, String apiKey, String url) =>
+    _postJson(client, apiKey, '/api/web_fetch', {'url': url});
