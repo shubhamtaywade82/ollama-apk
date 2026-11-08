@@ -55,12 +55,16 @@ Future<String> runToolLoop(List<llama.Message> history, ModelCall callModel,
     final calls = reply.toolCalls ?? [];
     history.add(reply);
     if (calls.isEmpty) return reply.content;
-    for (final call in calls.take(maxCallsPerRound)) {
+    for (final (index, call) in calls.indexed) {
       final function = call.function;
       if (function == null) continue;
-      history.add(llama.Message(
-          role: llama.MessageRole.tool,
-          content: await _runSafely(runTool, function)));
+      // Every requested call gets a result, so the model's call/result
+      // pairing stays intact; calls past the cap are refused, not dropped.
+      final result = index < maxCallsPerRound
+          ? await _runSafely(runTool, function)
+          : 'Not run: at most $maxCallsPerRound tool calls per turn. '
+              'Request it again in the next turn if still needed.';
+      history.add(llama.Message(role: llama.MessageRole.tool, content: result));
     }
   }
   return 'Stopped after $maxToolRounds tool rounds without a final answer.';

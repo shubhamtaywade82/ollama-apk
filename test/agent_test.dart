@@ -191,21 +191,33 @@ void reviewFixTests() {
     });
   });
 
-  test('should run at most maxCallsPerRound tool calls per reply', () async {
-    var ran = 0;
-    final burst = llama.Message(
-        role: llama.MessageRole.assistant,
-        content: '',
-        toolCalls: List.generate(
-            20,
-            (_) => const llama.ToolCall(
-                function: llama.ToolCallFunction(
-                    name: 'crypto_price', arguments: {}))));
-    final replies = [burst, answer];
-    await runToolLoop([], (_) async => replies.removeAt(0), (_, __) async {
-      ran++;
-      return 'r';
+  for (final batch in [0, 1, 4, 5, 20]) {
+    test(
+        'should answer every call in a batch of $batch, running at most '
+        'maxCallsPerRound', () async {
+      var ran = 0;
+      final reply = llama.Message(
+          role: llama.MessageRole.assistant,
+          content: '',
+          toolCalls: List.generate(
+              batch,
+              (_) => const llama.ToolCall(
+                  function: llama.ToolCallFunction(
+                      name: 'crypto_price', arguments: {}))));
+      final replies = [if (batch > 0) reply, answer];
+      final history = <llama.Message>[];
+      final result = await runToolLoop(
+          history, (_) async => replies.removeAt(0), (_, __) async {
+        ran++;
+        return 'r';
+      });
+      final toolResults =
+          history.where((m) => m.role == llama.MessageRole.tool).toList();
+      expect(ran, batch < maxCallsPerRound ? batch : maxCallsPerRound);
+      expect(toolResults.length, batch);
+      expect(toolResults.where((m) => m.content.startsWith('Not run')).length,
+          batch > maxCallsPerRound ? batch - maxCallsPerRound : 0);
+      expect(result, answer.content);
     });
-    expect(ran, maxCallsPerRound);
-  });
+  }
 }
