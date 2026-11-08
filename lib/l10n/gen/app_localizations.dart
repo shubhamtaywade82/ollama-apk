@@ -1305,6 +1305,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 tool} other{{count} tools}}'**
   String mcpToolCount(int count);
+
+  /// No description provided for @hostsPublicHttpWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This is plain http:// over the internet: anyone on the path can read your chats. Use https:// or a VPN such as Tailscale.'**
+  String get hostsPublicHttpWarning;
 }
 
 class _AppLocalizationsDelegate

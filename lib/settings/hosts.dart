@@ -217,6 +217,12 @@ class _AddHostDialogState extends State<_AddHostDialog> {
               onChanged: (_) => setState(() => testResult = null),
               decoration: InputDecoration(
                   labelText: l10n.hostsUrl, errorText: urlError)),
+          if (isPublicHttp(url.text))
+            Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(l10n.hostsPublicHttpWarning,
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.error))),
           if (showLoopbackWarning)
             Padding(
                 padding: const EdgeInsets.only(top: 8),

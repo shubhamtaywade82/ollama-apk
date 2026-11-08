@@ -702,4 +702,8 @@ class AppLocalizationsTr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get hostsPublicHttpWarning =>
+      'This is plain http:// over the internet: anyone on the path can read your chats. Use https:// or a VPN such as Tailscale.';
 }

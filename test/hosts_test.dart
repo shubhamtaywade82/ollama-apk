@@ -86,6 +86,23 @@ void main() {
 }
 
 void loopbackTests() {
+  test('should flag http only for public addresses', () {
+    for (final private in [
+      'http://192.168.1.5:11434',
+      'http://10.0.0.2',
+      'http://172.20.1.1',
+      'http://100.101.2.3:11434',
+      'http://box.local:11434',
+      'http://localhost:11434',
+      'https://203.0.113.9',
+    ]) {
+      expect(isPublicHttp(private), isFalse, reason: private);
+    }
+    expect(isPublicHttp('http://203.0.113.9:11434'), isTrue);
+    expect(isPublicHttp('http://ollama.example.com'), isTrue);
+    expect(isPublicHttp('http://172.32.0.1'), isTrue);
+  });
+
   group('isLoopbackOnPhone', () {
     test('should flag localhost variants on Android and iOS only', () {
       for (final url in [

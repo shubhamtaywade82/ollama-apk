@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Self-hosted Ollama is normally plain http:// on the LAN (192.168.x.x,
+  Tailscale, .local), and Android cannot scope cleartext to IP ranges, so
+  cleartext is allowed here and the policy lives in the app: the Ollama
+  Cloud key is only ever sent to https://ollama.com, MCP tokens require
+  https, and Add Host warns about http:// to public addresses.
+  Only system CAs are trusted; there is no certificate bypass.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

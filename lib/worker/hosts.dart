@@ -182,3 +182,19 @@ bool isLoopbackOnPhone(String url, TargetPlatform platform) {
   final host = Uri.tryParse(normalizeHostUrl(url))?.host ?? '';
   return host == 'localhost' || host == '127.0.0.1' || host == '::1';
 }
+
+final _privateIpv4 = RegExp(
+    r'^(10\.|127\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.)');
+
+/// Plain http:// to an address outside private networks (LAN, loopback,
+/// Tailscale's 100.64/10, mDNS .local): traffic crosses the internet
+/// unencrypted, so prompts and replies can be read in transit.
+bool isPublicHttp(String url) {
+  final uri = Uri.tryParse(normalizeHostUrl(url));
+  if (uri == null || uri.scheme != 'http' || uri.host.isEmpty) return false;
+  final host = uri.host;
+  if (host == 'localhost' || host == '::1' || host.endsWith('.local')) {
+    return false;
+  }
+  return !_privateIpv4.hasMatch(host);
+}
