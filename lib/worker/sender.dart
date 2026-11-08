@@ -414,3 +414,21 @@ Future<String> send(String value, BuildContext context, Function setState,
 /// none, so plain replies stay unchanged.
 Map<String, dynamic>? thinkingMetadata(String thinking) =>
     thinking.trim().isEmpty ? null : {"thinking": thinking};
+
+/// Asks again for the latest reply: drops it and its prompt, then resends
+/// the prompt. Files attached to that prompt stay pending, so they go with
+/// the new request too.
+Future<void> regenerateLastReply(
+    BuildContext context, Function setState) async {
+  if (!chatAllowed || messages.length < 2) return;
+  final reply = messages[0];
+  final prompt = messages[1];
+  if (reply.author.id != assistant.id ||
+      prompt is! types.TextMessage ||
+      prompt.author.id != user.id) {
+    return;
+  }
+  messages.removeRange(0, 2);
+  setState(() {});
+  await send(prompt.text, context, setState);
+}

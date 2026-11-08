@@ -1365,6 +1365,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ask about {name}…'**
   String messageInputAskAbout(String name);
+
+  /// No description provided for @messageCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get messageCopy;
+
+  /// No description provided for @messageCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard'**
+  String get messageCopied;
+
+  /// No description provided for @messageReadAloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Read aloud'**
+  String get messageReadAloud;
+
+  /// No description provided for @messageRegenerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerate'**
+  String get messageRegenerate;
 }
 
 class _AppLocalizationsDelegate

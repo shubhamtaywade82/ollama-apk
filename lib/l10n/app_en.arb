@@ -936,5 +936,9 @@
                 "type": "String"
             }
         }
-    }
+    },
+    "messageCopy": "Copy",
+    "messageCopied": "Copied to clipboard",
+    "messageReadAloud": "Read aloud",
+    "messageRegenerate": "Regenerate"
 }

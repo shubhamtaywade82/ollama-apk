@@ -724,4 +724,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String messageInputAskAbout(String name) {
     return 'Ask about $name…';
   }
+
+  @override
+  String get messageCopy => 'Copy';
+
+  @override
+  String get messageCopied => 'Copied to clipboard';
+
+  @override
+  String get messageReadAloud => 'Read aloud';
+
+  @override
+  String get messageRegenerate => 'Regenerate';
 }

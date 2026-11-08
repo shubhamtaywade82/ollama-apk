@@ -1,3 +1,4 @@
+import 'message_actions.dart';
 import 'thinking_block.dart';
 import 'worker/attachments.dart';
 import 'worker/chat_store.dart';
@@ -1210,6 +1211,15 @@ class _MainAppState extends State<MainApp> {
                                                               code: const TextStyle(color: Colors.black, backgroundColor: Colors.white),
                                                               codeblockDecoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
                                                               horizontalRuleDecoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.grey[200]!, width: 1))))),
+                                            // Only once the reply has finished
+                                            // streaming.
+                                            if (p0.author.id == assistant.id &&
+                                                isAnswering &&
+                                                (chatAllowed ||
+                                                    messages.first.id != p0.id))
+                                              MessageActions(
+                                                  message: p0,
+                                                  setChatState: setState),
                                           ]),
                                     ));
                               },
