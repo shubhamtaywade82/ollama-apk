@@ -35,7 +35,7 @@ dependencies:
   flutter_install_referrer: ^2.0.2
   package_info_plus: ^8.0.0
   version: ^3.0.2
-  flutter_displaymode: ^0.6.0
+  flutter_displaymode: ^0.7.0
   duration_picker: ^1.2.0
   speech_to_text: ^7.0.0
   flutter_tts:
