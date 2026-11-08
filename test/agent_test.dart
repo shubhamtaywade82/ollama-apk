@@ -16,6 +16,7 @@ const answer =
     llama.Message(role: llama.MessageRole.assistant, content: 'It is 21C.');
 
 void main() {
+  marketToolTests();
   test('should run requested tool and return final answer', () async {
     final replies = [
       toolCall('web_search', {'query': 'weather'}),
@@ -80,5 +81,66 @@ void main() {
     expect(seen.url.toString(), 'https://ollama.com/api/web_search');
     expect(seen.headers['Authorization'], 'Bearer k');
     expect(jsonDecode(seen.body)['query'], 'q');
+  });
+}
+
+void marketToolTests() {
+  group('market tools', () {
+    late List<Uri> requested;
+    late http.Client client;
+
+    setUp(() {
+      requested = [];
+      client = MockClient((req) async {
+        requested.add(req.url);
+        return http.Response('[]', 200);
+      });
+    });
+
+    test('should fetch price and candles with validated parameters', () async {
+      final run = marketToolRunner(client);
+      await run('crypto_price', {'symbol': 'btcusdt'});
+      await run('crypto_candles',
+          {'symbol': 'ETHUSDT', 'interval': '4h', 'limit': 9999});
+      expect(requested[0].toString(),
+          'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
+      expect(requested[1].queryParameters,
+          {'symbol': 'ETHUSDT', 'interval': '4h', 'limit': '100'});
+    });
+
+    test('should reject symbols that could alter the request', () async {
+      final run = marketToolRunner(client);
+      for (final bad in ['BTCUSDT&x=1', '../order', 'BTC', '']) {
+        await expectLater(run('crypto_price', {'symbol': bad}),
+            throwsA(isA<ArgumentError>()));
+      }
+      expect(requested, isEmpty);
+    });
+
+    test('should reject unknown intervals', () async {
+      await expectLater(
+          marketToolRunner(client)(
+              'crypto_candles', {'symbol': 'BTCUSDT', 'interval': '7x'}),
+          throwsA(isA<ArgumentError>()));
+    });
+
+    test('should expose no tool that can trade', () {
+      final names = marketTools.map((t) => t.function!.name);
+      expect(names, ['crypto_price', 'crypto_candles']);
+    });
+
+    test('should only run tools from enabled packs', () async {
+      final none = buildToolSet(client);
+      expect(none.tools, isEmpty);
+      expect(await none.run('crypto_price', {'symbol': 'BTCUSDT'}),
+          contains('not enabled'));
+      final marketOnly = buildToolSet(client, market: true);
+      expect(marketOnly.tools.length, marketTools.length);
+      expect(await marketOnly.run('web_search', {'query': 'x'}),
+          contains('not enabled'));
+      expect(requested, isEmpty);
+      final both = buildToolSet(client, webApiKey: 'k', market: true);
+      expect(both.tools.length, webTools.length + marketTools.length);
+    });
   });
 }

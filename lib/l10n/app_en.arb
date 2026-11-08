@@ -831,5 +831,7 @@
     },
     "modelsDeleteBody": "The model is removed from the server and must be downloaded again to use it.",
     "settingsWebTools": "Web search tools",
-    "settingsWebToolsDescription": "Lets tool-capable models search and read the web through Ollama Cloud. Needs an Ollama Cloud API key. Replies are not streamed while enabled."
+    "settingsWebToolsDescription": "Lets tool-capable models search and read the web through Ollama Cloud. Needs an Ollama Cloud API key. Replies are not streamed while enabled.",
+    "settingsMarketTools": "Crypto market tools",
+    "settingsMarketToolsDescription": "Lets tool-capable models read Binance prices and candles. Read-only: the app never places orders. Replies are not streamed while enabled."
 }

@@ -225,10 +225,11 @@ Future<String> send(String value, BuildContext context, Function setState,
     try {
       // ponytail: tool rounds are non-streaming; stream the final answer
       // too if waiting on long tool chains feels slow.
-      final apiKey = cloudApiKey;
-      final useWebTools =
-          (prefs!.getBool("webTools") ?? false) && apiKey != null;
-      if (!useWebTools &&
+      final toolSet = buildToolSet(httpClient,
+          webApiKey: (prefs!.getBool("webTools") ?? false) ? cloudApiKey : null,
+          market: prefs!.getBool("marketTools") ?? false);
+      final useTools = toolSet.tools.isNotEmpty;
+      if (!useTools &&
           (prefs!.getString("requestType") ?? "stream") == "stream") {
         final stream = ollamaClient
             .generateChatCompletionStream(
@@ -269,7 +270,7 @@ Future<String> send(String value, BuildContext context, Function setState,
                       request: llama.GenerateChatCompletionRequest(
                           model: model!,
                           messages: turns,
-                          tools: useWebTools ? webTools : null,
+                          tools: useTools ? toolSet.tools : null,
                           keepAlive: int.parse(
                               prefs!.getString("keepAlive") ?? "300")),
                     )
@@ -279,9 +280,8 @@ Future<String> send(String value, BuildContext context, Function setState,
                             .round())))
                 .message;
         // A copy, so a failover retry does not resend this attempt's tool turns.
-        final reply = useWebTools
-            ? await runToolLoop(
-                List.of(history), callModel, webToolRunner(httpClient, apiKey))
+        final reply = useTools
+            ? await runToolLoop(List.of(history), callModel, toolSet.run)
             : (await callModel(history)).content;
         if (chatAllowed) return "";
         messages.insert(

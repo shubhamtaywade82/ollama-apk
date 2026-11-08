@@ -13,7 +13,9 @@ void main() {
 
   test('should migrate prefs chats to file and drop prefs copy', () async {
     SharedPreferences.setMockInitialValues({
-      'chats': [jsonEncode({'uuid': 'a'})]
+      'chats': [
+        jsonEncode({'uuid': 'a'})
+      ]
     });
     final prefs = await SharedPreferences.getInstance();
     await loadChats(prefs, dir);
@@ -36,7 +38,9 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     await loadChats(prefs, dir);
-    await Future.wait([for (var i = 0; i < 20; i++) saveChats(['v$i'])]);
+    await Future.wait([
+      for (var i = 0; i < 20; i++) saveChats(['v$i'])
+    ]);
     await loadChats(prefs, dir);
     expect(chats, ['v19']);
   });

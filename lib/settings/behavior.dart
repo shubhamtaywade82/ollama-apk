@@ -111,6 +111,25 @@ class _ScreenSettingsBehaviorState extends State<ScreenSettingsBehavior> {
                           }),
                       toggle(
                           context,
+                          AppLocalizations.of(context)!.settingsMarketTools,
+                          (prefs!.getBool("marketTools") ?? false),
+                          (value) {
+                            selectionHaptic();
+                            prefs!.setBool("marketTools", value);
+                            setState(() {});
+                          },
+                          icon: const Icon(Icons.info_rounded,
+                              color: Colors.grey),
+                          iconAfterwards: true,
+                          onLongTap: () {
+                            selectionHaptic();
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(AppLocalizations.of(context)!
+                                    .settingsMarketToolsDescription),
+                                showCloseIcon: true));
+                          }),
+                      toggle(
+                          context,
                           AppLocalizations.of(context)!.settingsDisableMarkdown,
                           (prefs!.getBool("noMarkdown") ?? false), (value) {
                         selectionHaptic();

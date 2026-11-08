@@ -621,4 +621,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsWebToolsDescription =>
       'Lets tool-capable models search and read the web through Ollama Cloud. Needs an Ollama Cloud API key. Replies are not streamed while enabled.';
+
+  @override
+  String get settingsMarketTools => 'Crypto market tools';
+
+  @override
+  String get settingsMarketToolsDescription =>
+      'Lets tool-capable models read Binance prices and candles. Read-only: the app never places orders. Replies are not streamed while enabled.';
 }

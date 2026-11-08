@@ -87,3 +87,88 @@ ToolRunner webToolRunner(http.Client client, String apiKey) =>
           return 'Unknown tool $name';
       }
     };
+
+const binanceBase = 'https://api.binance.com';
+const klineIntervals = ['1m', '5m', '15m', '1h', '4h', '1d'];
+
+// Read-only on purpose: these tools only fetch public market data, so a
+// model can never place or cancel an order through the agent.
+final marketTools = [
+  const llama.Tool(
+      function: llama.ToolFunction(
+          name: 'crypto_price',
+          description:
+              'Latest Binance spot price for a symbol such as BTCUSDT.',
+          parameters: {
+        'type': 'object',
+        'properties': {
+          'symbol': {'type': 'string', 'description': 'e.g. BTCUSDT'}
+        },
+        'required': ['symbol']
+      })),
+  const llama.Tool(
+      function: llama.ToolFunction(
+          name: 'crypto_candles',
+          description:
+              'Recent Binance spot candles: [openTime, open, high, low, close, volume].',
+          parameters: {
+        'type': 'object',
+        'properties': {
+          'symbol': {'type': 'string', 'description': 'e.g. BTCUSDT'},
+          'interval': {'type': 'string', 'enum': klineIntervals},
+          'limit': {'type': 'integer', 'description': '1-100, default 24'}
+        },
+        'required': ['symbol']
+      })),
+];
+
+final _symbolPattern = RegExp(r'^[A-Z0-9]{5,20}$');
+
+String _validSymbol(Object? raw) {
+  final symbol = '$raw'.toUpperCase();
+  if (!_symbolPattern.hasMatch(symbol)) throw ArgumentError('bad symbol: $raw');
+  return symbol;
+}
+
+ToolRunner marketToolRunner(http.Client client) => (name, arguments) async {
+      final symbol = _validSymbol(arguments['symbol']);
+      final Uri uri;
+      switch (name) {
+        case 'crypto_price':
+          uri = Uri.parse('$binanceBase/api/v3/ticker/price?symbol=$symbol');
+        case 'crypto_candles':
+          final interval = '${arguments['interval'] ?? '1h'}';
+          if (!klineIntervals.contains(interval)) {
+            throw ArgumentError('bad interval: $interval');
+          }
+          final limit =
+              (int.tryParse('${arguments['limit']}') ?? 24).clamp(1, 100);
+          uri = Uri.parse('$binanceBase/api/v3/klines'
+              '?symbol=$symbol&interval=$interval&limit=$limit');
+        default:
+          return 'Unknown tool $name';
+      }
+      final response = await client.get(uri);
+      if (response.statusCode != 200) {
+        throw Exception('Binance ${response.statusCode}: ${response.body}');
+      }
+      return response.body;
+    };
+
+/// Tools and their runner for the enabled packs. A call to a tool outside
+/// the enabled packs is rejected rather than silently run.
+({List<llama.Tool> tools, ToolRunner run}) buildToolSet(http.Client client,
+    {String? webApiKey, bool market = false}) {
+  final web = webApiKey == null ? null : webToolRunner(client, webApiKey);
+  final markets = market ? marketToolRunner(client) : null;
+  return (
+    tools: [if (web != null) ...webTools, if (markets != null) ...marketTools],
+    run: (name, arguments) async {
+      if (name.startsWith('web_') && web != null) return web(name, arguments);
+      if (name.startsWith('crypto_') && markets != null) {
+        return markets(name, arguments);
+      }
+      return 'Tool $name is not enabled';
+    }
+  );
+}

@@ -31,7 +31,9 @@
     "modelsDeleteTitle",
     "modelsDeleteBody",
     "settingsWebTools",
-    "settingsWebToolsDescription"
+    "settingsWebToolsDescription",
+    "settingsMarketTools",
+    "settingsMarketToolsDescription"
   ],
 
   "fa": [
@@ -66,7 +68,9 @@
     "modelsDeleteTitle",
     "modelsDeleteBody",
     "settingsWebTools",
-    "settingsWebToolsDescription"
+    "settingsWebToolsDescription",
+    "settingsMarketTools",
+    "settingsMarketToolsDescription"
   ],
 
   "it": [
@@ -101,7 +105,9 @@
     "modelsDeleteTitle",
     "modelsDeleteBody",
     "settingsWebTools",
-    "settingsWebToolsDescription"
+    "settingsWebToolsDescription",
+    "settingsMarketTools",
+    "settingsMarketToolsDescription"
   ],
 
   "tr": [
@@ -136,7 +142,9 @@
     "modelsDeleteTitle",
     "modelsDeleteBody",
     "settingsWebTools",
-    "settingsWebToolsDescription"
+    "settingsWebToolsDescription",
+    "settingsMarketTools",
+    "settingsMarketToolsDescription"
   ],
 
   "zh": [
@@ -171,6 +179,8 @@
     "modelsDeleteTitle",
     "modelsDeleteBody",
     "settingsWebTools",
-    "settingsWebToolsDescription"
+    "settingsWebToolsDescription",
+    "settingsMarketTools",
+    "settingsMarketToolsDescription"
   ]
 }

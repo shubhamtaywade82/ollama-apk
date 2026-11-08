@@ -1191,6 +1191,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Lets tool-capable models search and read the web through Ollama Cloud. Needs an Ollama Cloud API key. Replies are not streamed while enabled.'**
   String get settingsWebToolsDescription;
+
+  /// No description provided for @settingsMarketTools.
+  ///
+  /// In en, this message translates to:
+  /// **'Crypto market tools'**
+  String get settingsMarketTools;
+
+  /// No description provided for @settingsMarketToolsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Lets tool-capable models read Binance prices and candles. Read-only: the app never places orders. Replies are not streamed while enabled.'**
+  String get settingsMarketToolsDescription;
 }
 
 class _AppLocalizationsDelegate

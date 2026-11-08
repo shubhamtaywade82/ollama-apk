@@ -5,8 +5,8 @@ import 'package:ollama_app/settings/cloud.dart';
 import 'package:ollama_app/worker/clients.dart';
 import 'package:ollama_app/worker/cloud.dart';
 
-Future<void> pump(WidgetTester tester, Widget child) => tester.pumpWidget(
-    MaterialApp(
+Future<void> pump(WidgetTester tester, Widget child) =>
+    tester.pumpWidget(MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(body: SingleChildScrollView(child: child))));
