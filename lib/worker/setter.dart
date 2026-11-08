@@ -20,6 +20,22 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 
+const _modelInfoTimeout = Duration(seconds: 10);
+
+/// Whether [entry] accepts images. A slow or failing metadata call only
+/// hides the image button for that model; it never blocks the model list.
+Future<bool> supportsVisionInput(llama.Model entry) async {
+  if ((entry.details?.families ?? []).contains("clip")) return true;
+  try {
+    final details = await ollamaClient
+        .showModelInfo(request: llama.ModelInfoRequest(model: entry.model!))
+        .timeout(_modelInfoTimeout);
+    return (details.capabilities ?? []).contains(llama.Capability.vision);
+  } catch (_) {
+    return false;
+  }
+}
+
 void setModel(BuildContext context, Function setState) {
   List<String> models = [];
   List<String> modelsReal = [];
@@ -36,13 +52,14 @@ void setModel(BuildContext context, Function setState) {
       var list = await ollamaClient.listModels().timeout(Duration(
           seconds:
               (10.0 * (prefs!.getDouble("timeoutMultiplier") ?? 1.0)).round()));
+      // ponytail: one parallel burst of show calls; batch it if hosts with
+      // hundreds of models start rejecting the burst.
+      final visionFlags =
+          await Future.wait(list.models!.map(supportsVisionInput));
       for (var i = 0; i < list.models!.length; i++) {
-        var details = await ollamaClient.showModelInfo(
-            request: llama.ModelInfoRequest(model: list.models![i].model!));
         models.add(list.models![i].model!.split(":")[0]);
         modelsReal.add(list.models![i].model!);
-        modal.add((list.models![i].details!.families ?? []).contains("clip") ||
-            (details.capabilities ?? []).contains(llama.Capability.vision));
+        modal.add(visionFlags[i]);
       }
 
       addIndex = models.length;
