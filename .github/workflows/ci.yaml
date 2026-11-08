@@ -50,12 +50,25 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
+          cache: gradle
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
       - run: flutter pub get
+      # The Gradle distribution download from GitHub intermittently returns
+      # 5xx; fetch it in its own retried step so a blip does not fail the job.
+      - name: Fetch Gradle distribution
+        run: |
+          flutter build apk --config-only
+          cd android
+          for attempt in 1 2 3 4; do
+            ./gradlew --version -q && exit 0
+            echo "Gradle download failed (attempt $attempt), retrying"
+            sleep 20
+          done
+          exit 1
       - run: flutter build apk --debug
       - uses: actions/upload-artifact@v7
         with:

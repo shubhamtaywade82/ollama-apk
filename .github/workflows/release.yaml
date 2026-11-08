@@ -23,6 +23,7 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
+          cache: gradle
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -37,18 +38,35 @@ jobs:
           KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        # Fail closed: without these the build would fall back to the debug
+        # key and a tag would publish an APK nobody can update safely.
         run: |
-          if [ -z "$KEYSTORE_B64" ]; then
-            echo "::warning::No ANDROID_KEYSTORE_BASE64 secret; APK will not be release-signed"
-            exit 0
-          fi
+          for name in KEYSTORE_B64 KEYSTORE_PASSWORD KEY_ALIAS; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Release signing secret for $name is missing"
+              exit 1
+            fi
+          done
           echo "$KEYSTORE_B64" | base64 -d > android/app/upload-keystore.jks
           {
             echo "storePassword=$KEYSTORE_PASSWORD"
             echo "keyPassword=$KEYSTORE_PASSWORD"
-            echo "keyAlias=${KEY_ALIAS:-upload}"
+            echo "keyAlias=$KEY_ALIAS"
             echo "storeFile=upload-keystore.jks"
           } > android/key.properties
+
+      # The Gradle distribution download from GitHub intermittently returns
+      # 5xx; fetch it in its own retried step so a blip does not fail the job.
+      - name: Fetch Gradle distribution
+        run: |
+          flutter build apk --config-only
+          cd android
+          for attempt in 1 2 3 4; do
+            ./gradlew --version -q && exit 0
+            echo "Gradle download failed (attempt $attempt), retrying"
+            sleep 20
+          done
+          exit 1
 
       - name: Build release APKs
         run: flutter build apk --release --split-per-abi --split-debug-info=build/symbols
@@ -63,6 +81,24 @@ jobs:
           done
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
+      - name: Verify release signature
+        run: |
+          apksigner=$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)apksigner
+          {
+            echo "### Signing certificate"
+            echo
+          } > release-notes.md
+          for apk in build/app/outputs/flutter-apk/ollama-apk-v*.apk; do
+            certs=$("$apksigner" verify --print-certs "$apk")
+            if echo "$certs" | grep -q "CN=Android Debug"; then
+              echo "::error::$apk is signed with the debug key"
+              exit 1
+            fi
+          done
+          "$apksigner" verify --print-certs "$apk" \
+            | grep "certificate SHA-256 digest" | head -1 \
+            | sed 's/^/    /' >> release-notes.md
+
       - uses: actions/upload-artifact@v7
         with:
           name: ollama-apk-v${{ steps.meta.outputs.version }}
@@ -73,4 +109,5 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           generate_release_notes: true
+          body_path: release-notes.md
           files: build/app/outputs/flutter-apk/ollama-apk-v*.apk
