@@ -20,12 +20,17 @@ permissions:
 env:
   FLUTTER_VERSION: "3.47.9"
   TAG: ${{ inputs.tag || github.ref_name }}
+  # Play identifies the app by its applicationId, which never changes.
+  PLAY_PACKAGE_NAME: com.shubhamtaywade82.ollamaapk
 
 jobs:
   release:
     name: Build and publish signed APK
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 50
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      play_configured: ${{ steps.play.outputs.configured }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -86,6 +91,11 @@ jobs:
           mv build/app/outputs/flutter-apk/app-release.apk build/universal.apk
           flutter build apk --release --split-per-abi --split-debug-info=build/symbols
 
+      # Google Play only accepts App Bundles. Built on every release so the
+      # Play upload works the moment credentials are added.
+      - name: Build release App Bundle
+        run: flutter build appbundle --release --split-debug-info=build/symbols
+
       - name: Name artifacts by version
         id: meta
         run: |
@@ -99,6 +109,7 @@ jobs:
             abi=$(basename "$f" | sed 's/app-\(.*\)-release.apk/\1/')
             mv "$f" "build/app/outputs/flutter-apk/hearth-android-v${version}-${abi}.apk"
           done
+          mv build/app/outputs/bundle/release/app-release.aab "build/hearth-android-v${version}.aab"
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Verify release signature
@@ -115,6 +126,17 @@ jobs:
               exit 1
             fi
           done
+          # Captured first so a keytool error fails the step (no pipefail);
+          # keytool also exits 0 on an unsigned bundle, hence the Owner check.
+          aab_certs=$(keytool -printcert -jarfile build/hearth-android-v*.aab)
+          if ! grep -q "Owner:" <<<"$aab_certs"; then
+            echo "::error::App Bundle is not signed"
+            exit 1
+          fi
+          if grep -q "CN=Android Debug" <<<"$aab_certs"; then
+            echo "::error::App Bundle is signed with the debug key"
+            exit 1
+          fi
           "$apksigner" verify --print-certs "$apk" \
             | grep "certificate SHA-256 digest" | head -1 \
             | sed 's/^/    /' >> release-notes.md
@@ -123,6 +145,7 @@ jobs:
         with:
           name: hearth-android-v${{ steps.meta.outputs.version }}
           path: build/app/outputs/flutter-apk/hearth-android-v*.apk
+          overwrite: true
 
       # append_body keeps the changelog release-please wrote and adds the
       # signing fingerprint below it.
@@ -134,3 +157,74 @@ jobs:
           append_body: true
           body_path: release-notes.md
           files: build/app/outputs/flutter-apk/hearth-android-v*.apk
+
+      # Play hand-off runs after the GitHub release is published, so a
+      # Play-only problem can never block the APK release.
+      # The bundle plus R8's mapping (lets Play de-obfuscate crash reports),
+      # handed to the play-store job.
+      - uses: actions/upload-artifact@v7
+        with:
+          name: play-bundle-v${{ steps.meta.outputs.version }}
+          path: |
+            build/hearth-android-v*.aab
+            build/app/outputs/mapping/release/mapping.txt
+          if-no-files-found: error
+          retention-days: 30
+          overwrite: true
+
+      # Secrets cannot appear in a job-level `if`, so their presence is
+      # decided here and exposed as a job output.
+      - name: Check Play Store credentials
+        id: play
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -n "$PLAY_SERVICE_ACCOUNT_JSON" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Play Store upload skipped: add the PLAY_SERVICE_ACCOUNT_JSON secret to upload future releases. This release's App Bundle is in the play-bundle artifact."
+          fi
+
+  # Uploads only when PLAY_SERVICE_ACCOUNT_JSON is set; otherwise skipped,
+  # never failed. Repository variables tune it without code changes:
+  #   PLAY_TRACK           internal (default) | alpha | beta | production
+  #   PLAY_RELEASE_STATUS  draft (default) | completed | inProgress
+  #   PLAY_USER_FRACTION   0 < x < 1, required with inProgress (staged
+  #                        rollout), must be unset otherwise
+  # Drafts are the default: Play only accepts drafts until the app's first
+  # release is published, and nothing reaches users without a manual rollout.
+  #
+  # One-time setup before adding the secret (see README, "Google Play"):
+  # create the app in Play Console, upload and roll out the first AAB by
+  # hand (the API cannot create an app), choose the app signing key, and
+  # grant the service account release access. The secret only affects
+  # releases cut after it is added. Each upload needs a new versionCode, so
+  # re-run only the failed play-store job, and never re-upload a build that
+  # was already uploaded by hand.
+  play-store:
+    name: Upload to Google Play
+    needs: release
+    if: needs.release.outputs.play_configured == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: play-bundle-v${{ needs.release.outputs.version }}
+          path: bundle
+
+      - uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: ${{ env.PLAY_PACKAGE_NAME }}
+          releaseFiles: bundle/hearth-android-v${{ needs.release.outputs.version }}.aab
+          releaseName: ${{ env.TAG }}
+          tracks: ${{ vars.PLAY_TRACK || 'internal' }}
+          status: ${{ vars.PLAY_RELEASE_STATUS || 'draft' }}
+          userFraction: ${{ vars.PLAY_USER_FRACTION }}
+          # R8 writes a mapping when release minification is on (Flutter's
+          # default); pass it only if present so the upload never trips on it.
+          mappingFile: ${{ hashFiles('bundle/app/outputs/mapping/release/mapping.txt') != '' && 'bundle/app/outputs/mapping/release/mapping.txt' || '' }}

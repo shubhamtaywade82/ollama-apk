@@ -101,6 +101,52 @@ Release signing needs these repository secrets: `ANDROID_KEYSTORE_BASE64`,
 `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`. Without them the release
 job fails rather than publishing a debug-signed APK.
 
+### Google Play
+
+Every release also builds a signed App Bundle (`.aab`), kept for 30 days as the
+`play-bundle-v<version>` artifact of the Release workflow run. Uploading it to
+Google Play is switched off until credentials exist: without them the
+`Upload to Google Play` job is skipped (the run stays green) and the GitHub
+release with APKs works as usual.
+
+One-time setup:
+
+1. Create a Google Play developer account and the app in Play Console
+   (package `com.shubhamtaywade82.ollamaapk`). Complete the store listing: the
+   icon and feature graphic are in `assets/brand/` (also under
+   `fastlane/metadata/android/en-US/images/`); Play also needs at least two
+   phone screenshots, taken from the current app.
+2. **Choose the app signing key before the first upload.** Play re-signs every
+   app with an app signing key. By default Google generates one, which means
+   copies installed from Play and copies installed from the GitHub APKs cannot
+   update each other. To keep both channels interchangeable, choose *Export and
+   upload a key from Java keystore* in the app signing setup and follow Play's
+   PEPK instructions with this project's release keystore (the same one behind
+   the `ANDROID_KEYSTORE_*` secrets). This can only be changed before a release
+   rolls out to open testing or production.
+3. Upload the first `.aab` by hand (Play's API cannot create an app). Take it
+   from the `play-bundle` artifact of the latest Release run.
+4. In Google Cloud, create a service account, enable the Google Play Android
+   Developer API, and create a JSON key. In Play Console → *Users and
+   permissions*, invite the service account and give it release permissions for
+   this app.
+5. Add the JSON key as the repository secret `PLAY_SERVICE_ACCOUNT_JSON`.
+
+From then on each release uploads automatically. Repository variables tune it
+without code changes:
+
+| Variable | Default | Values |
+|---|---|---|
+| `PLAY_TRACK` | `internal` | `internal`, `alpha`, `beta`, `production` |
+| `PLAY_RELEASE_STATUS` | `draft` | `draft`, `completed`, `inProgress` |
+| `PLAY_USER_FRACTION` | unset | `0` < x < `1`; required with `inProgress`, otherwise leave unset |
+
+Uploads stay drafts by default: Play accepts only drafts until the app's first
+release is published, and nothing reaches users without a rollout in Play
+Console. The secret applies to releases cut after it is added. Every upload
+needs a new version code, so re-run only a failed `Upload to Google Play` job,
+and never re-upload a build that was already uploaded by hand.
+
 ## License and attribution
 
 Copyright 2026 shubhamtaywade82. Portions Copyright 2024 JHubi1, modified by
