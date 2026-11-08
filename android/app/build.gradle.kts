@@ -52,8 +52,13 @@ android {
 
     buildTypes {
         release {
-            if (keystorePropertiesFile.exists()) {
-                signingConfig = signingConfigs.getByName("release")
+            // Without a release keystore, sign with the debug key so local
+            // release builds still install. Such APKs cannot be updated by a
+            // later release-key build without uninstalling first.
+            signingConfig = if (keystorePropertiesFile.exists()) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
             }
         }
     }
