@@ -10,14 +10,19 @@ updates:
         update-types: ["version-update:semver-major"]
       # Discontinued upstream; 0.7.7 fails analyze. Replace, don't bump.
       - dependency-name: flutter_markdown
+      # 13.x compiles against the Android 37 SDK, which build machines lack.
+      - dependency-name: permission_handler
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: gradle
     directory: /android
     schedule: { interval: weekly }
     ignore:
       # AGP 9 / Gradle 9 / Kotlin 2.4 broke the APK build; upgrade together
       # on a branch, not as separate bumps.
+      # 8.13 rejects plugins still compiled against old SDKs (dynamic_color
+      # targets 31); stay on 8.11 until those plugins are updated.
       - dependency-name: com.android.application
-        update-types: ["version-update:semver-major"]
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: gradle-wrapper
         update-types: ["version-update:semver-major"]
       - dependency-name: org.jetbrains.kotlin.android

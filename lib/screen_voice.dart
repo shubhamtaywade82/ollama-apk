@@ -44,9 +44,10 @@ class _ScreenVoiceState extends State<ScreenVoice> {
     text = "";
 
     speech.listen(
-        localeId: (prefs!.getString("voiceLanguage") ?? "en-US"),
-        listenOptions:
-            stt.SpeechListenOptions(listenMode: stt.ListenMode.dictation),
+        listenOptions: stt.SpeechListenOptions(
+            listenMode: stt.ListenMode.dictation,
+            localeId: prefs!.getString("voiceLanguage") ?? "en-US",
+            pauseFor: const Duration(seconds: 3)),
         onResult: (result) {
           lightHaptic();
           if (!speaking) return;
@@ -54,8 +55,7 @@ class _ScreenVoiceState extends State<ScreenVoice> {
             sttDone = result.finalResult;
             text = result.recognizedWords;
           });
-        },
-        pauseFor: const Duration(seconds: 3));
+        });
 
     DateTime start = DateTime.now();
     bool timeout = false;
