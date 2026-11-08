@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/shubhamtaywade82/ollama-apk/compare/v1.5.1...v1.6.0) (2026-11-08)
+
+
+### Features
+
+* rebrand as Hearth, our own app ([09abf46](https://github.com/shubhamtaywade82/ollama-apk/commit/09abf4686e1384884287b5921e82d1673c1e6ce4))
+
 ## [1.5.1](https://github.com/shubhamtaywade82/ollama-apk/compare/v1.5.0...v1.5.1) (2026-11-08)
 
 
