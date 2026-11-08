@@ -5,7 +5,7 @@ version: 1.2.0+9
 
 environment:
   sdk: '>=3.3.4 <4.0.0'
-  flutter: 3.29.0
+  flutter: '>=3.29.0'
 
 dependencies:
   flutter:
@@ -25,7 +25,6 @@ dependencies:
   dartx: ^1.2.0
   smooth_page_indicator: ^1.1.0
   transparent_image: ^2.0.1
-  simple_icons: ^14.6.1
   url_launcher: ^6.2.6
   flutter_markdown: ^0.7.1
   file_picker: ^8.0.3

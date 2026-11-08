@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:ollama_dart/ollama_dart.dart' as llama;
@@ -13,6 +14,15 @@ bool isCloudHost(String? h) {
   return h == 'ollama.com' ||
       h == 'https://ollama.com' ||
       Uri.tryParse(normalized)?.host == 'ollama.com';
+}
+
+// Self-hosted Ollama commonly uses self-signed certs; Ollama Cloud never does.
+class OllamaHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (_, host, __) => host != 'ollama.com';
+  }
 }
 
 final httpClient = http.Client();

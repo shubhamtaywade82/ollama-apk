@@ -9,7 +9,6 @@ import '../worker/desktop.dart';
 import 'package:ollama_app/l10n/gen/app_localizations.dart';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
-import 'package:simple_icons/simple_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:version/version.dart';
@@ -128,7 +127,7 @@ class _ScreenSettingsAboutState extends State<ScreenSettingsAbout> {
                             }),
                       titleDivider(context: context),
                       button(AppLocalizations.of(context)!.settingsGithub,
-                          SimpleIcons.github, () {
+                          Icons.code_rounded, () {
                         selectionHaptic();
                         launchUrl(
                             mode: LaunchMode.inAppBrowserView,

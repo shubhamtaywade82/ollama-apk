@@ -620,7 +620,7 @@ class _ScreenSettingsState extends State<ScreenSettings> {
                                                         fontFamily:
                                                             "monospace"))
                                               ],
-                                            ))))
+                                            )))),
                           AnimatedSize(
                               duration: const Duration(milliseconds: 200),
                               child: isCloudHost(hostInputController.text
