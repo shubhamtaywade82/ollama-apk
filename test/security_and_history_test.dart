@@ -19,6 +19,7 @@ types.ImageMessage image(String base64) => types.ImageMessage(
     uri: 'data:image/png;base64,$base64');
 
 void main() {
+  hostHeaderTests();
   setUp(() async {
     SharedPreferences.setMockInitialValues({'useSystem': false});
     app.prefs = await SharedPreferences.getInstance();
@@ -85,6 +86,31 @@ void main() {
       expect(history[0].images, ['OLD']);
       expect(history[1].images, isNull);
       expect(images, ['NEW'], reason: 'pending images go to the new prompt');
+    });
+  });
+}
+
+void hostHeaderTests() {
+  group('custom host headers', () {
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({
+        'host': 'http://10.0.0.2:11434',
+        'hostHeaders': '{"CF-Access-Token":"t"}',
+      });
+      app.prefs = await SharedPreferences.getInstance();
+      await migrateHostHeadersOwner(app.prefs!);
+    });
+
+    test('should send headers only to the host they were saved for', () {
+      expect(
+          customHostHeaders('http://10.0.0.2:11434'), {'CF-Access-Token': 't'});
+      expect(customHostHeaders('http://10.0.0.9:11434'), isEmpty);
+      expect(customHostHeaders(cloudOrigin), isEmpty);
+    });
+
+    test('should not follow failover to another host', () async {
+      app.host = 'http://10.0.0.9:11434';
+      expect(ollamaClientHeaders().containsKey('CF-Access-Token'), isFalse);
     });
   });
 }

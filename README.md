@@ -14,7 +14,18 @@ server, a LAN router, or Ollama Cloud.
 - **Multiple hosts** in priority order with live health checks
 - **Automatic failover**: if the active host stops answering before a reply
   starts, the next healthy host takes over
-- **Ollama Cloud** with an API key kept in Android Keystore-backed storage
+- **Ollama Cloud** with an API key kept in Android Keystore-backed storage, plus
+  a usage and balance screen (spend, tokens, per-model breakdown, credits left)
+- **Models screen**: installed models, which are loaded and their VRAM use,
+  unload and delete
+- **Agent tools** (Settings → Behavior), sent only to models that report tool
+  support:
+  - web search and page fetch through Ollama Cloud
+  - read-only Binance prices and candles; the app never places orders
+- **Reasoning mode** for models that support thinking
+- Add Host checks the connection and warns when `localhost` would point at the
+  phone itself
+- Chats are stored in an app data file, not in preferences
 
 ## Connecting
 

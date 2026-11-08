@@ -134,6 +134,7 @@ class _AppState extends State<App> {
       SharedPreferences.setPrefix("ollama.");
       SharedPreferences tmp = await SharedPreferences.getInstance();
       await loadCloudApiKey(tmp);
+      await migrateHostHeadersOwner(tmp);
       await loadChats(
           tmp, kIsWeb ? null : await getApplicationSupportDirectory());
       setState(() {

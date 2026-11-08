@@ -24,7 +24,14 @@ Future<void> loadChats(SharedPreferences prefs, Directory? dataDir) async {
   _file = dataDir == null ? null : File('${dataDir.path}/$_fileName');
   final file = _file;
   if (file != null && await file.exists()) {
-    chats = (jsonDecode(await file.readAsString()) as List).cast<String>();
+    try {
+      chats = (jsonDecode(await file.readAsString()) as List).cast<String>();
+    } on FormatException {
+      // An unreadable file would otherwise stop the app from ever starting.
+      // Keep it aside for recovery instead of deleting it.
+      await file.rename('${file.path}.corrupt');
+      chats = [];
+    }
     return;
   }
   chats = prefs.getStringList(_prefsKey) ?? [];

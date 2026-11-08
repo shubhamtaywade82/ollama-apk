@@ -1,9 +1,10 @@
 name: Release
 
+# Tags only: a manual dispatch could sign an APK from any unreviewed branch
+# with the release keystore.
 on:
   push:
     tags: ["v*"]
-  workflow_dispatch:
 
 permissions:
   contents: write

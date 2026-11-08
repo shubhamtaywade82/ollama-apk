@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show SocketException;
 
 import 'package:flutter/foundation.dart' show TargetPlatform;
 
@@ -149,7 +151,10 @@ bool isHostFailure(Object error) {
     final code = error.code;
     return code == null || code >= 500;
   }
-  return true;
+  // Only transport failures; a local bug must not switch the saved host.
+  return error is SocketException ||
+      error is TimeoutException ||
+      error is http.ClientException;
 }
 
 /// Chat-time failover: switch the app to the next healthy saved host.

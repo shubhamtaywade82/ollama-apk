@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/foundation.dart' show TargetPlatform;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -14,6 +17,7 @@ MockClient fakeServers(Map<String, http.Response> byUrl) =>
         byUrl[req.url.toString()] ?? (throw http.ClientException('refused')));
 
 void main() {
+  failoverClassificationTests();
   loopbackTests();
   test('should migrate legacy single host when no host list saved', () async {
     SharedPreferences.setMockInitialValues({'host': 'http://10.0.0.2:11434'});
@@ -91,5 +95,15 @@ void loopbackTests() {
       expect(isLoopbackOnPhone('https://ollama.com', TargetPlatform.android),
           isFalse);
     });
+  });
+}
+
+void failoverClassificationTests() {
+  test('should fail over only on transport and server errors', () {
+    expect(isHostFailure(const SocketException('refused')), isTrue);
+    expect(isHostFailure(TimeoutException('slow')), isTrue);
+    expect(isHostFailure(http.ClientException('reset')), isTrue);
+    expect(isHostFailure(ArgumentError('local bug')), isFalse);
+    expect(isHostFailure(StateError('local bug')), isFalse);
   });
 }

@@ -165,8 +165,8 @@ void setModel(BuildContext context, Function setState) {
                   : Uri.parse("$host/api/generate");
               final preloadHeaders = <String, String>{
                 "Content-Type": "application/json",
-                ...(jsonDecode(prefs!.getString("hostHeaders") ?? "{}") as Map)
-              }.cast<String, String>();
+                ...customHostHeaders(host)
+              };
               if (isCloudHost(host)) {
                 preloadHeaders["Authorization"] = "Bearer $cloudApiKey";
               }

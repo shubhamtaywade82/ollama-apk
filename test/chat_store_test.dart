@@ -6,6 +6,7 @@ import 'package:ollama_app/worker/chat_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  corruptFileTests();
   late Directory dir;
 
   setUp(() async => dir = await Directory.systemTemp.createTemp('chats'));
@@ -62,5 +63,17 @@ void main() {
     });
     await loadChats(await SharedPreferences.getInstance(), dir);
     expect(chats, ['file']);
+  });
+}
+
+void corruptFileTests() {
+  test('should start empty and keep a corrupt chats file aside', () async {
+    final dir = await Directory.systemTemp.createTemp('chats');
+    addTearDown(() => dir.delete(recursive: true));
+    File('${dir.path}/chats.json').writeAsStringSync('{not json');
+    SharedPreferences.setMockInitialValues({});
+    await loadChats(await SharedPreferences.getInstance(), dir);
+    expect(chats, isEmpty);
+    expect(File('${dir.path}/chats.json.corrupt').existsSync(), isTrue);
   });
 }

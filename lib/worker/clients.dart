@@ -52,11 +52,34 @@ Future<void> saveCloudApiKey(String key) async {
   cloudApiKey = key;
 }
 
+const _headersOwnerKey = 'hostHeadersHost';
+
+/// Custom headers (e.g. a proxy token) for [url]: only the host they were
+/// saved for receives them, never another saved host after failover and
+/// never Ollama Cloud.
+Map<String, String> customHostHeaders(String? url) {
+  final owner = prefs!.getString(_headersOwnerKey);
+  if (url == null || isCloudHost(url) || owner != url) return {};
+  return (jsonDecode(prefs!.getString('hostHeaders') ?? '{}') as Map)
+      .cast<String, String>();
+}
+
+/// Binds the saved custom headers to [url]. Headers saved before this
+/// binding existed belonged to the single host of that time.
+Future<void> bindHostHeaders(String? url) async {
+  if (url == null) return;
+  await prefs!.setString(_headersOwnerKey, url);
+}
+
+Future<void> migrateHostHeadersOwner(SharedPreferences prefs) async {
+  final legacyHost = prefs.getString('host');
+  if (prefs.getString(_headersOwnerKey) != null || legacyHost == null) return;
+  await prefs.setString(_headersOwnerKey, legacyHost);
+}
+
 /// Custom host headers, plus the Cloud key only when the host is Cloud.
 Map<String, String> ollamaClientHeaders() {
-  final headers = Map<String, String>.from(
-      (jsonDecode(prefs!.getString('hostHeaders') ?? '{}') as Map)
-          .cast<String, String>());
+  final headers = customHostHeaders(host);
   final apiKey = cloudApiKey;
   // The Cloud key must never reach a local or third-party host.
   if (isCloudHost(host) && apiKey != null && apiKey.isNotEmpty) {

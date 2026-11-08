@@ -366,10 +366,12 @@ class _ScreenSettingsState extends State<ScreenSettings> {
       // between the ways of calling a request
       final requestBase = http.Request(
           "get", Uri.parse(cloudHost ? "$tmpHost/api/tags" : tmpHost))
-        ..headers.addAll(
-          (jsonDecode(prefs!.getString("hostHeaders") ?? "{}") as Map)
-              .cast<String, String>(),
-        )
+        // These headers are edited on this screen for the host being
+        // configured, so they go to it, but never to Ollama Cloud.
+        ..headers.addAll(cloudHost
+            ? const <String, String>{}
+            : (jsonDecode(prefs!.getString("hostHeaders") ?? "{}") as Map)
+                .cast<String, String>())
         ..headers.addAll({
           if (cloudHost) "Authorization": "Bearer $tmpApiKey",
         })
@@ -405,6 +407,7 @@ class _ScreenSettingsState extends State<ScreenSettings> {
         }
       });
       prefs?.setString("host", host!);
+      bindHostHeaders(host);
       if (cloudHost) saveCloudApiKey(tmpApiKey);
     } else {
       setState(() {

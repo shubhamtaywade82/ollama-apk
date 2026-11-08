@@ -236,7 +236,8 @@ Future<String> send(String value, BuildContext context, Function setState,
       final canUseTools = capabilities.contains(llama.Capability.tools);
       final toolSet = buildToolSet(httpClient,
           webApiKey: wantsWeb && canUseTools ? cloudApiKey : null,
-          market: wantsMarket && canUseTools);
+          market: wantsMarket && canUseTools,
+          userText: value);
       final useTools = toolSet.tools.isNotEmpty;
       final think =
           wantsThinking && capabilities.contains(llama.Capability.thinking)
