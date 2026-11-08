@@ -1,1 +1,56 @@
-{}
+{
+  "de": [
+    "settingsTitleHosts",
+    "settingsDescriptionHosts",
+    "hostsAdd",
+    "hostsName",
+    "hostsUrl",
+    "hostsEmpty",
+    "hostsRefresh",
+    "hostsInvalidUrl"
+  ],
+
+  "fa": [
+    "settingsTitleHosts",
+    "settingsDescriptionHosts",
+    "hostsAdd",
+    "hostsName",
+    "hostsUrl",
+    "hostsEmpty",
+    "hostsRefresh",
+    "hostsInvalidUrl"
+  ],
+
+  "it": [
+    "settingsTitleHosts",
+    "settingsDescriptionHosts",
+    "hostsAdd",
+    "hostsName",
+    "hostsUrl",
+    "hostsEmpty",
+    "hostsRefresh",
+    "hostsInvalidUrl"
+  ],
+
+  "tr": [
+    "settingsTitleHosts",
+    "settingsDescriptionHosts",
+    "hostsAdd",
+    "hostsName",
+    "hostsUrl",
+    "hostsEmpty",
+    "hostsRefresh",
+    "hostsInvalidUrl"
+  ],
+
+  "zh": [
+    "settingsTitleHosts",
+    "settingsDescriptionHosts",
+    "hostsAdd",
+    "hostsName",
+    "hostsUrl",
+    "hostsEmpty",
+    "hostsRefresh",
+    "hostsInvalidUrl"
+  ]
+}

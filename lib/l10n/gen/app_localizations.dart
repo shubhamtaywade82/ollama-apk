@@ -999,6 +999,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ollama App v{version}'**
   String settingsVersion(String version);
+
+  /// No description provided for @settingsTitleHosts.
+  ///
+  /// In en, this message translates to:
+  /// **'Hosts'**
+  String get settingsTitleHosts;
+
+  /// No description provided for @settingsDescriptionHosts.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage servers, order them by priority, and fail over automatically'**
+  String get settingsDescriptionHosts;
+
+  /// No description provided for @hostsAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add host'**
+  String get hostsAdd;
+
+  /// No description provided for @hostsName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostsName;
+
+  /// No description provided for @hostsUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'URL'**
+  String get hostsUrl;
+
+  /// No description provided for @hostsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No hosts yet. Add your Ollama server, router or Ollama Cloud.'**
+  String get hostsEmpty;
+
+  /// No description provided for @hostsRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Check hosts'**
+  String get hostsRefresh;
+
+  /// No description provided for @hostsInvalidUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a full URL such as http://192.168.1.5:11434'**
+  String get hostsInvalidUrl;
 }
 
 class _AppLocalizationsDelegate

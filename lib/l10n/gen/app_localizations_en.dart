@@ -515,4 +515,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String settingsVersion(String version) {
     return 'Ollama App v$version';
   }
+
+  @override
+  String get settingsTitleHosts => 'Hosts';
+
+  @override
+  String get settingsDescriptionHosts =>
+      'Manage servers, order them by priority, and fail over automatically';
+
+  @override
+  String get hostsAdd => 'Add host';
+
+  @override
+  String get hostsName => 'Name';
+
+  @override
+  String get hostsUrl => 'URL';
+
+  @override
+  String get hostsEmpty =>
+      'No hosts yet. Add your Ollama server, router or Ollama Cloud.';
+
+  @override
+  String get hostsRefresh => 'Check hosts';
+
+  @override
+  String get hostsInvalidUrl =>
+      'Enter a full URL such as http://192.168.1.5:11434';
 }

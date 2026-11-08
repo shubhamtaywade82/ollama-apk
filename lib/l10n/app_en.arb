@@ -792,5 +792,13 @@
                 "description": "Version number of the app"
             }
         }
-    }
+    },
+    "settingsTitleHosts": "Hosts",
+    "settingsDescriptionHosts": "Manage servers, order them by priority, and fail over automatically",
+    "hostsAdd": "Add host",
+    "hostsName": "Name",
+    "hostsUrl": "URL",
+    "hostsEmpty": "No hosts yet. Add your Ollama server, router or Ollama Cloud.",
+    "hostsRefresh": "Check hosts",
+    "hostsInvalidUrl": "Enter a full URL such as http://192.168.1.5:11434"
 }
