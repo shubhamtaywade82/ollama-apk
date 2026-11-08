@@ -15,6 +15,7 @@ import 'package:ollama_app/l10n/gen/app_localizations.dart';
 import 'settings/behavior.dart';
 import 'settings/cloud.dart';
 import 'settings/hosts.dart';
+import 'settings/mcp.dart';
 import 'settings/models.dart';
 import 'settings/interface.dart';
 import 'settings/voice.dart';
@@ -698,6 +699,18 @@ class _ScreenSettingsState extends State<ScreenSettings> {
                         ]);
                         var column2 =
                             Column(mainAxisSize: MainAxisSize.min, children: [
+                          button(AppLocalizations.of(context)!.settingsTitleMcp,
+                              Icons.extension_rounded, () {
+                            selectionHaptic();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ScreenSettingsMcp()));
+                          },
+                              context: context,
+                              description:
+                                  "\n${AppLocalizations.of(context)!.settingsDescriptionMcp}"),
                           button(
                               AppLocalizations.of(context)!.settingsTitleModels,
                               Icons.view_in_ar_rounded, () {

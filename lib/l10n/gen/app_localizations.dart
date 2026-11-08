@@ -1251,6 +1251,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Thought process'**
   String get thinkingDone;
+
+  /// No description provided for @settingsTitleMcp.
+  ///
+  /// In en, this message translates to:
+  /// **'MCP servers'**
+  String get settingsTitleMcp;
+
+  /// No description provided for @settingsDescriptionMcp.
+  ///
+  /// In en, this message translates to:
+  /// **'Give tool-capable models tools from remote MCP servers'**
+  String get settingsDescriptionMcp;
+
+  /// No description provided for @mcpAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add server'**
+  String get mcpAdd;
+
+  /// No description provided for @mcpEnable.
+  ///
+  /// In en, this message translates to:
+  /// **'Use MCP tools in chat'**
+  String get mcpEnable;
+
+  /// No description provided for @mcpEnableDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent only to models that support tools. MCP tools may act on your behalf; add only servers you trust. Replies are not streamed while tools are on.'**
+  String get mcpEnableDescription;
+
+  /// No description provided for @mcpEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No MCP servers yet. Add a remote server URL (Streamable HTTP).'**
+  String get mcpEmpty;
+
+  /// No description provided for @mcpToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Bearer token (optional)'**
+  String get mcpToken;
+
+  /// No description provided for @mcpTokenNeedsHttps.
+  ///
+  /// In en, this message translates to:
+  /// **'Use an https:// URL when sending a token'**
+  String get mcpTokenNeedsHttps;
+
+  /// No description provided for @mcpToolCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 tool} other{{count} tools}}'**
+  String mcpToolCount(int count);
 }
 
 class _AppLocalizationsDelegate

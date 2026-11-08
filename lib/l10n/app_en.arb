@@ -855,5 +855,21 @@
     },
     "hostsLoopbackWarning": "On a phone, localhost is the phone itself. Use your computer's address, e.g. http://192.168.1.100:11434, and start Ollama with OLLAMA_HOST=0.0.0.0.",
     "thinkingActive": "Thinking…",
-    "thinkingDone": "Thought process"
+    "thinkingDone": "Thought process",
+    "settingsTitleMcp": "MCP servers",
+    "settingsDescriptionMcp": "Give tool-capable models tools from remote MCP servers",
+    "mcpAdd": "Add server",
+    "mcpEnable": "Use MCP tools in chat",
+    "mcpEnableDescription": "Sent only to models that support tools. MCP tools may act on your behalf; add only servers you trust. Replies are not streamed while tools are on.",
+    "mcpEmpty": "No MCP servers yet. Add a remote server URL (Streamable HTTP).",
+    "mcpToken": "Bearer token (optional)",
+    "mcpTokenNeedsHttps": "Use an https:// URL when sending a token",
+    "mcpToolCount": "{count, plural, =1{1 tool} other{{count} tools}}",
+    "@mcpToolCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    }
 }

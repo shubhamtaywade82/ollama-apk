@@ -22,7 +22,7 @@ bool isCloudHost(String? h) {
 
 final httpClient = http.Client();
 
-const _secureStorage = FlutterSecureStorage();
+const secureStorage = FlutterSecureStorage();
 const _cloudKeyName = 'ollamaCloudApiKey';
 
 /// In-memory copy of the Keystore-backed Cloud key, so the synchronous
@@ -35,20 +35,20 @@ Future<void> loadCloudApiKey(SharedPreferences prefs) async {
   final legacy = prefs.getString('apiKey');
   if (legacy != null) {
     if (legacy.isNotEmpty) {
-      await _secureStorage.write(key: _cloudKeyName, value: legacy);
+      await secureStorage.write(key: _cloudKeyName, value: legacy);
     }
     await prefs.remove('apiKey');
   }
-  cloudApiKey = await _secureStorage.read(key: _cloudKeyName);
+  cloudApiKey = await secureStorage.read(key: _cloudKeyName);
 }
 
 Future<void> saveCloudApiKey(String key) async {
   if (key.isEmpty) {
-    await _secureStorage.delete(key: _cloudKeyName);
+    await secureStorage.delete(key: _cloudKeyName);
     cloudApiKey = null;
     return;
   }
-  await _secureStorage.write(key: _cloudKeyName, value: key);
+  await secureStorage.write(key: _cloudKeyName, value: key);
   cloudApiKey = key;
 }
 

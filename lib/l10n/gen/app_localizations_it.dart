@@ -668,4 +668,42 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get thinkingDone => 'Thought process';
+
+  @override
+  String get settingsTitleMcp => 'MCP servers';
+
+  @override
+  String get settingsDescriptionMcp =>
+      'Give tool-capable models tools from remote MCP servers';
+
+  @override
+  String get mcpAdd => 'Add server';
+
+  @override
+  String get mcpEnable => 'Use MCP tools in chat';
+
+  @override
+  String get mcpEnableDescription =>
+      'Sent only to models that support tools. MCP tools may act on your behalf; add only servers you trust. Replies are not streamed while tools are on.';
+
+  @override
+  String get mcpEmpty =>
+      'No MCP servers yet. Add a remote server URL (Streamable HTTP).';
+
+  @override
+  String get mcpToken => 'Bearer token (optional)';
+
+  @override
+  String get mcpTokenNeedsHttps => 'Use an https:// URL when sending a token';
+
+  @override
+  String mcpToolCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tools',
+      one: '1 tool',
+    );
+    return '$_temp0';
+  }
 }

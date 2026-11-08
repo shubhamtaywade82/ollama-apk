@@ -1,5 +1,6 @@
 import 'thinking_block.dart';
 import 'worker/chat_store.dart';
+import 'worker/mcp.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -135,6 +136,7 @@ class _AppState extends State<App> {
       SharedPreferences.setPrefix("ollama.");
       SharedPreferences tmp = await SharedPreferences.getInstance();
       await loadCloudApiKey(tmp);
+      await loadMcpServers(secureStorage);
       await migrateHostHeadersOwner(tmp);
       await loadChats(
           tmp, kIsWeb ? null : await getApplicationSupportDirectory());

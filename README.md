@@ -22,7 +22,10 @@ server, a LAN router, or Ollama Cloud.
   support:
   - web search and page fetch through Ollama Cloud
   - read-only Binance prices and candles; the app never places orders
-- **Reasoning mode** for models that support thinking
+  - tools from remote **MCP servers** (Streamable HTTP, optional bearer
+    token; Settings → MCP servers). Add only servers you trust
+- **Reasoning mode** for models that support thinking, streamed live into a
+  collapsible "Thinking…" block above the answer
 - Add Host checks the connection and warns when `localhost` would point at the
   phone itself
 - Chats are stored in an app data file, not in preferences

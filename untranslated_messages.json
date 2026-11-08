@@ -41,7 +41,16 @@
     "hostsTestFailed",
     "hostsLoopbackWarning",
     "thinkingActive",
-    "thinkingDone"
+    "thinkingDone",
+    "settingsTitleMcp",
+    "settingsDescriptionMcp",
+    "mcpAdd",
+    "mcpEnable",
+    "mcpEnableDescription",
+    "mcpEmpty",
+    "mcpToken",
+    "mcpTokenNeedsHttps",
+    "mcpToolCount"
   ],
 
   "fa": [
@@ -86,7 +95,16 @@
     "hostsTestFailed",
     "hostsLoopbackWarning",
     "thinkingActive",
-    "thinkingDone"
+    "thinkingDone",
+    "settingsTitleMcp",
+    "settingsDescriptionMcp",
+    "mcpAdd",
+    "mcpEnable",
+    "mcpEnableDescription",
+    "mcpEmpty",
+    "mcpToken",
+    "mcpTokenNeedsHttps",
+    "mcpToolCount"
   ],
 
   "it": [
@@ -131,7 +149,16 @@
     "hostsTestFailed",
     "hostsLoopbackWarning",
     "thinkingActive",
-    "thinkingDone"
+    "thinkingDone",
+    "settingsTitleMcp",
+    "settingsDescriptionMcp",
+    "mcpAdd",
+    "mcpEnable",
+    "mcpEnableDescription",
+    "mcpEmpty",
+    "mcpToken",
+    "mcpTokenNeedsHttps",
+    "mcpToolCount"
   ],
 
   "tr": [
@@ -176,7 +203,16 @@
     "hostsTestFailed",
     "hostsLoopbackWarning",
     "thinkingActive",
-    "thinkingDone"
+    "thinkingDone",
+    "settingsTitleMcp",
+    "settingsDescriptionMcp",
+    "mcpAdd",
+    "mcpEnable",
+    "mcpEnableDescription",
+    "mcpEmpty",
+    "mcpToken",
+    "mcpTokenNeedsHttps",
+    "mcpToolCount"
   ],
 
   "zh": [
@@ -221,6 +257,15 @@
     "hostsTestFailed",
     "hostsLoopbackWarning",
     "thinkingActive",
-    "thinkingDone"
+    "thinkingDone",
+    "settingsTitleMcp",
+    "settingsDescriptionMcp",
+    "mcpAdd",
+    "mcpEnable",
+    "mcpEnableDescription",
+    "mcpEmpty",
+    "mcpToken",
+    "mcpTokenNeedsHttps",
+    "mcpToolCount"
   ]
 }

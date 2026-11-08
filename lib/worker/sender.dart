@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:ollama_app/worker/clients.dart';
 
 import 'agent.dart';
+import 'mcp.dart';
 import 'hosts.dart';
 import 'haptic.dart';
 import 'setter.dart';
@@ -231,15 +232,21 @@ Future<String> send(String value, BuildContext context, Function setState,
       final wantsWeb = prefs!.getBool("webTools") ?? false;
       final wantsMarket = prefs!.getBool("marketTools") ?? false;
       final wantsThinking = prefs!.getBool("think") ?? false;
-      final capabilities = (wantsWeb || wantsMarket || wantsThinking)
-          ? await modelCapabilities(model!)
-          : <llama.Capability>{};
+      final wantsMcp =
+          (prefs!.getBool("mcpTools") ?? false) && mcpServers.isNotEmpty;
+      final capabilities =
+          (wantsWeb || wantsMarket || wantsMcp || wantsThinking)
+              ? await modelCapabilities(model!)
+              : <llama.Capability>{};
       // Sending tools or think to a model without the capability makes the
       // server reject the whole request, so both are gated per model.
       final canUseTools = capabilities.contains(llama.Capability.tools);
       final toolSet = buildToolSet(httpClient,
           webApiKey: wantsWeb && canUseTools ? cloudApiKey : null,
           market: wantsMarket && canUseTools,
+          mcp: wantsMcp && canUseTools
+              ? await connectMcpServers(httpClient)
+              : const [],
           userText: value);
       final useTools = toolSet.tools.isNotEmpty;
       final think =

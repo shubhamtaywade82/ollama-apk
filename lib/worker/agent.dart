@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:ollama_dart/ollama_dart.dart' as llama;
 
 import 'cloud.dart';
+import 'mcp.dart';
 
 const maxToolRounds = 5;
 
@@ -182,14 +183,31 @@ ToolRunner marketToolRunner(http.Client client) => (name, arguments) async {
 /// Tools and their runner for the enabled packs. A call to a tool outside
 /// the enabled packs is rejected rather than silently run.
 ({List<llama.Tool> tools, ToolRunner run}) buildToolSet(http.Client client,
-    {String? webApiKey, bool market = false, String userText = ''}) {
+    {String? webApiKey,
+    bool market = false,
+    String userText = '',
+    List<McpConnection> mcp = const []}) {
+  final mcpTools = <String, (McpClient, McpTool)>{
+    for (final connection in mcp)
+      for (final tool in connection.tools)
+        mcpToolName(connection.client.server, tool): (connection.client, tool)
+  };
   final web = webApiKey == null
       ? null
       : webToolRunner(client, webApiKey, userUrls: urlsIn(userText));
   final markets = market ? marketToolRunner(client) : null;
   return (
-    tools: [if (web != null) ...webTools, if (markets != null) ...marketTools],
+    tools: [
+      if (web != null) ...webTools,
+      if (markets != null) ...marketTools,
+      for (final (client, tool) in mcpTools.values)
+        toOllamaTool(client.server, tool),
+    ],
     run: (name, arguments) async {
+      final mcpTool = mcpTools[name];
+      if (mcpTool != null) {
+        return mcpTool.$1.callTool(mcpTool.$2.name, arguments);
+      }
       if (name.startsWith('web_') && web != null) return web(name, arguments);
       if (name.startsWith('crypto_') && markets != null) {
         return markets(name, arguments);
