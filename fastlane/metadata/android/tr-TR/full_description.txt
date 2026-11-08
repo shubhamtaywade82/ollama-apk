@@ -1,6 +1,27 @@
-Bu, Ollama için modern ve kullanımı kolay bir istemcidir.
+Hearth, Ollama için özel bir sohbet istemcisidir. Kendi bilgisayarınızdaki, sunucunuzdaki, yerel ağınızdaki veya Ollama Cloud üzerindeki modellerle konuşur. Hearth modelleri telefonun kendisinde çalıştırmaz; bu yüzden bir Ollama sunucusu ya da Ollama Cloud hesabı gerekir.
 
-ChatGPT uygulamasından ve Ollama'nın sayfasının sadeliğinden esinlenerek, önceden teknik bilgi verilmese bile yapay zeka ile etkileşimi olabildiğince kolay hale getirdik.
-Anlaşılması kolaydır ve birkaç saniye içinde açıklanabilir.
+Sunucular ve güvenilirlik
+- Birden fazla Ollama sunucusu ekleyin, önceliğe göre sıralayın ve canlı kontrollerle hangilerinin çevrimiçi olduğunu görün.
+- Etkin sunucu yanıt başlamadan cevap vermeyi keserse bir sonraki sağlıklı sunucu otomatik devreye girer.
 
-Ollama uygulaması çok modlu girişi bile destekliyor. Bu, bir görüntü girebileceğiniz ve sohbet robotu aracılığıyla onunla konuşabileceğiniz anlamına gelir.
+Ollama Cloud
+- Ollama Cloud API anahtarınızla oturum açın. Anahtar Android Keystore destekli depolamada tutulur ve yalnızca HTTPS üzerinden ollama.com'a gönderilir.
+- Kullanım ekranı harcamayı, token sayısını, model bazında dökümü ve kalan krediyi gösterir.
+
+Modeller
+- Hangi modellerin kurulu, hangilerinin yüklü olduğunu ve ne kadar bellek kullandıklarını görün. Modelleri aynı ekrandan boşaltın veya silin.
+
+Sohbet
+- Markdown destekli akan yanıtlar, birden fazla konuşma ve görsel modeller için resim girişi.
+- Akıl yürütme modelleri düşüncelerini yanıtın üstündeki daraltılabilir bloğa akıtır.
+- Mesajlara dosya ve PDF ekleyin.
+- Her yanıtı kopyalayın, sesli okutun veya yeniden üretin.
+- Konuşmayı metne ve metni konuşmaya çeviren sesli mod.
+
+Ajan araçları (isteğe bağlı)
+- Araçlar yalnızca araç desteğini bildiren modellere sunulur.
+- Web araması ve sayfa getirme Ollama Cloud üzerinden çalışır.
+- Salt okunur Binance fiyatları ve mumlar. Hearth hiçbir zaman emir vermez.
+- Uzak MCP sunucuları (Streamable HTTP, isteğe bağlı bearer token) araç ekleyebilir. Yalnızca güvendiğiniz sunucuları ekleyin.
+
+Sohbetler uygulama veri dosyasında saklanır, düz tercihlerde değil.

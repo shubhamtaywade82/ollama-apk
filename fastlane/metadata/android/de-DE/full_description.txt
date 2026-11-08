@@ -1,6 +1,27 @@
-Dies ist ein moderner und benutzerfreundlicher Client für Ollama.
+Hearth ist ein privater Chat-Client für Ollama. Er spricht mit Modellen auf deinem eigenen Computer oder Server, in deinem lokalen Netzwerk oder in der Ollama Cloud. Hearth führt Modelle nicht auf dem Telefon selbst aus, du brauchst also einen Ollama-Server oder ein Ollama-Cloud-Konto.
 
-Inspiriert von der ChatGPT-App und der Einfachheit der Ollama-Website haben wir es so einfach wie möglich gemacht, mit der KI zu interagieren, auch wenn keine Vorkenntnisse vorliegen.
-Es ist leicht zu verstehen und kann in Sekundenschnelle erklärt werden.
+Hosts und Verlässlichkeit
+- Füge mehrere Ollama-Server hinzu, sortiere sie nach Priorität und sieh mit Live-Prüfungen, welche online sind.
+- Antwortet der aktive Host nicht, bevor eine Antwort beginnt, übernimmt automatisch der nächste funktionierende Host.
 
-Die Ollama-App unterstützt sogar multimodale Eingaben. Das bedeutet, dass du ein Bild eingeben und mit ihm über den Chatbot sprechen kannst.
+Ollama Cloud
+- Melde dich mit einem Ollama-Cloud-API-Schlüssel an. Der Schlüssel wird im Android-Keystore gespeichert und nur per HTTPS an ollama.com gesendet.
+- Ein Nutzungsbildschirm zeigt Ausgaben, Tokens, eine Aufschlüsselung nach Modell und verbleibende Guthaben.
+
+Modelle
+- Sieh, welche Modelle installiert sind, welche geladen sind und wie viel Speicher sie brauchen. Modelle lassen sich direkt auf diesem Bildschirm entladen oder löschen.
+
+Chat
+- Gestreamte Antworten mit Markdown, mehrere Unterhaltungen und Bildeingabe für Vision-Modelle.
+- Reasoning-Modelle streamen ihr Denken in einen einklappbaren Block über der Antwort.
+- Hänge Dateien und PDFs an eine Nachricht an.
+- Kopiere, lies vor oder erzeuge jede Antwort neu.
+- Sprachmodus mit Spracherkennung und Sprachausgabe.
+
+Agenten-Werkzeuge (optional)
+- Werkzeuge werden nur Modellen angeboten, die Werkzeugunterstützung melden.
+- Websuche und Seitenabruf laufen über die Ollama Cloud.
+- Schreibgeschützte Binance-Preise und Kerzen. Hearth gibt niemals Orders auf.
+- Entfernte MCP-Server (Streamable HTTP, optionaler Bearer-Token) können Werkzeuge ergänzen. Füge nur Server hinzu, denen du vertraust.
+
+Chats werden in einer App-Datendatei gespeichert, nicht in einfachen Einstellungen.

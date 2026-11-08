@@ -1,10 +1,10 @@
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ollama_app/main.dart' as app;
-import 'package:ollama_app/worker/clients.dart';
-import 'package:ollama_app/worker/hosts.dart';
-import 'package:ollama_app/worker/sender.dart';
+import 'package:hearth/main.dart' as app;
+import 'package:hearth/worker/clients.dart';
+import 'package:hearth/worker/hosts.dart';
+import 'package:hearth/worker/sender.dart';
 import 'package:ollama_dart/ollama_dart.dart' as llama;
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -1,1 +1,1 @@
-Ollama
+Hearth: Chat for Ollama

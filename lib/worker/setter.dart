@@ -13,7 +13,7 @@ import '../main.dart';
 import 'sender.dart';
 import 'clients.dart';
 
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
 
 import 'package:dartx/dartx.dart';
 import 'package:ollama_dart/ollama_dart.dart' as llama;
@@ -396,92 +396,55 @@ void addModel(BuildContext context, Function setState) async {
         networkError = true;
         return false;
       }
-      var endpoint = "https://ollama.com/library/";
-      if (kIsWeb) {
-        if (!(prefs!.getBool("allowWebProxy") ?? false)) {
-          bool returnValue = false;
-          await showDialog(
-              context: mainContext!,
-              barrierDismissible: false,
-              builder: (context) {
-                return AlertDialog(
-                    title: Text(AppLocalizations.of(context)!
-                        .modelDialogAddAllowanceTitle),
-                    content: SizedBox(
-                      width: 640,
-                      child: Text(AppLocalizations.of(context)!
-                          .modelDialogAddAllowanceDescription),
-                    ),
-                    actions: [
-                      TextButton(
-                          onPressed: () {
-                            canceled = true;
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(AppLocalizations.of(context)!
-                              .modelDialogAddAllowanceDeny)),
-                      TextButton(
-                          onPressed: () {
-                            returnValue = true;
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(AppLocalizations.of(context)!
-                              .modelDialogAddAllowanceAllow))
-                    ]);
-              });
-          if (!returnValue) return false;
-          prefs!.setBool("allowWebProxy", true);
+      // Browsers cannot query ollama.com (CORS), so the web client skips the library check.
+      if (!kIsWeb) {
+        http.Response response;
+        try {
+          response = await httpClient
+              .get(Uri.parse(
+                  "https://ollama.com/library/${Uri.encodeComponent(model)}"))
+              .timeout(Duration(
+                  seconds:
+                      (10.0 * (prefs!.getDouble("timeoutMultiplier") ?? 1.0))
+                          .round()));
+        } catch (_) {
+          networkError = true;
+          return false;
         }
-        endpoint = "https://end.jhubi1.com/ollama-proxy/";
+        if (response.statusCode == 429) ratelimitError = true;
+        if (response.statusCode != 200) return false;
       }
-      http.Response response;
-      try {
-        response = await httpClient
-            .get(Uri.parse("$endpoint${Uri.encodeComponent(model)}"))
-            .timeout(Duration(
-                seconds: (10.0 * (prefs!.getDouble("timeoutMultiplier") ?? 1.0))
-                    .round()));
-      } catch (_) {
-        networkError = true;
-        return false;
-      }
-      if (response.statusCode == 200) {
-        bool returnValue = false;
-        await showDialog(
-            context: mainContext!,
-            barrierDismissible: false,
-            builder: (context) {
-              return AlertDialog(
-                  title: Text(AppLocalizations.of(context)!
-                      .modelDialogAddAssuranceTitle(model)),
-                  content: SizedBox(
-                    width: 640,
-                    child: Text(AppLocalizations.of(context)!
-                        .modelDialogAddAssuranceDescription(model)),
-                  ),
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          canceled = true;
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(AppLocalizations.of(context)!
-                            .modelDialogAddAssuranceCancel)),
-                    TextButton(
-                        onPressed: () {
-                          returnValue = true;
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(AppLocalizations.of(context)!
-                            .modelDialogAddAssuranceAdd))
-                  ]);
-            });
-        return returnValue;
-      }
-      if (response.statusCode == 429) {
-        ratelimitError = true;
-      }
-      return false;
+      bool returnValue = false;
+      await showDialog(
+          context: mainContext!,
+          barrierDismissible: false,
+          builder: (context) {
+            return AlertDialog(
+                title: Text(AppLocalizations.of(context)!
+                    .modelDialogAddAssuranceTitle(model)),
+                content: SizedBox(
+                  width: 640,
+                  child: Text(AppLocalizations.of(context)!
+                      .modelDialogAddAssuranceDescription(model)),
+                ),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        canceled = true;
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(AppLocalizations.of(context)!
+                          .modelDialogAddAssuranceCancel)),
+                  TextButton(
+                      onPressed: () {
+                        returnValue = true;
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(AppLocalizations.of(context)!
+                          .modelDialogAddAssuranceAdd))
+                ]);
+          });
+      return returnValue;
     },
     validatorErrorCallback: (content) {
       if (networkError) return networkErrorText;

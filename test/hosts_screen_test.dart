@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
-import 'package:ollama_app/main.dart' as app;
-import 'package:ollama_app/settings/hosts.dart';
-import 'package:ollama_app/worker/hosts.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
+import 'package:hearth/main.dart' as app;
+import 'package:hearth/settings/hosts.dart';
+import 'package:hearth/worker/hosts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> pumpScreen(WidgetTester tester) =>

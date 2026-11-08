@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:ollama_app/worker/clients.dart';
+import 'package:hearth/worker/clients.dart';
 
 import 'agent.dart';
 import 'attachments.dart';
@@ -14,7 +14,7 @@ import 'haptic.dart';
 import 'setter.dart';
 import '../main.dart';
 
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
 
 import 'package:ollama_dart/ollama_dart.dart' as llama;
 import 'package:dartx/dartx.dart';

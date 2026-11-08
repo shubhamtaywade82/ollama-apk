@@ -1,1 +1,1 @@
-Ollama sunucusu ile sohbet edin
+Kendi Ollama sunucularınız ve Ollama Cloud ile özel sohbet.

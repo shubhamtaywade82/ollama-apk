@@ -1,6 +1,27 @@
-Questo è un client moderno e facile da usare per Ollama.
+Hearth è un client di chat privato per Ollama. Parla con i modelli sul tuo computer o server, nella rete locale o su Ollama Cloud. Hearth non esegue i modelli sul telefono, quindi serve un server Ollama o un account Ollama Cloud.
 
-Ispirati dall'app ChatGPT e dalla semplicità della pagina di Ollama, abbiamo reso il più semplice possibile l'interazione con l'intelligenza artificiale, anche se non vengono fornite conoscenze tecniche preliminari.
-È facile da capire e può essere compresa in pochi secondi.
+Host e affidabilità
+- Aggiungi più server Ollama, ordinali per priorità e controlla con verifiche in tempo reale quali sono online.
+- Se l'host attivo smette di rispondere prima dell'inizio di una risposta, subentra automaticamente il successivo host funzionante.
 
-L'app Ollama supporta anche l'input multimodale. Ciò significa che puoi inserire un'immagine e parlarle tramite il chatbot.
+Ollama Cloud
+- Accedi con una chiave API di Ollama Cloud. La chiave è conservata nel Keystore di Android e viene inviata solo a ollama.com tramite HTTPS.
+- Una schermata di utilizzo mostra spesa, token, dettaglio per modello e crediti rimanenti.
+
+Modelli
+- Vedi quali modelli sono installati, quali sono caricati e quanta memoria usano. Puoi scaricarli dalla memoria o eliminarli dalla stessa schermata.
+
+Chat
+- Risposte in streaming con Markdown, più conversazioni e input di immagini per i modelli di visione.
+- I modelli di ragionamento mostrano il pensiero in un blocco comprimibile sopra la risposta.
+- Allega file e PDF a un messaggio.
+- Copia, leggi ad alta voce o rigenera ogni risposta.
+- Modalità vocale con riconoscimento e sintesi vocale.
+
+Strumenti per agenti (facoltativi)
+- Gli strumenti vengono offerti solo ai modelli che dichiarano il supporto agli strumenti.
+- Ricerca web e recupero di pagine passano da Ollama Cloud.
+- Prezzi e candele Binance in sola lettura. Hearth non effettua mai ordini.
+- I server MCP remoti (Streamable HTTP, token bearer facoltativo) possono aggiungere strumenti. Aggiungi solo server di cui ti fidi.
+
+Le chat sono salvate in un file dei dati dell'app, non nelle preferenze.

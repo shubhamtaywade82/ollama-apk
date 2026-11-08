@@ -109,7 +109,7 @@ abstract class AppLocalizations {
   /// Title of the application
   ///
   /// In en, this message translates to:
-  /// **'Ollama'**
+  /// **'Hearth'**
   String get appTitle;
 
   /// Text displayed for new chat option
@@ -310,30 +310,6 @@ abstract class AppLocalizations {
   /// **'Invalid model name'**
   String get modelDialogAddPromptInvalid;
 
-  /// Title of the allow proxy dialog
-  ///
-  /// In en, this message translates to:
-  /// **'Allow Proxy'**
-  String get modelDialogAddAllowanceTitle;
-
-  /// Description of the allow proxy dialog
-  ///
-  /// In en, this message translates to:
-  /// **'Ollama App must check if the entered model is valid. For that, we normally send a web request to the Ollama model list and check the status code, but because you\'re using the web client, we can\'t do that directly. Instead, the app will send the request to a different api, hosted by JHubi1, to check for us.\nThis is a one-time request and will only be sent when you add a new model.\nYour IP address will be sent with the request and might be stored for up to ten minutes to prevent spamming with potential harmful intentions.\nIf you accept, your selection will be remembered in the future; if not, nothing will be sent and the model won\'t be added.'**
-  String get modelDialogAddAllowanceDescription;
-
-  /// Text displayed for allow button, should be capitalized
-  ///
-  /// In en, this message translates to:
-  /// **'Allow'**
-  String get modelDialogAddAllowanceAllow;
-
-  /// Text displayed for deny button, should be capitalized
-  ///
-  /// In en, this message translates to:
-  /// **'Deny'**
-  String get modelDialogAddAllowanceDeny;
-
   /// Title of the add model assurance dialog
   ///
   /// In en, this message translates to:
@@ -439,7 +415,7 @@ abstract class AppLocalizations {
   /// Description of the interface settings section
   ///
   /// In en, this message translates to:
-  /// **'Edit how Ollama App looks and behaves.'**
+  /// **'Edit how Hearth looks and behaves.'**
   String get settingsDescriptionInterface;
 
   /// Title of the voice settings section. Do not translate if not required!
@@ -475,7 +451,7 @@ abstract class AppLocalizations {
   /// Description of the about settings section
   ///
   /// In en, this message translates to:
-  /// **'Check for updates and learn more about Ollama App.'**
+  /// **'Check for updates and learn more about Hearth.'**
   String get settingsDescriptionAbout;
 
   /// Text displayed when settings are saved automatically
@@ -754,10 +730,10 @@ abstract class AppLocalizations {
   /// **'Device'**
   String get settingsThemeDevice;
 
-  /// Text displayed as description for Ollama theme option
+  /// Text displayed as description for Hearth theme option
   ///
   /// In en, this message translates to:
-  /// **'Ollama'**
+  /// **'Hearth'**
   String get settingsThemeOllama;
 
   /// Text displayed as description for temporary fixes section
@@ -949,7 +925,7 @@ abstract class AppLocalizations {
   /// Description of the update dialog
   ///
   /// In en, this message translates to:
-  /// **'A new version of Ollama is available. Do you want to download and install it now?'**
+  /// **'A new version of Hearth is available. Do you want to download and install it now?'**
   String get settingsUpdateDialogDescription;
 
   /// Text displayed as description for change log button
@@ -997,7 +973,7 @@ abstract class AppLocalizations {
   /// Text displayed as description for version
   ///
   /// In en, this message translates to:
-  /// **'Ollama App v{version}'**
+  /// **'Hearth v{version}'**
   String settingsVersion(String version);
 
   /// No description provided for @settingsTitleHosts.

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../worker/clients.dart';
 import '../worker/cloud.dart';
 
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
 
 class ScreenSettingsCloud extends StatefulWidget {
   const ScreenSettingsCloud({super.key});

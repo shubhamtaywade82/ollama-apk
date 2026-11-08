@@ -91,7 +91,7 @@ class McpClient {
     final result = await _request('initialize', {
       'protocolVersion': mcpProtocolVersion,
       'capabilities': {},
-      'clientInfo': {'name': 'ollama-apk', 'version': '1.0.0'},
+      'clientInfo': {'name': 'hearth', 'version': '1.0.0'},
     });
     final negotiated = result['protocolVersion'];
     if (!_supportedProtocolVersions.contains(negotiated)) {

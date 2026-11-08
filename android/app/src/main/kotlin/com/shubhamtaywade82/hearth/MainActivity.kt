@@ -1,4 +1,4 @@
-package com.freakurl.apps.ollama
+package com.shubhamtaywade82.hearth
 
 import io.flutter.embedding.android.FlutterActivity
 

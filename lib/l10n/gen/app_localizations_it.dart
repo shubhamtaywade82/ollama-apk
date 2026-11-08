@@ -9,7 +9,7 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
-  String get appTitle => 'Ollama';
+  String get appTitle => 'Hearth';
 
   @override
   String get optionNewChat => 'Nuova Chat';
@@ -114,19 +114,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get modelDialogAddPromptInvalid => 'Nome del modello non valido';
 
   @override
-  String get modelDialogAddAllowanceTitle => 'Abilita Proxy';
-
-  @override
-  String get modelDialogAddAllowanceDescription =>
-      'Ollama App deve controllare se il modello inserito è valido. Per questo, normalmente inviamo una richiesta web alla lista dei modelli Ollama e controlliamo il codice di stato, ma perché stai usando il web client, non possiamo farlo direttamente. Invece, l\'app invierà la richiesta a un altro api, ospitato da JHubi1, per eseguire il controllo.\nQuesta è una richiesta verrà inviata solo quando aggiungi un nuovo modello.\nIl tuo indirizzo IP verrà inviato con la richiesta e potrebbe essere memorizzato per un massimo di dieci minuti per evitare lo spamming con potenziali intenzioni nocive.\nSe accetti, la tua selezione sarà ricordata in futuro; in caso contrario, non verrà inviato nulla e il modello non verrà aggiunto.';
-
-  @override
-  String get modelDialogAddAllowanceAllow => 'Consenti';
-
-  @override
-  String get modelDialogAddAllowanceDeny => 'Nega';
-
-  @override
   String modelDialogAddAssuranceTitle(String model) {
     return 'Aggiungi $model?';
   }
@@ -188,7 +175,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get settingsDescriptionInterface =>
-      'Modifica l\'aspetto e il comportamento dell\'app Ollama.';
+      'Modifica l\'aspetto e il comportamento dell\'app Hearth.';
 
   @override
   String get settingsTitleVoice => 'Voce';
@@ -209,7 +196,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get settingsDescriptionAbout =>
-      'Controlla gli aggiornamenti e scopri di più su Ollama App.';
+      'Controlla gli aggiornamenti e scopri di più su Hearth.';
 
   @override
   String get settingsSavedAutomatically =>
@@ -384,7 +371,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settingsThemeDevice => 'Dispositivo';
 
   @override
-  String get settingsThemeOllama => 'Ollama';
+  String get settingsThemeOllama => 'Hearth';
 
   @override
   String get settingsTemporaryFixes =>
@@ -491,7 +478,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get settingsUpdateDialogDescription =>
-      'È disponibile una nuova versione di Ollama. Vuoi scaricarla e installarla adesso?';
+      'È disponibile una nuova versione di Hearth. Vuoi scaricarla e installarla adesso?';
 
   @override
   String get settingsUpdateChangeLog => 'Cambiamenti';
@@ -517,7 +504,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String settingsVersion(String version) {
-    return 'Ollama App v$version';
+    return 'Hearth v$version';
   }
 
   @override

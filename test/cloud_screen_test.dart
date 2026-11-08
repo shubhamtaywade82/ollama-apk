@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
-import 'package:ollama_app/settings/cloud.dart';
-import 'package:ollama_app/worker/clients.dart';
-import 'package:ollama_app/worker/cloud.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
+import 'package:hearth/settings/cloud.dart';
+import 'package:hearth/worker/clients.dart';
+import 'package:hearth/worker/cloud.dart';
 
 Future<void> pump(WidgetTester tester, Widget child) =>
     tester.pumpWidget(MaterialApp(

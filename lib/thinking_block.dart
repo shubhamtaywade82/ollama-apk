@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
 
 /// Reasoning text kept on an assistant message, or null if it has none.
 String? thinkingOf(Map<String, dynamic>? metadata) {

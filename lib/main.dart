@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
 
 import 'screen_settings.dart';
 import 'screen_voice.dart';
@@ -818,7 +818,7 @@ class _MainAppState extends State<MainApp> {
         }
 
         setState(() {});
-        if (prefs!.getBool("checkUpdateOnSettingsOpen") ?? true) {
+        if (prefs!.getBool("checkUpdateOnSettingsOpen") ?? false) {
           updateDetectedOnStart = await checkUpdate(setState);
         }
       },

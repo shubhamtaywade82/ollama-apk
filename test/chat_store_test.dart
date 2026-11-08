@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ollama_app/worker/chat_store.dart';
+import 'package:hearth/worker/chat_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {

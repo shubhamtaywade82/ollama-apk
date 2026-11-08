@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
-import 'package:ollama_app/main.dart' as app;
-import 'package:ollama_app/worker/setter.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
+import 'package:hearth/main.dart' as app;
+import 'package:hearth/worker/setter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const tags = '''{"models":[

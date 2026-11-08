@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
-import 'package:ollama_app/main.dart' as app;
-import 'package:ollama_app/message_actions.dart';
-import 'package:ollama_app/worker/sender.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
+import 'package:hearth/main.dart' as app;
+import 'package:hearth/message_actions.dart';
+import 'package:hearth/worker/sender.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final reply =

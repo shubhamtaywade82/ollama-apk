@@ -1,6 +1,27 @@
-This is a modern and easy-to-use client for Ollama.
+Hearth is a private chat client for Ollama. It talks to models on your own computer or server, on your local network, or on Ollama Cloud. Hearth does not run models on the phone itself, so you need an Ollama server or an Ollama Cloud account.
 
-Inspired by the ChatGPT app and the simplicity of Ollama's page, we made it as easy as possible to interact with the AI, even if no prior technical knowledge is given.
-It is easy to understand and can be explained in a matter of seconds.
+Hosts and reliability
+- Add several Ollama servers, reorder them by priority and see which ones are online with live health checks.
+- If the active host stops answering before a reply starts, the next healthy host takes over automatically.
 
-The Ollama app even supports multimodal input. That means you can input an image and talk to it through the chatbot.
+Ollama Cloud
+- Sign in with an Ollama Cloud API key. The key is kept in Android Keystore-backed storage and is only sent to ollama.com over HTTPS.
+- A usage screen shows spend, tokens, a per-model breakdown and remaining credits.
+
+Models
+- See which models are installed, which are loaded and how much memory they use. Unload or delete models from the same screen.
+
+Chat
+- Streamed replies with Markdown, multiple conversations and image input for vision models.
+- Reasoning models stream their thinking into a collapsible block above the answer.
+- Attach files and PDFs to a message.
+- Copy, read aloud or regenerate any reply.
+- Voice mode with speech-to-text and text-to-speech.
+
+Agent tools (optional)
+- Tools are offered only to models that report tool support.
+- Web search and page fetch run through Ollama Cloud.
+- Read-only Binance prices and candles. Hearth never places orders.
+- Remote MCP servers (Streamable HTTP, optional bearer token) can add tools. Add only servers you trust.
+
+Chats are stored in an app data file, not in plain preferences.

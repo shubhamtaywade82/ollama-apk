@@ -1,9 +1,9 @@
-; Inno Setup script for Ollama App, created by JHubi1
+; Inno Setup script for Hearth
 
-#define AppName "Ollama App"
-#define AppPublisher "JHubi1"
-#define AppURL "https://jhubi1.com"
-#define AppExeName "ollama.exe"
+#define AppName "Hearth"
+#define AppPublisher "shubhamtaywade82"
+#define AppURL "https://github.com/shubhamtaywade82/ollama-apk"
+#define AppExeName "hearth.exe"
 
 ; #define AppVersion "1.0.1"
 ; #define AppArchitectures "x64"
@@ -24,14 +24,14 @@ SourceDir=..
     ArchitecturesAllowed={#AppArchitectures}
 #endif
 
-AppId={{4ACF8C84-5D9B-455C-9FED-93D29E2F71DC}
+AppId={{F5B5DDD2-1033-4653-98A4-96F6BCB8306C}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppVerName={#AppName} v{#AppVersion}
 AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 SetupIconFile=windows\runner\resources\app_icon.ico
-AppCopyright=Copyright 2024 {#AppPublisher}
+AppCopyright=Copyright 2026 {#AppPublisher}. Portions Copyright 2024 JHubi1.
 
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription=Installation program for {#AppName}
@@ -41,18 +41,18 @@ VersionInfoVersion={#AppVersion}
 UninstallDisplayIcon={app}\{#AppExeName}
 UninstallDisplayName={#AppName}
 
-DefaultDirName={autopf}\OllamaApp
+DefaultDirName={autopf}\Hearth
 OutputDir=build\windows\{#AppArchitectures}\runner
-OutputBaseFilename=ollama-windows-{#AppArchitectures}-v{#AppVersion}
+OutputBaseFilename=hearth-windows-{#AppArchitectures}-v{#AppVersion}
 
-AppSupportURL=https://github.com/JHubi1/ollama-app/issues
-AppUpdatesURL=https://github.com/JHubi1/ollama-app/releases
+AppSupportURL=https://github.com/shubhamtaywade82/ollama-apk/issues
+AppUpdatesURL=https://github.com/shubhamtaywade82/ollama-apk/releases
 
 LicenseFile=windows_installer\docs\license.txt
 InfoBeforeFile=windows_installer\docs\before.txt
 InfoAfterFile=windows_installer\docs\after.txt
 
-WizardImageFile=assets\OllamaAppBanner.bmp
+WizardImageFile=assets\brand\hearth-wizard-banner.bmp
 
 PrivilegesRequiredOverridesAllowed=dialog
 ; Password=enterPasswordInCaseOfSecretBuild
@@ -66,7 +66,7 @@ SolidCompression=yes
 WizardStyle=modern
 WizardResizable=no
 
-SetupMutex=OllamaAppSetup
+SetupMutex=HearthSetup
 CloseApplications=force
 
 [Languages]
@@ -112,7 +112,7 @@ procedure CurUninstallStepChanged (CurUninstallStep: TUninstallStep);
             begin
                 mres := SuppressibleMsgBox('Do you want to Remove settings?', mbConfirmation, MB_YESNO or MB_DEFBUTTON2, IDYES)
                 if mres = IDYES then
-                    DelTree(ExpandConstant('{userappdata}\JHubi1\Ollama App'), True, True, True);
+                    DelTree(ExpandConstant('{userappdata}\shubhamtaywade82\Hearth'), True, True, True);
         end;
     end;
 end;

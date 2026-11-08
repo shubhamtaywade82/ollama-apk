@@ -1,1 +1,1 @@
-与 Ollama 服务器聊天
+与你自己的 Ollama 服务器和 Ollama Cloud 私密聊天。

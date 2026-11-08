@@ -10,7 +10,7 @@ import 'worker/update.dart';
 import 'worker/desktop.dart';
 import 'worker/setter.dart';
 
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
 
 import 'settings/behavior.dart';
 import 'settings/cloud.dart';

@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart' show TargetPlatform;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:ollama_app/worker/hosts.dart';
+import 'package:hearth/worker/hosts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const local = OllamaHost(name: 'laptop', url: 'http://192.168.1.5:11434');

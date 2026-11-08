@@ -6,14 +6,13 @@ import '../worker/desktop.dart';
 import '../worker/theme.dart';
 import '../screen_settings.dart';
 
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:dartx/dartx.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 
-import 'package:url_launcher/url_launcher.dart';
 
 class ScreenSettingsInterface extends StatefulWidget {
   const ScreenSettingsInterface({super.key});
@@ -467,10 +466,6 @@ class _ScreenSettingsInterfaceState extends State<ScreenSettingsInterface> {
                                             prefs!.remove("fixCodeblockScroll");
                                           }
                                           setState(() {});
-                                        }, onLongTap: () {
-                                          selectionHaptic();
-                                          launchUrl(Uri.parse(
-                                              "https://github.com/JHubi1/ollama-app/issues/26"));
                                         }),
                                         const SizedBox(height: 16)
                                       ]),

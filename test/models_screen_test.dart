@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:ollama_app/main.dart' as app;
+import 'package:hearth/main.dart' as app;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ollama_app/settings/models.dart';
+import 'package:hearth/settings/models.dart';
 
 void main() {
   inventoryTests();

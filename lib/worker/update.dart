@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:ollama_app/worker/clients.dart';
-import 'package:ollama_app/worker/desktop.dart';
+import 'package:hearth/worker/clients.dart';
+import 'package:hearth/worker/desktop.dart';
 
 import 'haptic.dart';
 
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
 
 import '../main.dart';
 

@@ -15,7 +15,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.freakurl.apps.ollama"
+    namespace = "com.shubhamtaywade82.hearth"
     compileSdk = flutter.compileSdkVersion
     // jni requires NDK 28; NDKs are backward compatible.
     ndkVersion = "28.2.13676358"

@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ollama_app/main.dart' as app;
-import 'package:ollama_app/worker/setter.dart';
+import 'package:hearth/main.dart' as app;
+import 'package:hearth/worker/setter.dart';
 import 'package:ollama_dart/ollama_dart.dart' as llama;
 import 'package:shared_preferences/shared_preferences.dart';
 

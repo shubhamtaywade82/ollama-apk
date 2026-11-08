@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
-import 'package:ollama_app/main.dart' as app;
-import 'package:ollama_app/thinking_block.dart';
-import 'package:ollama_app/worker/chat_store.dart';
-import 'package:ollama_app/worker/sender.dart';
-import 'package:ollama_app/worker/setter.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
+import 'package:hearth/main.dart' as app;
+import 'package:hearth/thinking_block.dart';
+import 'package:hearth/worker/chat_store.dart';
+import 'package:hearth/worker/sender.dart';
+import 'package:hearth/worker/setter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> pump(WidgetTester tester, Widget child) =>

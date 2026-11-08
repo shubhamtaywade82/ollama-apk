@@ -1,5 +1,5 @@
-name: ollama_app
-description: "A modern and easy-to-use client for Ollama"
+name: hearth
+description: "Hearth: a private chat client for Ollama"
 publish_to: 'none'
 version: 1.5.0+14
 

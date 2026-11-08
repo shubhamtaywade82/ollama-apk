@@ -1,1 +1,1 @@
-Chat with an Ollama server
+Private chat with your own Ollama servers and Ollama Cloud.

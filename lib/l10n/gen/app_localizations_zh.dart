@@ -9,7 +9,7 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get appTitle => 'Ollama';
+  String get appTitle => 'Hearth';
 
   @override
   String get optionNewChat => '新建聊天';
@@ -112,19 +112,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get modelDialogAddPromptInvalid => '无效的模型名称';
 
   @override
-  String get modelDialogAddAllowanceTitle => '允许代理服务器';
-
-  @override
-  String get modelDialogAddAllowanceDescription =>
-      'Ollama 应用程序必须检查输入的模型是否有效。 为此，我们通常向Ollama模型列表发送一个网络请求并检查状态。 由于您正在使用 Web 客户端，我们不能直接做到这一点。 因此，应用将把请求发送到另一个由 JHubi 1 部署的api 上进行检查。\n这是一个一次性请求，只有当您添加一个新模型时才会发送。\n您的IP地址将与请求一起发送，可能会被存储长达10分钟，以防止潜在的有害故障。\n如果您接受，您的选择将在将来被记住；如果不接受，将不会发送任何内容，也不会添加模型。';
-
-  @override
-  String get modelDialogAddAllowanceAllow => '允许';
-
-  @override
-  String get modelDialogAddAllowanceDeny => '拒绝';
-
-  @override
   String modelDialogAddAssuranceTitle(String model) {
     return '添加$model?';
   }
@@ -183,7 +170,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsTitleInterface => '界面';
 
   @override
-  String get settingsDescriptionInterface => '修改 Ollama App的外观和行为';
+  String get settingsDescriptionInterface => '修改 Hearth的外观和行为';
 
   @override
   String get settingsTitleVoice => '语音';
@@ -201,7 +188,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsTitleAbout => '关于';
 
   @override
-  String get settingsDescriptionAbout => '检查更新并了解更多关于Ollama App的信息。';
+  String get settingsDescriptionAbout => '检查更新并了解更多关于Hearth的信息。';
 
   @override
   String get settingsSavedAutomatically => '设置已自动保存';
@@ -363,7 +350,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsThemeDevice => '设备主题';
 
   @override
-  String get settingsThemeOllama => 'Ollama主题';
+  String get settingsThemeOllama => 'Hearth主题';
 
   @override
   String get settingsTemporaryFixes => '临时界面修复';
@@ -465,7 +452,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsUpdateDialogTitle => '有可用的新版本';
 
   @override
-  String get settingsUpdateDialogDescription => 'Ollama有新版本可用。是否下载并安装？';
+  String get settingsUpdateDialogDescription => 'Hearth有新版本可用。是否下载并安装？';
 
   @override
   String get settingsUpdateChangeLog => '更新日志';
@@ -490,7 +477,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String settingsVersion(String version) {
-    return 'Ollama App v$version';
+    return 'Hearth v$version';
   }
 
   @override

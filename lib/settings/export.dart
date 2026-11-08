@@ -11,7 +11,7 @@ import '../worker/haptic.dart';
 import '../worker/desktop.dart';
 import '../screen_settings.dart';
 
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:file_picker/file_picker.dart';
@@ -74,7 +74,7 @@ class _ScreenSettingsExportState extends State<ScreenSettingsExport> {
                             path = (await file_selector
                                     .getSaveLocation(acceptedTypeGroups: [
                               const file_selector.XTypeGroup(
-                                  label: "Ollama App File",
+                                  label: "Hearth File",
                                   extensions: ["json"])
                             ], suggestedName: name))
                                 ?.path;
@@ -137,7 +137,7 @@ class _ScreenSettingsExportState extends State<ScreenSettingsExport> {
                                                         const file_selector
                                                             .XTypeGroup(
                                                             label:
-                                                                "Ollama App File",
+                                                                "Hearth File",
                                                             extensions: [
                                                               "json"
                                                             ])

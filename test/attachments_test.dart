@@ -4,12 +4,12 @@ import 'dart:typed_data';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
-import 'package:ollama_app/main.dart' as app;
-import 'package:ollama_app/worker/attachments.dart';
-import 'package:ollama_app/worker/chat_store.dart';
-import 'package:ollama_app/worker/sender.dart';
-import 'package:ollama_app/worker/setter.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
+import 'package:hearth/main.dart' as app;
+import 'package:hearth/worker/attachments.dart';
+import 'package:hearth/worker/chat_store.dart';
+import 'package:hearth/worker/sender.dart';
+import 'package:hearth/worker/setter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Uint8List bytesOf(String text) => Uint8List.fromList(utf8.encode(text));

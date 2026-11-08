@@ -6,7 +6,7 @@ import 'main.dart';
 import 'worker/haptic.dart';
 import 'worker/sender.dart';
 
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
 
 /// Copy, read aloud and (on the latest reply) regenerate, shown under a
 /// finished assistant reply.

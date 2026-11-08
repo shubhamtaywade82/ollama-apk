@@ -1,11 +1,12 @@
-# Ollama APK
+# Hearth: chat for Ollama
 
 [![CI](https://github.com/shubhamtaywade82/ollama-apk/actions/workflows/ci.yaml/badge.svg)](https://github.com/shubhamtaywade82/ollama-apk/actions/workflows/ci.yaml)
 
-Android client for [Ollama](https://ollama.com): chat with models on your own
-server, a LAN router, or Ollama Cloud.
+**Your AI, at home.** Hearth is an Android client for
+[Ollama](https://ollama.com): chat with models on your own server, a router on
+your LAN, or Ollama Cloud.
 
-> This app does not run models on the phone. It connects to an Ollama server.
+> Hearth does not run models on the phone. It connects to an Ollama server.
 
 ## Features
 
@@ -21,14 +22,22 @@ server, a LAN router, or Ollama Cloud.
 - **Agent tools** (Settings → Behavior), sent only to models that report tool
   support:
   - web search and page fetch through Ollama Cloud
-  - read-only Binance prices and candles; the app never places orders
+  - read-only Binance prices and candles; Hearth never places orders
   - tools from remote **MCP servers** (Streamable HTTP, optional bearer
     token; Settings → MCP servers). Add only servers you trust
 - **Reasoning mode** for models that support thinking, streamed live into a
   collapsible "Thinking…" block above the answer
+- Attachments: files and PDFs in messages
+- Copy, read aloud and regenerate actions under replies
 - Add Host checks the connection and warns when `localhost` would point at the
   phone itself
 - Chats are stored in an app data file, not in preferences
+
+## Install
+
+Download the latest APK from
+[GitHub Releases](https://github.com/shubhamtaywade82/ollama-apk/releases) and
+install it on your Android device.
 
 ## Connecting
 
@@ -94,5 +103,7 @@ job fails rather than publishing a debug-signed APK.
 
 ## License and attribution
 
-Derived from [JHubi1/ollama-app](https://github.com/JHubi1/ollama-app),
-licensed under Apache 2.0. See [LICENSE](LICENSE).
+Copyright 2026 shubhamtaywade82. Portions Copyright 2024 JHubi1, modified by
+shubhamtaywade82. Derived from
+[JHubi1/ollama-app](https://github.com/JHubi1/ollama-app), licensed under
+Apache 2.0. See [LICENSE](LICENSE).

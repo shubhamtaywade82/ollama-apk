@@ -6,7 +6,7 @@ import '../worker/haptic.dart';
 import '../worker/update.dart';
 import '../worker/desktop.dart';
 
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -119,7 +119,7 @@ class _ScreenSettingsAboutState extends State<ScreenSettingsAbout> {
                               AppLocalizations.of(context)!
                                   .settingsCheckForUpdates,
                               (prefs!.getBool("checkUpdateOnSettingsOpen") ??
-                                  true), (value) {
+                                  false), (value) {
                               selectionHaptic();
                               prefs!
                                   .setBool("checkUpdateOnSettingsOpen", value);
@@ -143,7 +143,8 @@ class _ScreenSettingsAboutState extends State<ScreenSettingsAbout> {
                       button(AppLocalizations.of(context)!.settingsLicenses,
                           Icons.gavel_rounded, () {
                         selectionHaptic();
-                        String legal = "Copyright 2024 JHubi1";
+                        String legal =
+                            "Copyright 2026 shubhamtaywade82. Portions Copyright 2024 JHubi1, licensed under Apache 2.0.";
                         Widget icon = const Padding(
                           padding: EdgeInsets.all(16),
                           child: ImageIcon(AssetImage("assets/logo512.png"),
@@ -157,7 +158,7 @@ class _ScreenSettingsAboutState extends State<ScreenSettingsAbout> {
                                     child: ClipRRect(
                                   borderRadius: BorderRadius.circular(28),
                                   child: LicensePage(
-                                      applicationName: "Ollama App",
+                                      applicationName: "Hearth",
                                       applicationVersion: currentVersion,
                                       applicationIcon: icon,
                                       applicationLegalese: legal),
@@ -166,7 +167,7 @@ class _ScreenSettingsAboutState extends State<ScreenSettingsAbout> {
                         } else {
                           showLicensePage(
                               context: context,
-                              applicationName: "Ollama App",
+                              applicationName: "Hearth",
                               applicationVersion: currentVersion,
                               applicationIcon: icon,
                               applicationLegalese: legal);

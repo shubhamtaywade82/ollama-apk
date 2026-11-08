@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:ollama_app/worker/agent.dart';
+import 'package:hearth/worker/agent.dart';
 import 'package:ollama_dart/ollama_dart.dart' as llama;
 
 llama.ChatMessage toolCall(String name, Map<String, dynamic> args) =>

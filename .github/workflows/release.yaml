@@ -94,10 +94,10 @@ jobs:
             echo "::error::pubspec version $version does not match tag $TAG"
             exit 1
           fi
-          mv build/universal.apk "build/app/outputs/flutter-apk/ollama-apk-v${version}.apk"
+          mv build/universal.apk "build/app/outputs/flutter-apk/hearth-android-v${version}.apk"
           for f in build/app/outputs/flutter-apk/app-*-release.apk; do
             abi=$(basename "$f" | sed 's/app-\(.*\)-release.apk/\1/')
-            mv "$f" "build/app/outputs/flutter-apk/ollama-apk-v${version}-${abi}.apk"
+            mv "$f" "build/app/outputs/flutter-apk/hearth-android-v${version}-${abi}.apk"
           done
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
@@ -108,7 +108,7 @@ jobs:
             echo "### Signing certificate"
             echo
           } > release-notes.md
-          for apk in build/app/outputs/flutter-apk/ollama-apk-v*.apk; do
+          for apk in build/app/outputs/flutter-apk/hearth-android-v*.apk; do
             certs=$("$apksigner" verify --print-certs "$apk")
             if echo "$certs" | grep -q "CN=Android Debug"; then
               echo "::error::$apk is signed with the debug key"
@@ -121,8 +121,8 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: ollama-apk-v${{ steps.meta.outputs.version }}
-          path: build/app/outputs/flutter-apk/ollama-apk-v*.apk
+          name: hearth-android-v${{ steps.meta.outputs.version }}
+          path: build/app/outputs/flutter-apk/hearth-android-v*.apk
 
       # append_body keeps the changelog release-please wrote and adds the
       # signing fingerprint below it.
@@ -133,4 +133,4 @@ jobs:
           generate_release_notes: true
           append_body: true
           body_path: release-notes.md
-          files: build/app/outputs/flutter-apk/ollama-apk-v*.apk
+          files: build/app/outputs/flutter-apk/hearth-android-v*.apk

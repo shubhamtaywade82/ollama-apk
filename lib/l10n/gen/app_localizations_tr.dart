@@ -9,7 +9,7 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
-  String get appTitle => 'Ollama';
+  String get appTitle => 'Hearth';
 
   @override
   String get optionNewChat => 'Yeni Sohbet';
@@ -113,19 +113,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get modelDialogAddPromptInvalid => 'Geçersiz model adı';
 
   @override
-  String get modelDialogAddAllowanceTitle => 'Proxy\'e İzin Ver';
-
-  @override
-  String get modelDialogAddAllowanceDescription =>
-      'Ollama Uygulaması, girilen modelin geçerli olup olmadığını kontrol etmelidir. Bunun için normalde Ollama model listesine bir web isteği gönderir ve durum kodunu kontrol ederiz, ancak siz web istemcisini kullandığınız için bunu doğrudan yapamayız. Bunun yerine, uygulama bizim için kontrol etmek amacıyla JHubi1 tarafından barındırılan farklı bir API\'ye istek gönderecek. \nBu, yalnızca bir kez yapılan bir istektir ve yalnızca yeni bir model eklediğinizde gönderilecektir. \nIP adresiniz istekle birlikte gönderilecek ve olası zararlı niyetlerle spam yapılmasını önlemek amacıyla on dakikaya kadar saklanabilir. \nKabul ederseniz, seçiminiz gelecekte hatırlanacaktır; kabul etmezseniz, hiçbir şey gönderilmeyecek ve model eklenmeyecektir.';
-
-  @override
-  String get modelDialogAddAllowanceAllow => 'İzin ver';
-
-  @override
-  String get modelDialogAddAllowanceDeny => 'Reddet';
-
-  @override
   String modelDialogAddAssuranceTitle(String model) {
     return '$model Ekle?';
   }
@@ -187,7 +174,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsDescriptionInterface =>
-      'Ollama Uygulamasının görünümünü ve davranışını düzenleyin.';
+      'Hearth\'in görünümünü ve davranışını düzenleyin.';
 
   @override
   String get settingsTitleVoice => 'Ses';
@@ -208,7 +195,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsDescriptionAbout =>
-      'Güncellemeleri kontrol edin ve Ollama Uygulaması hakkında daha fazla bilgi edinin.';
+      'Güncellemeleri kontrol edin ve Hearth hakkında daha fazla bilgi edinin.';
 
   @override
   String get settingsSavedAutomatically => 'Ayarlar otomatik olarak kaydedilir';
@@ -380,7 +367,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settingsThemeDevice => 'Cihaz';
 
   @override
-  String get settingsThemeOllama => 'Ollama';
+  String get settingsThemeOllama => 'Hearth';
 
   @override
   String get settingsTemporaryFixes => 'Geçici arayüz düzeltmeleri';
@@ -488,7 +475,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsUpdateDialogDescription =>
-      'Ollama\'\'nın yeni bir sürümü mevcut. Şimdi indirip kurmak istiyor musunuz?';
+      'Hearth\'in yeni bir sürümü mevcut. Şimdi indirip kurmak istiyor musunuz?';
 
   @override
   String get settingsUpdateChangeLog => 'Değişiklik Günlüğü';
@@ -513,7 +500,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String settingsVersion(String version) {
-    return 'Ollama App v$version';
+    return 'Hearth v$version';
   }
 
   @override

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'functions.dart';
-import 'package:ollama_app/screen_settings.dart';
+import 'package:hearth/screen_settings.dart';
 
 void main() {
   testWidgets("Widget: button", (WidgetTester tester) async {

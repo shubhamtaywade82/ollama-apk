@@ -5,7 +5,7 @@ import '../worker/clients.dart';
 import '../worker/haptic.dart';
 import '../worker/mcp.dart';
 
-import 'package:ollama_app/l10n/gen/app_localizations.dart';
+import 'package:hearth/l10n/gen/app_localizations.dart';
 
 class ScreenSettingsMcp extends StatefulWidget {
   const ScreenSettingsMcp({super.key});
