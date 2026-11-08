@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.1](https://github.com/shubhamtaywade82/ollama-apk/compare/v1.5.0...v1.5.1) (2026-11-08)
+
+
+### Miscellaneous Chores
+
+* release 1.5.1 ([410e8e3](https://github.com/shubhamtaywade82/ollama-apk/commit/410e8e319ec2875ccd285881e4010e1739957918))
+* release 1.5.1 ([581e7e4](https://github.com/shubhamtaywade82/ollama-apk/commit/581e7e471f16a9e391e88cd52b2e3d5f8308f12c))
+
 ## [1.5.0](https://github.com/shubhamtaywade82/ollama-apk/compare/v1.4.1...v1.5.0) (2026-11-08)
 
 
