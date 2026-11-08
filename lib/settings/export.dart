@@ -1,3 +1,4 @@
+import '../worker/chat_store.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:universal_html/html.dart' as html;
@@ -50,8 +51,7 @@ class _ScreenSettingsExportState extends State<ScreenSettingsExport> {
                         selectionHaptic();
                         var name =
                             "ollama-export-${DateFormat('yyyy-MM-dd-H-m-s').format(DateTime.now())}.json";
-                        var content =
-                            jsonEncode(prefs!.getStringList("chats") ?? []);
+                        var content = jsonEncode(chats);
                         if (kIsWeb) {
                           // web fallback
                           final bytes = utf8.encode(content);
@@ -83,8 +83,7 @@ class _ScreenSettingsExportState extends State<ScreenSettingsExport> {
                                 type: FileType.custom,
                                 allowedExtensions: ["json"],
                                 fileName: name,
-                                bytes: utf8.encode(jsonEncode(
-                                    prefs!.getStringList("chats") ?? [])));
+                                bytes: utf8.encode(jsonEncode(chats)));
                           }
                           selectionHaptic();
                           if (path == null) return;
@@ -187,8 +186,7 @@ class _ScreenSettingsExportState extends State<ScreenSettingsExport> {
                                                   history.add(tmpHistory[i]);
                                                 }
 
-                                                prefs!.setStringList(
-                                                    "chats", history);
+                                                saveChats(history);
 
                                                 messages = [];
                                                 chatUuid = null;

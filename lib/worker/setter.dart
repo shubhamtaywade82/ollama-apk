@@ -1,3 +1,4 @@
+import 'chat_store.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -581,8 +582,8 @@ void addModel(BuildContext context, Function setState) async {
 
 void saveChat(String uuid, Function setState) async {
   int index = -1;
-  for (var i = 0; i < (prefs!.getStringList("chats") ?? []).length; i++) {
-    if (jsonDecode((prefs!.getStringList("chats") ?? [])[i])["uuid"] == uuid) {
+  for (var i = 0; i < chats.length; i++) {
+    if (jsonDecode(chats[i])["uuid"] == uuid) {
       index = i;
     }
   }
@@ -609,27 +610,22 @@ void saveChat(String uuid, Function setState) async {
     }
   }
   if (messages.isEmpty && uuid == chatUuid) {
-    for (var i = 0; i < (prefs!.getStringList("chats") ?? []).length; i++) {
-      if (jsonDecode((prefs!.getStringList("chats") ?? [])[i])["uuid"] ==
-          chatUuid) {
-        List<String> tmp = prefs!.getStringList("chats")!;
+    for (var i = 0; i < chats.length; i++) {
+      if (jsonDecode(chats[i])["uuid"] == chatUuid) {
+        List<String> tmp = List.of(chats);
         tmp.removeAt(i);
-        prefs!.setStringList("chats", tmp);
+        saveChats(tmp);
         chatUuid = null;
         return;
       }
     }
   }
-  if (jsonDecode((prefs!.getStringList("chats") ?? [])[index])["messages"]
-          .length >=
-      1) {
-    if (jsonDecode(jsonDecode((prefs!.getStringList("chats") ?? [])[index])[
-            "messages"])[0]["role"] ==
+  if (jsonDecode(chats[index])["messages"].length >= 1) {
+    if (jsonDecode(jsonDecode(chats[index])["messages"])[0]["role"] ==
         "system") {
       history.add({
         "role": "system",
-        "content": jsonDecode(jsonDecode(
-                (prefs!.getStringList("chats") ?? [])[index])["messages"])[0]
+        "content": jsonDecode(jsonDecode(chats[index])["messages"])[0]
             ["content"]
       });
     }
@@ -642,25 +638,24 @@ void saveChat(String uuid, Function setState) async {
     history.add({"role": "system", "content": system});
   }
   history = history.reversed.toList();
-  List<String> tmp = prefs!.getStringList("chats") ?? [];
+  List<String> tmp = List.of(chats);
   tmp.removeAt(index);
   tmp.insert(
       0,
       jsonEncode({
-        "title":
-            jsonDecode((prefs!.getStringList("chats") ?? [])[index])["title"],
+        "title": jsonDecode(chats[index])["title"],
         "uuid": uuid,
         "model": model,
         "messages": jsonEncode(history)
       }));
-  prefs!.setStringList("chats", tmp);
+  saveChats(tmp);
   setState(() {});
 }
 
 void loadChat(String uuid, Function setState) {
   int index = -1;
-  for (var i = 0; i < (prefs!.getStringList("chats") ?? []).length; i++) {
-    if (jsonDecode((prefs!.getStringList("chats") ?? [])[i])["uuid"] == uuid) {
+  for (var i = 0; i < chats.length; i++) {
+    if (jsonDecode(chats[i])["uuid"] == uuid) {
       index = i;
     }
   }
@@ -668,8 +663,7 @@ void loadChat(String uuid, Function setState) {
   messages = [];
   model = null;
   setState(() {});
-  var history = jsonDecode(
-      jsonDecode((prefs!.getStringList("chats") ?? [])[index])["messages"]);
+  var history = jsonDecode(jsonDecode(chats[index])["messages"]);
   for (var i = 0; i < history.length; i++) {
     if (history[i]["role"] != "system") {
       if ((history[i] as Map).containsKey("type") &&
@@ -692,7 +686,7 @@ void loadChat(String uuid, Function setState) {
       }
     }
   }
-  model = jsonDecode((prefs!.getStringList("chats") ?? [])[index])["model"];
+  model = jsonDecode(chats[index])["model"];
   setState(() {});
 }
 
@@ -708,12 +702,11 @@ Future<bool> deleteChatDialog(BuildContext context, Function setState,
   void delete(BuildContext context) {
     returnValue = true;
     if (takeAction) {
-      for (var i = 0; i < (prefs!.getStringList("chats") ?? []).length; i++) {
-        if (jsonDecode((prefs!.getStringList("chats") ?? [])[i])["uuid"] ==
-            uuid) {
-          List<String> tmp = prefs!.getStringList("chats")!;
+      for (var i = 0; i < chats.length; i++) {
+        if (jsonDecode(chats[i])["uuid"] == uuid) {
+          List<String> tmp = List.of(chats);
           tmp.removeAt(i);
-          prefs!.setStringList("chats", tmp);
+          saveChats(tmp);
           break;
         }
       }

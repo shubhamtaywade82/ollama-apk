@@ -1,4 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
+import 'chat_store.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -64,10 +65,9 @@ Future<List<llama.Message>> getHistory([String? addToSystem]) async {
 List getHistoryString([String? uuid]) {
   uuid ??= chatUuid!;
   List messages = [];
-  for (var i = 0; i < (prefs!.getStringList("chats") ?? []).length; i++) {
-    if (jsonDecode((prefs!.getStringList("chats") ?? [])[i])["uuid"] == uuid) {
-      messages = jsonDecode(
-          jsonDecode((prefs!.getStringList("chats") ?? [])[i])["messages"]);
+  for (var i = 0; i < chats.length; i++) {
+    if (jsonDecode(chats[i])["uuid"] == uuid) {
+      messages = jsonDecode(jsonDecode(chats[i])["messages"]);
       break;
     }
   }
@@ -145,17 +145,16 @@ Future<String> getTitleAi(List history) async {
 Future<void> setTitleAi(List history) async {
   try {
     var title = await getTitleAi(history);
-    var tmp = (prefs!.getStringList("chats") ?? []);
+    var tmp = List.of(chats);
     for (var i = 0; i < tmp.length; i++) {
-      if (jsonDecode((prefs!.getStringList("chats") ?? [])[i])["uuid"] ==
-          chatUuid) {
+      if (jsonDecode(chats[i])["uuid"] == chatUuid) {
         var tmp2 = jsonDecode(tmp[i]);
         tmp2["title"] = title;
         tmp[i] = jsonEncode(tmp2);
         break;
       }
     }
-    prefs!.setStringList("chats", tmp);
+    saveChats(tmp);
   } catch (_) {}
 }
 
@@ -193,15 +192,13 @@ Future<String> send(String value, BuildContext context, Function setState,
   if (chatUuid == null) {
     newChat = true;
     chatUuid = const Uuid().v4();
-    prefs!.setStringList(
-        "chats",
-        (prefs!.getStringList("chats") ?? []).append([
-          jsonEncode({
-            "title": AppLocalizations.of(context)!.newChatTitle,
-            "uuid": chatUuid,
-            "messages": []
-          })
-        ]).toList());
+    saveChats(List.of(chats).append([
+      jsonEncode({
+        "title": AppLocalizations.of(context)!.newChatTitle,
+        "uuid": chatUuid,
+        "messages": []
+      })
+    ]).toList());
   }
 
   var history = await getHistory(addToSystem);
@@ -309,12 +306,11 @@ Future<String> send(String value, BuildContext context, Function setState,
         chatAllowed = true;
         messages.removeAt(0);
         if (messages.isEmpty) {
-          var tmp = (prefs!.getStringList("chats") ?? []);
+          var tmp = List.of(chats);
           for (var i = 0; i < tmp.length; i++) {
-            if (jsonDecode((prefs!.getStringList("chats") ?? [])[i])["uuid"] ==
-                chatUuid) {
+            if (jsonDecode(chats[i])["uuid"] == chatUuid) {
               tmp.removeAt(i);
-              prefs!.setStringList("chats", tmp);
+              saveChats(tmp);
               break;
             }
           }

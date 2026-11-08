@@ -1,3 +1,4 @@
+import 'worker/chat_store.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -5,6 +6,7 @@ import 'dart:math';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:ollama_app/l10n/gen/app_localizations.dart';
 
@@ -132,6 +134,8 @@ class _AppState extends State<App> {
       SharedPreferences.setPrefix("ollama.");
       SharedPreferences tmp = await SharedPreferences.getInstance();
       await loadCloudApiKey(tmp);
+      await loadChats(
+          tmp, kIsWeb ? null : await getApplicationSupportDirectory());
       setState(() {
         prefs = tmp;
       });
@@ -381,7 +385,7 @@ class _MainAppState extends State<MainApp> {
               color: desktopLayout(context)
                   ? Theme.of(context).colorScheme.onSurface.withAlpha(20)
                   : null),
-      ((prefs?.getStringList("chats") ?? []).isNotEmpty)
+      (chats.isNotEmpty)
           ? const SizedBox.shrink()
           : (Padding(
               padding: padding,
@@ -421,7 +425,7 @@ class _MainAppState extends State<MainApp> {
                         ? AppLocalizations.of(context)!.tip3
                         : AppLocalizations.of(context)!.tip4;
         return (!(prefs?.getBool("tips") ?? true) ||
-                (prefs?.getStringList("chats") ?? []).isNotEmpty ||
+                chats.isNotEmpty ||
                 !allowSettings)
             ? const SizedBox.shrink()
             : (Padding(
@@ -461,7 +465,7 @@ class _MainAppState extends State<MainApp> {
                 )));
       }),
     ])
-      ..addAll((prefs?.getStringList("chats") ?? []).map((item) {
+      ..addAll(chats.map((item) {
         var child = Padding(
             padding: padding,
             child: InkWell(
@@ -503,10 +507,9 @@ class _MainAppState extends State<MainApp> {
                                 .dialogEnterNewTitle,
                             value: oldTitle,
                             uuid: jsonDecode(item)["uuid"]);
-                        var tmp = (prefs!.getStringList("chats") ?? []);
+                        var tmp = List.of(chats);
                         for (var i = 0; i < tmp.length; i++) {
-                          if (jsonDecode((prefs!.getStringList("chats") ??
-                                  [])[i])["uuid"] ==
+                          if (jsonDecode(chats[i])["uuid"] ==
                               jsonDecode(item)["uuid"]) {
                             var tmp2 = jsonDecode(tmp[i]);
                             tmp2["title"] = newTitle;
@@ -514,7 +517,7 @@ class _MainAppState extends State<MainApp> {
                             break;
                           }
                         }
-                        prefs!.setStringList("chats", tmp);
+                        saveChats(tmp);
                         setState(() {});
                       },
                 child: Padding(
@@ -571,22 +574,15 @@ class _MainAppState extends State<MainApp> {
                                             }
                                             if (!allowMultipleChats) {
                                               for (var i = 0;
-                                                  i <
-                                                      (prefs!.getStringList(
-                                                                  "chats") ??
-                                                              [])
-                                                          .length;
+                                                  i < chats.length;
                                                   i++) {
-                                                if (jsonDecode((prefs!
-                                                            .getStringList(
-                                                                "chats") ??
-                                                        [])[i])["uuid"] ==
+                                                if (jsonDecode(List.of(
+                                                        chats)[i])["uuid"] ==
                                                     jsonDecode(item)["uuid"]) {
-                                                  List<String> tmp = prefs!
-                                                      .getStringList("chats")!;
+                                                  List<String> tmp =
+                                                      List.of(chats);
                                                   tmp.removeAt(i);
-                                                  prefs!.setStringList(
-                                                      "chats", tmp);
+                                                  saveChats(tmp);
                                                   break;
                                                 }
                                               }
@@ -664,11 +660,11 @@ class _MainAppState extends State<MainApp> {
                                                                               value: oldTitle,
                                                                               uuid: jsonDecode(item)["uuid"]);
                                                                           var tmp =
-                                                                              (prefs!.getStringList("chats") ?? []);
+                                                                              List.of(chats);
                                                                           for (var i = 0;
                                                                               i < tmp.length;
                                                                               i++) {
-                                                                            if (jsonDecode((prefs!.getStringList("chats") ?? [])[i])["uuid"] ==
+                                                                            if (jsonDecode(chats[i])["uuid"] ==
                                                                                 jsonDecode(item)["uuid"]) {
                                                                               var tmp2 = jsonDecode(tmp[i]);
                                                                               tmp2["title"] = newTitle;
@@ -676,8 +672,7 @@ class _MainAppState extends State<MainApp> {
                                                                               break;
                                                                             }
                                                                           }
-                                                                          prefs!.setStringList(
-                                                                              "chats",
+                                                                          saveChats(
                                                                               tmp);
                                                                           setState(
                                                                               () {});
@@ -725,15 +720,12 @@ class _MainAppState extends State<MainApp> {
                 },
                 onDismissed: (direction) {
                   selectionHaptic();
-                  for (var i = 0;
-                      i < (prefs!.getStringList("chats") ?? []).length;
-                      i++) {
-                    if (jsonDecode(
-                            (prefs!.getStringList("chats") ?? [])[i])["uuid"] ==
+                  for (var i = 0; i < chats.length; i++) {
+                    if (jsonDecode(chats[i])["uuid"] ==
                         jsonDecode(item)["uuid"]) {
-                      List<String> tmp = prefs!.getStringList("chats")!;
+                      List<String> tmp = List.of(chats);
                       tmp.removeAt(i);
-                      prefs!.setStringList("chats", tmp);
+                      saveChats(tmp);
                       break;
                     }
                   }
@@ -799,10 +791,8 @@ class _MainAppState extends State<MainApp> {
           return;
         }
 
-        if (!allowMultipleChats &&
-            (prefs!.getStringList("chats") ?? []).isNotEmpty) {
-          chatUuid =
-              jsonDecode((prefs!.getStringList("chats") ?? [])[0])["uuid"];
+        if (!allowMultipleChats && chats.isNotEmpty) {
+          chatUuid = jsonDecode(chats[0])["uuid"];
           loadChat(chatUuid!, setState);
         }
 
