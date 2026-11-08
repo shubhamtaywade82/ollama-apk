@@ -53,16 +53,28 @@ void main() {
     expect((await pingHost(cloud, client)).error, 'unauthorized');
   });
 
-  test('should fail over to next healthy host and activate it', () async {
+  test('should fail over to next healthy local host and activate it', () async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     await saveHosts(prefs, [local, router, cloud]);
     final client = fakeServers({
+      'http://192.168.1.5:8080': http.Response('Ollama is running', 200),
       'https://ollama.com/api/tags': http.Response('{"models":[]}', 200),
     });
     final next = await failoverFrom(prefs, client, local.url);
-    expect(next?.name, 'cloud');
-    expect(prefs.getString('host'), 'https://ollama.com');
+    expect(next?.name, 'router');
+    expect(prefs.getString('host'), 'http://192.168.1.5:8080');
+  });
+
+  test('should never fail over from a local host to Ollama Cloud', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    await saveHosts(prefs, [local, cloud]);
+    final client = fakeServers({
+      'https://ollama.com/api/tags': http.Response('{"models":[]}', 200),
+    });
+    expect(await failoverFrom(prefs, client, local.url), isNull);
+    expect(prefs.getString('host'), isNull);
   });
 
   test('should return null when every host is down', () async {

@@ -125,10 +125,16 @@ Future<HostHealth> pingHost(OllamaHost host, http.Client client,
 
 /// First host in priority order that is healthy, skipping [skipUrl]
 /// (the host that just failed). Null when every host is down.
+/// With [sameTrustAs], only hosts on the same side of the local/Cloud
+/// boundary qualify: a failed local server must never silently send the
+/// conversation to Ollama Cloud, and vice versa.
 Future<OllamaHost?> firstHealthyHost(List<OllamaHost> hosts, http.Client client,
-    {String? skipUrl}) async {
+    {String? skipUrl, String? sameTrustAs}) async {
   for (final host in hosts) {
     if (host.url == skipUrl) continue;
+    if (sameTrustAs != null && host.isCloud != isCloudHost(sameTrustAs)) {
+      continue;
+    }
     if ((await pingHost(host, client)).isUp) return host;
   }
   return null;
@@ -138,8 +144,8 @@ Future<OllamaHost?> firstHealthyHost(List<OllamaHost> hosts, http.Client client,
 /// Returns the new host, or null if nothing else is reachable.
 Future<OllamaHost?> failoverFrom(
     SharedPreferences prefs, http.Client client, String failedUrl) async {
-  final next =
-      await firstHealthyHost(loadHosts(prefs), client, skipUrl: failedUrl);
+  final next = await firstHealthyHost(loadHosts(prefs), client,
+      skipUrl: failedUrl, sameTrustAs: failedUrl);
   if (next != null) await activateHost(prefs, next);
   return next;
 }
