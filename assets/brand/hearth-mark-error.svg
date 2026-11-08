@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="160 230 704 612">
+  <!-- Error variant (host unreachable): the bubble with the ember gone out,
+       shown as a cut-out cross centred in the bubble. -->
+  <path fill="#000" fill-rule="evenodd" d="
+    M262 250 H762 Q842 250 842 330 V630 Q842 710 762 710 H470 L330 820 L352 710 H262 Q182 710 182 630 V330 Q182 250 262 250 Z
+    M430 438 L470 398 L512 440 L554 398 L594 438 L552 480 L594 522 L554 562 L512 520 L470 562 L430 522 L472 480 Z"/>
+</svg>

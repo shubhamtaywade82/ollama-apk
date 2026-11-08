@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="160 230 704 612">
+  <!-- Single-colour mark: chat bubble with the ember cut out and its core
+       filled back in. Used tinted in-app (ImageIcon) and as the themed icon. -->
+  <path fill="#000" fill-rule="evenodd" d="
+    M262 250 H762 Q842 250 842 330 V630 Q842 710 762 710 H470 L330 820 L352 710 H262 Q182 710 182 630 V330 Q182 250 262 250 Z
+    M512 300 C548 372 610 400 610 482 C610 560 566 620 512 620 C458 620 414 560 414 486 C414 438 440 410 458 382 C462 420 476 438 494 448 C484 396 490 346 512 300 Z"/>
+  <path fill="#000" d="M512 452 C530 488 560 506 560 548 C560 584 538 610 512 610 C486 610 464 584 464 552 C464 528 478 512 490 498 C492 516 500 526 510 530 C506 504 506 478 512 452 Z"/>
+</svg>

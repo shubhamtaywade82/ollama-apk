@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2B1D16"/><stop offset="1" stop-color="#120C09"/>
+    </linearGradient>
+    <linearGradient id="fl" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#FF5A1F"/><stop offset="0.55" stop-color="#FF9A2E"/><stop offset="1" stop-color="#FFD166"/>
+    </linearGradient>
+    <linearGradient id="core" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#FFE7A3"/><stop offset="1" stop-color="#FFF7E0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="230" fill="url(#bg)"/>
+  <!-- chat bubble -->
+  <path d="M262 250 H762 Q842 250 842 330 V630 Q842 710 762 710 H470 L330 820 L352 710 H262 Q182 710 182 630 V330 Q182 250 262 250 Z"
+        fill="#F6EFE7"/>
+  <!-- ember -->
+  <path d="M512 300 C548 372 610 400 610 482 C610 560 566 620 512 620 C458 620 414 560 414 486 C414 438 440 410 458 382 C462 420 476 438 494 448 C484 396 490 346 512 300 Z"
+        fill="url(#fl)"/>
+  <path d="M512 452 C530 488 560 506 560 548 C560 584 538 610 512 610 C486 610 464 584 464 552 C464 528 478 512 490 498 C492 516 500 526 510 530 C506 504 506 478 512 452 Z"
+        fill="url(#core)"/>
+</svg>
