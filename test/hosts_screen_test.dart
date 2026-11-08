@@ -6,8 +6,8 @@ import 'package:ollama_app/settings/hosts.dart';
 import 'package:ollama_app/worker/hosts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<void> pumpScreen(WidgetTester tester) => tester.pumpWidget(
-    const MaterialApp(
+Future<void> pumpScreen(WidgetTester tester) =>
+    tester.pumpWidget(const MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: ScreenSettingsHosts()));

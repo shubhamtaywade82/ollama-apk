@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart' show host, prefs;
-import 'clients.dart' show httpClient, isCloudHost;
+import 'clients.dart' show cloudApiKey, cloudOrigin, httpClient, isCloudHost;
 import 'package:ollama_dart/ollama_dart.dart' show OllamaClientException;
 
 const _hostsKey = 'hosts';
@@ -13,21 +13,20 @@ const _pingTimeout = Duration(seconds: 5);
 class OllamaHost {
   final String name;
   final String url;
-  final String apiKey;
 
-  const OllamaHost({required this.name, required this.url, this.apiKey = ''});
+  const OllamaHost({required this.name, required this.url});
 
   bool get isCloud => isCloudHost(url);
 
-  Map<String, String> get headers =>
-      apiKey.isEmpty ? {} : {'Authorization': 'Bearer $apiKey'};
+  /// Keys are only ever sent to Ollama Cloud over HTTPS.
+  Map<String, String> get headers => isCloud && (cloudApiKey ?? '').isNotEmpty
+      ? {'Authorization': 'Bearer $cloudApiKey'}
+      : {};
 
-  Map<String, String> toJson() => {'name': name, 'url': url, 'apiKey': apiKey};
+  Map<String, String> toJson() => {'name': name, 'url': url};
 
-  factory OllamaHost.fromJson(Map<String, dynamic> json) => OllamaHost(
-      name: json['name'] as String,
-      url: json['url'] as String,
-      apiKey: (json['apiKey'] as String?) ?? '');
+  factory OllamaHost.fromJson(Map<String, dynamic> json) =>
+      OllamaHost(name: json['name'] as String, url: json['url'] as String);
 }
 
 class HostHealth {
@@ -43,8 +42,10 @@ class HostHealth {
         latency = null;
 }
 
-String normalizeHostUrl(String raw) =>
-    raw.trim().replaceAll(RegExp(r'/+$'), '');
+String normalizeHostUrl(String raw) {
+  final trimmed = raw.trim().replaceAll(RegExp(r'/+$'), '');
+  return isCloudHost(trimmed) ? cloudOrigin : trimmed;
+}
 
 /// Saved hosts in priority order. Migrates the legacy single `host` pref.
 List<OllamaHost> loadHosts(SharedPreferences prefs) {
@@ -59,8 +60,7 @@ List<OllamaHost> loadHosts(SharedPreferences prefs) {
   return [
     OllamaHost(
         name: Uri.tryParse(legacy)?.host ?? legacy,
-        url: legacy,
-        apiKey: prefs.getString('apiKey') ?? '')
+        url: normalizeHostUrl(legacy))
   ];
 }
 
@@ -87,17 +87,16 @@ Future<List<OllamaHost>> removeHost(SharedPreferences prefs, String url) async {
   return hosts;
 }
 
-/// Points the legacy `host`/`apiKey` prefs (read by the Ollama client) at [host].
+/// Points the `host` pref (read by the Ollama client) at [host].
 Future<void> activateHost(SharedPreferences prefs, OllamaHost host) async {
   await prefs.setString('host', host.url);
-  await prefs.setString('apiKey', host.apiKey);
 }
 
 /// Local Ollama answers "Ollama is running" at `/`; Cloud has no such root
 /// route, so its key is verified against `/api/tags` instead.
 Future<HostHealth> pingHost(OllamaHost host, http.Client client,
     {Duration timeout = _pingTimeout}) async {
-  final uri = Uri.parse(host.isCloud ? '${host.url}/api/tags' : host.url);
+  final uri = Uri.parse(host.isCloud ? '$cloudOrigin/api/tags' : host.url);
   final stopwatch = Stopwatch()..start();
   try {
     final response =

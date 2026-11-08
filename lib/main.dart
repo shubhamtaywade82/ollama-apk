@@ -12,12 +12,12 @@ import 'screen_settings.dart';
 import 'screen_voice.dart';
 import 'screen_welcome.dart';
 import 'worker/setter.dart';
+import 'worker/clients.dart';
 import 'worker/haptic.dart';
 import 'worker/sender.dart';
 import 'worker/desktop.dart';
 import 'worker/theme.dart';
 import 'worker/update.dart';
-import 'worker/clients.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 // ignore: depend_on_referenced_packages
@@ -95,10 +95,6 @@ void Function(void Function())? setMainAppState;
 void main() {
   pwa.PWAInstall().setup(installCallback: () {});
 
-  try {
-    HttpOverrides.global = OllamaHttpOverrides();
-  } catch (_) {}
-
   runApp(const App());
 
   if (desktopFeature()) {
@@ -135,6 +131,7 @@ class _AppState extends State<App> {
 
       SharedPreferences.setPrefix("ollama.");
       SharedPreferences tmp = await SharedPreferences.getInstance();
+      await loadCloudApiKey(tmp);
       setState(() {
         prefs = tmp;
       });

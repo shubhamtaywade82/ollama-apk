@@ -326,8 +326,7 @@ class _ScreenSettingsState extends State<ScreenSettings> {
       text: (useHost)
           ? fixedHost
           : (prefs?.getString("host") ?? "http://localhost:11434"));
-  final apiKeyController = TextEditingController(
-      text: prefs?.getString("apiKey") ?? "");
+  final apiKeyController = TextEditingController(text: cloudApiKey ?? "");
   bool hostLoading = false;
   bool hostInvalidUrl = false;
   bool hostInvalidHost = false;
@@ -348,6 +347,7 @@ class _ScreenSettingsState extends State<ScreenSettings> {
     }
 
     final cloudHost = isCloudHost(tmpHost);
+    if (cloudHost) tmpHost = cloudOrigin;
     final tmpApiKey = apiKeyController.text.trim();
 
     if (cloudHost && tmpApiKey.isEmpty) {
@@ -363,8 +363,7 @@ class _ScreenSettingsState extends State<ScreenSettings> {
       // don't use centralized client because of unexplainable inconsistency
       // between the ways of calling a request
       final requestBase = http.Request(
-          "get",
-          Uri.parse(cloudHost ? "$tmpHost/api/tags" : tmpHost))
+          "get", Uri.parse(cloudHost ? "$tmpHost/api/tags" : tmpHost))
         ..headers.addAll(
           (jsonDecode(prefs!.getString("hostHeaders") ?? "{}") as Map)
               .cast<String, String>(),
@@ -392,7 +391,9 @@ class _ScreenSettingsState extends State<ScreenSettings> {
     final isValidCloud = cloudHost &&
         request.statusCode == 200 &&
         request.body.contains('"models"');
-    if (isValidLocal || isValidCloud || (Uri.parse(tmpHost).toString() == fixedHost)) {
+    if (isValidLocal ||
+        isValidCloud ||
+        (Uri.parse(tmpHost).toString() == fixedHost)) {
       setState(() {
         hostLoading = false;
         host = tmpHost;
@@ -402,9 +403,7 @@ class _ScreenSettingsState extends State<ScreenSettings> {
         }
       });
       prefs?.setString("host", host!);
-      if (cloudHost) {
-        prefs?.setString("apiKey", tmpApiKey);
-      }
+      if (cloudHost) saveCloudApiKey(tmpApiKey);
     } else {
       setState(() {
         hostInvalidHost = true;
@@ -614,7 +613,7 @@ class _ScreenSettingsState extends State<ScreenSettings> {
                                                     style: TextStyle(
                                                         color: Colors.green
                                                             .harmonizeWith(
-                                                                 Theme.of(
+                                                                Theme.of(
                                                                         context)
                                                                     .colorScheme
                                                                     .primary),
@@ -645,8 +644,7 @@ class _ScreenSettingsState extends State<ScreenSettings> {
                                               selectionHaptic();
                                               if (value.trim().isNotEmpty &&
                                                   !isCloudHost(
-                                                      hostInputController
-                                                          .text
+                                                      hostInputController.text
                                                           .trim()
                                                           .removeSuffix("/")
                                                           .trim()) &&
@@ -659,10 +657,9 @@ class _ScreenSettingsState extends State<ScreenSettings> {
                                               checkHost();
                                             },
                                             decoration: InputDecoration(
-                                                labelText:
-                                                    AppLocalizations.of(
-                                                            context)!
-                                                        .settingsApiKey,
+                                                labelText: AppLocalizations.of(
+                                                        context)!
+                                                    .settingsApiKey,
                                                 hintText: "sk-...",
                                                 prefixIcon: const Icon(
                                                     Icons.key_rounded),
@@ -670,9 +667,10 @@ class _ScreenSettingsState extends State<ScreenSettings> {
                                                     ? const SizedBox.shrink()
                                                     : IconButton(
                                                         enableFeedback: false,
-                                                        tooltip: AppLocalizations
-                                                                .of(context)!
-                                                            .tooltipSave,
+                                                        tooltip:
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .tooltipSave,
                                                         onPressed: () {
                                                           selectionHaptic();
                                                           checkHost();

@@ -124,16 +124,15 @@ void setModel(BuildContext context, Function setState) {
             setLocalState(() {});
             try {
               // don't use llama client, package doesn't support just loading without content
-              final preloadUri =
-                  isCloudHost(host) ? Uri.parse("https://ollama.com/api/generate") : Uri.parse("$host/api/generate");
+              final preloadUri = isCloudHost(host)
+                  ? Uri.parse("https://ollama.com/api/generate")
+                  : Uri.parse("$host/api/generate");
               final preloadHeaders = <String, String>{
                 "Content-Type": "application/json",
-                ...(jsonDecode(prefs!.getString("hostHeaders") ?? "{}")
-                    as Map)
+                ...(jsonDecode(prefs!.getString("hostHeaders") ?? "{}") as Map)
               }.cast<String, String>();
               if (isCloudHost(host)) {
-                preloadHeaders["Authorization"] =
-                    "Bearer ${prefs!.getString("apiKey")}";
+                preloadHeaders["Authorization"] = "Bearer $cloudApiKey";
               }
               await httpClient
                   .post(preloadUri,

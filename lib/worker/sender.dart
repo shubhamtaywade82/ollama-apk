@@ -33,19 +33,22 @@ Future<List<llama.Message>> getHistory([String? addToSystem]) async {
   List<llama.Message> history = (prefs!.getBool("useSystem") ?? true)
       ? [llama.Message(role: llama.MessageRole.system, content: system)]
       : [];
-  List<llama.Message> history2 = [];
   images = [];
-  for (var i = 0; i < messages.length; i++) {
-    if (jsonDecode(jsonEncode(messages[i]))["text"] != null) {
-      history2.add(llama.Message(
-          role: (messages[i].author.id == user.id)
+  // `messages` is newest-first and a turn's images are inserted just before
+  // its text, so walk it oldest-first: images then belong to the next text.
+  // Images left over at the end belong to the prompt being sent now.
+  for (final message in messages.reversed) {
+    final json = jsonDecode(jsonEncode(message));
+    if (json["text"] != null) {
+      history.add(llama.Message(
+          role: (message.author.id == user.id)
               ? llama.MessageRole.user
-              : llama.MessageRole.system,
-          content: jsonDecode(jsonEncode(messages[i]))["text"],
+              : llama.MessageRole.assistant,
+          content: json["text"],
           images: (images.isNotEmpty) ? images : null));
       images = [];
     } else {
-      var uri = jsonDecode(jsonEncode(messages[i]))["uri"] as String;
+      var uri = json["uri"] as String;
       String content = (uri.startsWith("data:image/png;base64,"))
           ? uri.removePrefix("data:image/png;base64,")
           : base64.encode(await File(uri).readAsBytes());
@@ -54,7 +57,6 @@ Future<List<llama.Message>> getHistory([String? addToSystem]) async {
     }
   }
 
-  history.addAll(history2.reversed.toList());
   return history;
 }
 
@@ -306,9 +308,8 @@ Future<String> send(String value, BuildContext context, Function setState,
         }
       });
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content:
-              Text(
-                  AppLocalizations.of(context)!.settingsHostInvalid("timeout")),
+          content: Text(
+              AppLocalizations.of(context)!.settingsHostInvalid("timeout")),
           showCloseIcon: true));
       return "";
     }

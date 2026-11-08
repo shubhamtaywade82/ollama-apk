@@ -6,8 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const local = OllamaHost(name: 'laptop', url: 'http://192.168.1.5:11434');
 const router = OllamaHost(name: 'router', url: 'http://192.168.1.5:8080');
-const cloud =
-    OllamaHost(name: 'cloud', url: 'https://ollama.com', apiKey: 'k123');
+const cloud = OllamaHost(name: 'cloud', url: 'https://ollama.com');
 
 MockClient fakeServers(Map<String, http.Response> byUrl) =>
     MockClient((req) async =>
@@ -15,8 +14,7 @@ MockClient fakeServers(Map<String, http.Response> byUrl) =>
 
 void main() {
   test('should migrate legacy single host when no host list saved', () async {
-    SharedPreferences.setMockInitialValues(
-        {'host': 'http://10.0.0.2:11434', 'apiKey': ''});
+    SharedPreferences.setMockInitialValues({'host': 'http://10.0.0.2:11434'});
     final prefs = await SharedPreferences.getInstance();
     final hosts = loadHosts(prefs);
     expect(hosts.single.url, 'http://10.0.0.2:11434');
@@ -27,8 +25,8 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     await upsertHost(prefs, local);
     await upsertHost(prefs, router);
-    final hosts = await upsertHost(
-        prefs, const OllamaHost(name: 'renamed', url: 'http://192.168.1.5:11434'));
+    final hosts = await upsertHost(prefs,
+        const OllamaHost(name: 'renamed', url: 'http://192.168.1.5:11434'));
     expect(hosts.map((h) => h.name), ['renamed', 'router']);
     expect((await removeHost(prefs, router.url)).length, 1);
   });
@@ -43,8 +41,8 @@ void main() {
   });
 
   test('should report down when unreachable or unauthorized', () async {
-    final client = fakeServers(
-        {'https://ollama.com/api/tags': http.Response('no', 401)});
+    final client =
+        fakeServers({'https://ollama.com/api/tags': http.Response('no', 401)});
     expect((await pingHost(local, client)).isUp, isFalse);
     expect((await pingHost(cloud, client)).error, 'unauthorized');
   });
@@ -59,7 +57,6 @@ void main() {
     final next = await failoverFrom(prefs, client, local.url);
     expect(next?.name, 'cloud');
     expect(prefs.getString('host'), 'https://ollama.com');
-    expect(prefs.getString('apiKey'), 'k123');
   });
 
   test('should return null when every host is down', () async {

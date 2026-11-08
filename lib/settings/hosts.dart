@@ -163,12 +163,9 @@ class _AddHostDialogState extends State<_AddHostDialog> {
       return;
     }
     final label = name.text.trim();
-    Navigator.pop(
-        context,
-        OllamaHost(
-            name: label.isEmpty ? uri.host : label,
-            url: normalized,
-            apiKey: apiKey.text.trim()));
+    if (isCloudHost(normalized)) saveCloudApiKey(apiKey.text.trim());
+    Navigator.pop(context,
+        OllamaHost(name: label.isEmpty ? uri.host : label, url: normalized));
   }
 
   @override
