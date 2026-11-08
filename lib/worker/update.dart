@@ -13,7 +13,7 @@ import '../main.dart';
 
 import 'package:flutter_install_referrer/flutter_install_referrer.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
 

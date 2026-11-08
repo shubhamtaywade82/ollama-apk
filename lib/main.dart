@@ -32,7 +32,7 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 // ignore: depend_on_referenced_packages
 import 'package:markdown/markdown.dart' as md;
 import 'package:bitsdojo_window/bitsdojo_window.dart';
@@ -1340,8 +1340,7 @@ class _MainAppState extends State<MainApp> {
                                   return;
                                 }
                                 if (desktopFeature()) {
-                                  FilePicker.platform
-                                      .pickFiles(type: FileType.image)
+                                  FilePicker.pickFiles(type: FileType.image)
                                       .then((value) async {
                                     if (value == null) return;
                                     if (!multimodal) return;

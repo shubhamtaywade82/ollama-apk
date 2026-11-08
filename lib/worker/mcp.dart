@@ -62,7 +62,7 @@ class McpClient {
         'Accept': 'application/json, text/event-stream',
         'MCP-Protocol-Version': mcpProtocolVersion,
         if (server.token.isNotEmpty) 'Authorization': 'Bearer ${server.token}',
-        if (_sessionId != null) _sessionHeader: _sessionId!,
+        _sessionHeader: ?_sessionId,
       };
 
   Future<http.Response> _post(Map<String, dynamic> body) => http_
@@ -203,7 +203,8 @@ String _slug(String value) =>
 
 typedef McpConnection = ({McpClient client, List<McpTool> tools});
 
-llama.Tool toOllamaTool(McpServer server, McpTool tool) => llama.Tool(
+llama.ToolDefinition toOllamaTool(McpServer server, McpTool tool) =>
+    llama.ToolDefinition(
     function: llama.ToolFunction(
         name: mcpToolName(server, tool),
         description: '[${server.name}] ${tool.description}',

@@ -9,7 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart' show host, prefs;
 import 'clients.dart' show cloudApiKey, cloudOrigin, httpClient, isCloudHost;
-import 'package:ollama_dart/ollama_dart.dart' show OllamaClientException;
+import 'package:ollama_dart/ollama_dart.dart' as llama
+    show ApiException, TimeoutException;
 
 const _hostsKey = 'hosts';
 const _pingTimeout = Duration(seconds: 5);
@@ -158,10 +159,8 @@ Future<OllamaHost?> failoverFrom(
 /// True for errors another host could plausibly avoid; false for client
 /// errors (bad model, bad key) that would repeat on every host.
 bool isHostFailure(Object error) {
-  if (error is OllamaClientException) {
-    final code = error.code;
-    return code == null || code >= 500;
-  }
+  if (error is llama.ApiException) return error.statusCode >= 500;
+  if (error is llama.TimeoutException) return true;
   // Only transport failures; a local bug must not switch the saved host.
   return error is SocketException ||
       error is TimeoutException ||

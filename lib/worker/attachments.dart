@@ -91,7 +91,7 @@ Future<void> attachFileToChat(
     BuildContext context, void Function(void Function()) setState) async {
   // No extension filter: Android maps filters to MIME types and drops
   // unknown ones (.pine, .dart, …). Binaries are rejected after reading.
-  final picked = await FilePicker.platform.pickFiles(withData: true);
+  final picked = await FilePicker.pickFiles(withData: true);
   final file = picked?.files.firstOrNull;
   final bytes = file?.bytes;
   if (file == null || bytes == null) return;

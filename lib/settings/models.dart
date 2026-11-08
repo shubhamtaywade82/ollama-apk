@@ -18,21 +18,21 @@ String formatBytes(int bytes) {
 }
 
 /// Installed models plus, for each loaded one, its VRAM footprint.
-typedef ModelInventory = (List<llama.Model>, Map<String, int>);
+typedef ModelInventory = (List<llama.ModelSummary>, Map<String, int>);
 
 Future<ModelInventory> loadInventory() async {
-  final installed = await ollamaClient.listModels();
+  final installed = await ollamaClient.models.list();
   // Loaded state is extra detail: some servers and proxies lack /api/ps,
   // and that must not hide the installed list.
-  final running = await ollamaClient
-      .listRunningModels()
-      .then((r) => r.models ?? <llama.ProcessModel>[])
-      .catchError((Object _) => <llama.ProcessModel>[]);
+  final running = await ollamaClient.models
+      .ps()
+      .then((r) => r.models ?? <llama.RunningModel>[])
+      .catchError((Object _) => <llama.RunningModel>[]);
   final loaded = {
     for (final m in running)
       if (m.model != null) m.model!: m.sizeVram ?? 0
   };
-  return (installed.models ?? <llama.Model>[], loaded);
+  return (installed.models ?? <llama.ModelSummary>[], loaded);
 }
 
 class ScreenSettingsModels extends StatefulWidget {
@@ -70,9 +70,11 @@ class _ScreenSettingsModelsState extends State<ScreenSettingsModels> {
 
   Future<void> unload(String name) => runOperation(
       name,
-      () => ollamaClient.generateCompletion(
-          request: llama.GenerateCompletionRequest(
-              model: name, prompt: '', keepAlive: 0)));
+      () => ollamaClient.completions.generate(
+          request: llama.GenerateRequest(
+              model: name,
+              prompt: '',
+              keepAlive: const llama.KeepAlive.number(0))));
 
   Future<void> delete(String name) async {
     final l10n = AppLocalizations.of(context)!;
@@ -93,8 +95,8 @@ class _ScreenSettingsModelsState extends State<ScreenSettingsModels> {
     if (confirmed != true) return;
     await runOperation(
         name,
-        () => ollamaClient.deleteModel(
-            request: llama.DeleteModelRequest(model: name)));
+        () => ollamaClient.models.delete(
+            request: llama.DeleteRequest(model: name)));
   }
 
   @override
@@ -125,7 +127,7 @@ class _ScreenSettingsModelsState extends State<ScreenSettingsModels> {
     );
   }
 
-  Widget tile(llama.Model entry, int? vramBytes) {
+  Widget tile(llama.ModelSummary entry, int? vramBytes) {
     final l10n = AppLocalizations.of(context)!;
     final name = entry.model ?? '';
     final details = entry.details;

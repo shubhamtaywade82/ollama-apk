@@ -247,15 +247,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String settingsHostInvalid(String type) {
-    String _temp0 = intl.Intl.selectLogic(
-      type,
-      {
-        'url': '无效的URL',
-        'host': '无效的主机地址',
-        'timeout': '请求失败。服务器问题',
-        'other': '请求失败',
-      },
-    );
+    String _temp0 = intl.Intl.selectLogic(type, {
+      'url': '无效的URL',
+      'host': '无效的主机地址',
+      'timeout': '请求失败。服务器问题',
+      'other': '请求失败',
+    });
     return '问题：$_temp0';
   }
 
@@ -267,13 +264,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String settingsHostInvalidDetailed(String type) {
-    String _temp0 = intl.Intl.selectLogic(
-      type,
-      {
-        'url': '您输入的 URL 无效。它不是一个标准的 URL 格式。',
-        'other': '您输入的主机地址无效。无法连接。请检查主机地址并再试一次',
-      },
-    );
+    String _temp0 = intl.Intl.selectLogic(type, {
+      'url': '您输入的 URL 无效。它不是一个标准的 URL 格式。',
+      'other': '您输入的主机地址无效。无法连接。请检查主机地址并再试一次',
+    });
     return '$_temp0';
   }
 
