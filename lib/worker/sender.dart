@@ -1,9 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:ollama_app/worker/clients.dart';
 
+import 'hosts.dart';
 import 'haptic.dart';
 import 'setter.dart';
 import '../main.dart';
@@ -218,91 +220,98 @@ Future<String> send(String value, BuildContext context, Function setState,
   String text = "";
   String newId = const Uuid().v4();
 
-  try {
-    if ((prefs!.getString("requestType") ?? "stream") == "stream") {
-      final stream = ollamaClient
-          .generateChatCompletionStream(
-            request: llama.GenerateChatCompletionRequest(
-                model: model!,
-                messages: history,
-                keepAlive: int.parse(prefs!.getString("keepAlive") ?? "300")),
-          )
-          .timeout(Duration(
-              seconds: (30.0 * (prefs!.getDouble("timeoutMultiplier") ?? 1.0))
-                  .round()));
+  var hasFailedOver = false;
+  while (true) {
+    try {
+      if ((prefs!.getString("requestType") ?? "stream") == "stream") {
+        final stream = ollamaClient
+            .generateChatCompletionStream(
+              request: llama.GenerateChatCompletionRequest(
+                  model: model!,
+                  messages: history,
+                  keepAlive: int.parse(prefs!.getString("keepAlive") ?? "300")),
+            )
+            .timeout(Duration(
+                seconds: (30.0 * (prefs!.getDouble("timeoutMultiplier") ?? 1.0))
+                    .round()));
 
-      await for (final res in stream) {
-        text += (res.message.content);
-        for (var i = 0; i < messages.length; i++) {
-          if (messages[i].id == newId) {
-            messages.removeAt(i);
-            break;
+        await for (final res in stream) {
+          text += (res.message.content);
+          for (var i = 0; i < messages.length; i++) {
+            if (messages[i].id == newId) {
+              messages.removeAt(i);
+              break;
+            }
           }
+          if (chatAllowed) return "";
+          messages.insert(
+              0, types.TextMessage(author: assistant, id: newId, text: text));
+          //TODO: add functionality
+          //
+          // chatKey!.currentState!.scrollToMessage(messages[1].id,
+          //     preferPosition: AutoScrollPosition.end);
+          if (onStream != null) {
+            onStream(text, false);
+          }
+          setState(() {});
+          heavyHaptic();
         }
+      } else {
+        llama.GenerateChatCompletionResponse request;
+        request = await ollamaClient
+            .generateChatCompletion(
+              request: llama.GenerateChatCompletionRequest(
+                  model: model!,
+                  messages: history,
+                  keepAlive: int.parse(prefs!.getString("keepAlive") ?? "300")),
+            )
+            .timeout(Duration(
+                seconds: (30.0 * (prefs!.getDouble("timeoutMultiplier") ?? 1.0))
+                    .round()));
         if (chatAllowed) return "";
         messages.insert(
-            0, types.TextMessage(author: assistant, id: newId, text: text));
-        //TODO: add functionality
-        //
-        // chatKey!.currentState!.scrollToMessage(messages[1].id,
-        //     preferPosition: AutoScrollPosition.end);
-        if (onStream != null) {
-          onStream(text, false);
-        }
+            0,
+            types.TextMessage(
+                author: assistant, id: newId, text: request.message.content));
+        text = request.message.content;
         setState(() {});
         heavyHaptic();
       }
-    } else {
-      llama.GenerateChatCompletionResponse request;
-      request = await ollamaClient
-          .generateChatCompletion(
-            request: llama.GenerateChatCompletionRequest(
-                model: model!,
-                messages: history,
-                keepAlive: int.parse(prefs!.getString("keepAlive") ?? "300")),
-          )
-          .timeout(Duration(
-              seconds: (30.0 * (prefs!.getDouble("timeoutMultiplier") ?? 1.0))
-                  .round()));
-      if (chatAllowed) return "";
-      messages.insert(
-          0,
-          types.TextMessage(
-              author: assistant, id: newId, text: request.message.content));
-      text = request.message.content;
-      setState(() {});
-      heavyHaptic();
-    }
-  } catch (e) {
-    for (var i = 0; i < messages.length; i++) {
-      if (messages[i].id == newId) {
-        messages.removeAt(i);
-        break;
+      break;
+    } catch (e) {
+      if (!hasFailedOver && text.isEmpty && await failoverActiveHost(e)) {
+        hasFailedOver = true;
+        continue;
       }
-    }
-    setState(() {
-      chatAllowed = true;
-      messages.removeAt(0);
-      if (messages.isEmpty) {
-        var tmp = (prefs!.getStringList("chats") ?? []);
-        for (var i = 0; i < tmp.length; i++) {
-          if (jsonDecode((prefs!.getStringList("chats") ?? [])[i])["uuid"] ==
-              chatUuid) {
-            tmp.removeAt(i);
-            prefs!.setStringList("chats", tmp);
-            break;
-          }
+      for (var i = 0; i < messages.length; i++) {
+        if (messages[i].id == newId) {
+          messages.removeAt(i);
+          break;
         }
-        chatUuid = null;
       }
-    });
-    // ignore: use_build_context_synchronously
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content:
-            // ignore: use_build_context_synchronously
-            Text(AppLocalizations.of(context)!.settingsHostInvalid("timeout")),
-        showCloseIcon: true));
-    return "";
+      setState(() {
+        chatAllowed = true;
+        messages.removeAt(0);
+        if (messages.isEmpty) {
+          var tmp = (prefs!.getStringList("chats") ?? []);
+          for (var i = 0; i < tmp.length; i++) {
+            if (jsonDecode((prefs!.getStringList("chats") ?? [])[i])["uuid"] ==
+                chatUuid) {
+              tmp.removeAt(i);
+              prefs!.setStringList("chats", tmp);
+              break;
+            }
+          }
+          chatUuid = null;
+        }
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content:
+              Text(
+                  AppLocalizations.of(context)!.settingsHostInvalid("timeout")),
+          showCloseIcon: true));
+      return "";
+    }
   }
   //TODO: add functionality
   //
