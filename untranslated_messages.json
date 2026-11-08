@@ -33,7 +33,9 @@
     "settingsWebTools",
     "settingsWebToolsDescription",
     "settingsMarketTools",
-    "settingsMarketToolsDescription"
+    "settingsMarketToolsDescription",
+    "settingsThinking",
+    "settingsThinkingDescription"
   ],
 
   "fa": [
@@ -70,7 +72,9 @@
     "settingsWebTools",
     "settingsWebToolsDescription",
     "settingsMarketTools",
-    "settingsMarketToolsDescription"
+    "settingsMarketToolsDescription",
+    "settingsThinking",
+    "settingsThinkingDescription"
   ],
 
   "it": [
@@ -107,7 +111,9 @@
     "settingsWebTools",
     "settingsWebToolsDescription",
     "settingsMarketTools",
-    "settingsMarketToolsDescription"
+    "settingsMarketToolsDescription",
+    "settingsThinking",
+    "settingsThinkingDescription"
   ],
 
   "tr": [
@@ -144,7 +150,9 @@
     "settingsWebTools",
     "settingsWebToolsDescription",
     "settingsMarketTools",
-    "settingsMarketToolsDescription"
+    "settingsMarketToolsDescription",
+    "settingsThinking",
+    "settingsThinkingDescription"
   ],
 
   "zh": [
@@ -181,6 +189,8 @@
     "settingsWebTools",
     "settingsWebToolsDescription",
     "settingsMarketTools",
-    "settingsMarketToolsDescription"
+    "settingsMarketToolsDescription",
+    "settingsThinking",
+    "settingsThinkingDescription"
   ]
 }

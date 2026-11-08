@@ -225,10 +225,23 @@ Future<String> send(String value, BuildContext context, Function setState,
     try {
       // ponytail: tool rounds are non-streaming; stream the final answer
       // too if waiting on long tool chains feels slow.
+      final wantsWeb = prefs!.getBool("webTools") ?? false;
+      final wantsMarket = prefs!.getBool("marketTools") ?? false;
+      final wantsThinking = prefs!.getBool("think") ?? false;
+      final capabilities = (wantsWeb || wantsMarket || wantsThinking)
+          ? await modelCapabilities(model!)
+          : <llama.Capability>{};
+      // Sending tools or think to a model without the capability makes the
+      // server reject the whole request, so both are gated per model.
+      final canUseTools = capabilities.contains(llama.Capability.tools);
       final toolSet = buildToolSet(httpClient,
-          webApiKey: (prefs!.getBool("webTools") ?? false) ? cloudApiKey : null,
-          market: prefs!.getBool("marketTools") ?? false);
+          webApiKey: wantsWeb && canUseTools ? cloudApiKey : null,
+          market: wantsMarket && canUseTools);
       final useTools = toolSet.tools.isNotEmpty;
+      final think =
+          wantsThinking && capabilities.contains(llama.Capability.thinking)
+              ? true
+              : null;
       if (!useTools &&
           (prefs!.getString("requestType") ?? "stream") == "stream") {
         final stream = ollamaClient
@@ -236,6 +249,7 @@ Future<String> send(String value, BuildContext context, Function setState,
               request: llama.GenerateChatCompletionRequest(
                   model: model!,
                   messages: history,
+                  think: think,
                   keepAlive: int.parse(prefs!.getString("keepAlive") ?? "300")),
             )
             .timeout(Duration(
@@ -270,6 +284,7 @@ Future<String> send(String value, BuildContext context, Function setState,
                       request: llama.GenerateChatCompletionRequest(
                           model: model!,
                           messages: turns,
+                          think: think,
                           tools: useTools ? toolSet.tools : null,
                           keepAlive: int.parse(
                               prefs!.getString("keepAlive") ?? "300")),

@@ -1203,6 +1203,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Lets tool-capable models read Binance prices and candles. Read-only: the app never places orders. Replies are not streamed while enabled.'**
   String get settingsMarketToolsDescription;
+
+  /// No description provided for @settingsThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Reasoning mode'**
+  String get settingsThinking;
+
+  /// No description provided for @settingsThinkingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Lets models that support it reason before answering. The reasoning is not shown. Models without the feature ignore this setting; web and market tools likewise only run on models that support tools.'**
+  String get settingsThinkingDescription;
 }
 
 class _AppLocalizationsDelegate

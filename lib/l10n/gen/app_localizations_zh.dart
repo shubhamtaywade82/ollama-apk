@@ -611,4 +611,11 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get settingsMarketToolsDescription =>
       'Lets tool-capable models read Binance prices and candles. Read-only: the app never places orders. Replies are not streamed while enabled.';
+
+  @override
+  String get settingsThinking => 'Reasoning mode';
+
+  @override
+  String get settingsThinkingDescription =>
+      'Lets models that support it reason before answering. The reasoning is not shown. Models without the feature ignore this setting; web and market tools likewise only run on models that support tools.';
 }

@@ -833,5 +833,7 @@
     "settingsWebTools": "Web search tools",
     "settingsWebToolsDescription": "Lets tool-capable models search and read the web through Ollama Cloud. Needs an Ollama Cloud API key. Replies are not streamed while enabled.",
     "settingsMarketTools": "Crypto market tools",
-    "settingsMarketToolsDescription": "Lets tool-capable models read Binance prices and candles. Read-only: the app never places orders. Replies are not streamed while enabled."
+    "settingsMarketToolsDescription": "Lets tool-capable models read Binance prices and candles. Read-only: the app never places orders. Replies are not streamed while enabled.",
+    "settingsThinking": "Reasoning mode",
+    "settingsThinkingDescription": "Lets models that support it reason before answering. The reasoning is not shown. Models without the feature ignore this setting; web and market tools likewise only run on models that support tools."
 }

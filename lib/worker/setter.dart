@@ -23,6 +23,24 @@ import 'package:http/http.dart' as http;
 
 const _modelInfoTimeout = Duration(seconds: 10);
 
+final _capabilityCache = <String, Set<llama.Capability>>{};
+
+/// Capabilities the server reports for [name]. Empty when the lookup fails,
+/// so a feature that needs one stays off instead of failing the request.
+Future<Set<llama.Capability>> modelCapabilities(String name) async {
+  final key = "$host|$name";
+  final cached = _capabilityCache[key];
+  if (cached != null) return cached;
+  try {
+    final details = await ollamaClient
+        .showModelInfo(request: llama.ModelInfoRequest(model: name))
+        .timeout(_modelInfoTimeout);
+    return _capabilityCache[key] = (details.capabilities ?? []).toSet();
+  } catch (_) {
+    return {};
+  }
+}
+
 /// Whether [entry] accepts images. A slow or failing metadata call only
 /// hides the image button for that model; it never blocks the model list.
 Future<bool> supportsVisionInput(llama.Model entry) async {

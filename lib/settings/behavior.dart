@@ -111,6 +111,25 @@ class _ScreenSettingsBehaviorState extends State<ScreenSettingsBehavior> {
                           }),
                       toggle(
                           context,
+                          AppLocalizations.of(context)!.settingsThinking,
+                          (prefs!.getBool("think") ?? false),
+                          (value) {
+                            selectionHaptic();
+                            prefs!.setBool("think", value);
+                            setState(() {});
+                          },
+                          icon: const Icon(Icons.info_rounded,
+                              color: Colors.grey),
+                          iconAfterwards: true,
+                          onLongTap: () {
+                            selectionHaptic();
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(AppLocalizations.of(context)!
+                                    .settingsThinkingDescription),
+                                showCloseIcon: true));
+                          }),
+                      toggle(
+                          context,
                           AppLocalizations.of(context)!.settingsMarketTools,
                           (prefs!.getBool("marketTools") ?? false),
                           (value) {
