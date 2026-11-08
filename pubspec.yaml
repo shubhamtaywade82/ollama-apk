@@ -37,7 +37,7 @@ dependencies:
   version: ^3.0.2
   flutter_displaymode: ^0.7.0
   duration_picker: ^1.2.0
-  speech_to_text: ^7.0.0
+  speech_to_text: ^7.5.0
   flutter_tts:
     git:
       url: https://github.com/mumu-lhl/flutter_tts.git
