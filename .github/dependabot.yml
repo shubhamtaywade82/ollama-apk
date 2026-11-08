@@ -4,9 +4,24 @@ updates:
     directory: /
     schedule: { interval: weekly }
     open-pull-requests-limit: 5
+    ignore:
+      # 2.x is a rewrite of the chat UI; needs a dedicated migration.
+      - dependency-name: flutter_chat_ui
+        update-types: ["version-update:semver-major"]
+      # Discontinued upstream; 0.7.7 fails analyze. Replace, don't bump.
+      - dependency-name: flutter_markdown
   - package-ecosystem: gradle
     directory: /android
     schedule: { interval: weekly }
+    ignore:
+      # AGP 9 / Gradle 9 / Kotlin 2.4 broke the APK build; upgrade together
+      # on a branch, not as separate bumps.
+      - dependency-name: com.android.application
+        update-types: ["version-update:semver-major"]
+      - dependency-name: gradle-wrapper
+        update-types: ["version-update:semver-major"]
+      - dependency-name: org.jetbrains.kotlin.android
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule: { interval: weekly }
