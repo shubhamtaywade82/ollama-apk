@@ -62,3 +62,6 @@ graphify-out/
 .gradle/
 .cxx/
 .externalNativeBuild/
+
+# Gradle build output for the Android host project
+/android/build/
