@@ -3,8 +3,15 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:ollama_dart/ollama_dart.dart' as llama;
+import 'package:shared_preferences/shared_preferences.dart';
 
 const mcpProtocolVersion = '2025-06-18';
+const _supportedProtocolVersions = {'2025-06-18', '2025-03-26'};
+
+// A remote server controls these sizes; cap them so a hostile or broken
+// server cannot exhaust memory or flood the model's tool list.
+const maxMcpResponseBytes = 1024 * 1024;
+const maxMcpToolsPerServer = 64;
 const _sessionHeader = 'mcp-session-id';
 const _requestTimeout = Duration(seconds: 20);
 
@@ -71,6 +78,9 @@ class McpClient {
       throw McpException('$method failed (${response.statusCode})');
     }
     _sessionId = response.headers[_sessionHeader] ?? _sessionId;
+    if (response.bodyBytes.length > maxMcpResponseBytes) {
+      throw McpException('$method response exceeds $maxMcpResponseBytes bytes');
+    }
     final message = _findResponse(response, id);
     final error = message['error'];
     if (error is Map) throw McpException('$method: ${error['message']}');
@@ -78,17 +88,23 @@ class McpClient {
   }
 
   Future<void> initialize() async {
-    await _request('initialize', {
+    final result = await _request('initialize', {
       'protocolVersion': mcpProtocolVersion,
       'capabilities': {},
       'clientInfo': {'name': 'ollama-apk', 'version': '1.0.0'},
     });
+    final negotiated = result['protocolVersion'];
+    if (!_supportedProtocolVersions.contains(negotiated)) {
+      throw McpException('unsupported protocol version $negotiated');
+    }
     await _post({'jsonrpc': '2.0', 'method': 'notifications/initialized'});
   }
 
   Future<List<McpTool>> listTools() async {
     final result = await _request('tools/list', {});
-    return ((result['tools'] as List?) ?? []).map((raw) {
+    return ((result['tools'] as List?) ?? [])
+        .take(maxMcpToolsPerServer)
+        .map((raw) {
       final tool = (raw as Map).cast<String, dynamic>();
       return McpTool(
           tool['name'] as String,
@@ -145,8 +161,42 @@ Iterable<String> _sseData(String body) sync* {
 
 /// Ollama tool names must be simple identifiers; MCP names are namespaced
 /// by server so two servers can expose a tool with the same name.
-String mcpToolName(McpServer server, McpTool tool) =>
-    'mcp_${_slug(server.name)}_${_slug(tool.name)}';
+///
+/// Slugs alone collide ('a b' and 'a_b'), so a short stable hash of the
+/// exact server URL and tool name is appended.
+String mcpToolName(McpServer server, McpTool tool) {
+  final readable = '${_slug(server.name)}_${_slug(tool.name)}';
+  final clipped = readable.length > 40 ? readable.substring(0, 40) : readable;
+  return 'mcp_${clipped}_${_fnv1a('${server.url}\n${tool.name}')}';
+}
+
+/// 32-bit FNV-1a as 8 hex digits: stable across runs, unlike hashCode.
+String _fnv1a(String input) {
+  var hash = 0x811c9dc5;
+  for (final byte in utf8.encode(input)) {
+    hash = ((hash ^ byte) * 0x01000193) & 0xffffffff;
+  }
+  return hash.toRadixString(16).padLeft(8, '0');
+}
+
+const _allowedToolsKey = 'mcpAllowedTools';
+
+String _toolKey(McpServer server, String toolName) =>
+    '${server.url}\n$toolName';
+
+/// Tools the user has switched on. New servers' tools start off: adding a
+/// server is not consent for every tool it exposes.
+bool isMcpToolAllowed(SharedPreferences prefs, McpServer server, String tool) =>
+    (prefs.getStringList(_allowedToolsKey) ?? [])
+        .contains(_toolKey(server, tool));
+
+Future<void> setMcpToolAllowed(SharedPreferences prefs, McpServer server,
+    String tool, bool allowed) async {
+  final keys = {...prefs.getStringList(_allowedToolsKey) ?? <String>[]};
+  final key = _toolKey(server, tool);
+  allowed ? keys.add(key) : keys.remove(key);
+  await prefs.setStringList(_allowedToolsKey, keys.toList());
+}
 
 String _slug(String value) =>
     value.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_');
@@ -212,3 +262,19 @@ Future<List<McpConnection>> connectMcpServers(http.Client client) async {
   }
   return connected;
 }
+
+/// [connections] reduced to the tools the user has switched on; servers
+/// with none left are dropped.
+List<McpConnection> allowedMcpConnections(
+        SharedPreferences prefs, List<McpConnection> connections) =>
+    [
+      for (final c in connections)
+        if (c.tools
+            .any((t) => isMcpToolAllowed(prefs, c.client.server, t.name)))
+          (
+            client: c.client,
+            tools: c.tools
+                .where((t) => isMcpToolAllowed(prefs, c.client.server, t.name))
+                .toList()
+          )
+    ];

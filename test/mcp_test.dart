@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:ollama_app/worker/agent.dart';
 import 'package:ollama_app/worker/mcp.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const server =
     McpServer(name: 'Notes', url: 'https://mcp.example/mcp', token: 'secret');
@@ -55,6 +56,7 @@ MockClient fakeMcp(List<Map<String, dynamic>> seen, {bool sse = false}) =>
     });
 
 void main() {
+  hardeningTests();
   test('should initialize, list and call tools over plain JSON', () async {
     final seen = <Map<String, dynamic>>[];
     final client = McpClient(fakeMcp(seen), server);
@@ -103,9 +105,9 @@ void main() {
     final connection = (client: mcp, tools: await mcp.listTools());
     final set = buildToolSet(http.Client(), mcp: [connection]);
 
-    expect(set.tools.single.function!.name, 'mcp_notes_search_notes');
-    expect(await set.run('mcp_notes_search_notes', {'q': 'eggs'}),
-        startsWith('found: eggs'));
+    final name = set.tools.single.function!.name;
+    expect(name, startsWith('mcp_notes_search_notes_'));
+    expect(await set.run(name, {'q': 'eggs'}), startsWith('found: eggs'));
     expect(await set.run('mcp_other_tool', {}), contains('not enabled'));
   });
 
@@ -129,5 +131,62 @@ void main() {
     final connections = await connectMcpServers(client);
     expect(connections.single.client.server.name, 'Notes');
     expect(mcpErrors[broken.url], contains('502'));
+  });
+}
+
+MockClient replying(Map<String, dynamic> result, {String padding = ''}) =>
+    MockClient((req) async {
+      final id = jsonDecode(req.body)['id'];
+      if (id == null) return http.Response('', 202);
+      return http.Response(
+          jsonEncode({'jsonrpc': '2.0', 'id': id, 'result': result}) + padding,
+          200);
+    });
+
+void hardeningTests() {
+  test('should reject a server negotiating an unsupported protocol', () {
+    final client =
+        McpClient(replying({'protocolVersion': '1999-01-01'}), server);
+    expect(client.initialize(), throwsA(isA<McpException>()));
+  });
+
+  test('should reject oversized responses before parsing', () {
+    final client = McpClient(
+        replying({'tools': []}, padding: ' ' * (maxMcpResponseBytes + 1)),
+        server);
+    expect(client.listTools(), throwsA(isA<McpException>()));
+  });
+
+  test('should keep at most maxMcpToolsPerServer tools', () async {
+    final client = McpClient(
+        replying({
+          'tools': [
+            for (var i = 0; i < 100; i++) {'name': 't$i'}
+          ]
+        }),
+        server);
+    expect((await client.listTools()).length, maxMcpToolsPerServer);
+  });
+
+  test('should give distinct names to tools whose slugs collide', () {
+    const a = McpTool('a b', '', {});
+    const b = McpTool('a_b', '', {});
+    expect(mcpToolName(server, a), isNot(mcpToolName(server, b)));
+    expect(mcpToolName(server, a), mcpToolName(server, a));
+  });
+
+  test('should expose only tools the user switched on', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final mcp = McpClient(fakeMcp([]), server);
+    await mcp.initialize();
+    final connection = (client: mcp, tools: await mcp.listTools());
+
+    expect(allowedMcpConnections(prefs, [connection]), isEmpty);
+    await setMcpToolAllowed(prefs, server, 'search notes', true);
+    expect(allowedMcpConnections(prefs, [connection]).single.tools.single.name,
+        'search notes');
+    await setMcpToolAllowed(prefs, server, 'search notes', false);
+    expect(allowedMcpConnections(prefs, [connection]), isEmpty);
   });
 }

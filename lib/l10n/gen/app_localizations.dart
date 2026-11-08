@@ -1279,7 +1279,7 @@ abstract class AppLocalizations {
   /// No description provided for @mcpEnableDescription.
   ///
   /// In en, this message translates to:
-  /// **'Sent only to models that support tools. MCP tools may act on your behalf; add only servers you trust. Replies are not streamed while tools are on.'**
+  /// **'Sent only to models that support tools. New servers\' tools start off: expand a server to enable each tool you trust. Replies are not streamed while tools are on.'**
   String get mcpEnableDescription;
 
   /// No description provided for @mcpEmpty.
@@ -1317,6 +1317,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Operation failed: {error}'**
   String modelsOperationFailed(String error);
+
+  /// No description provided for @mcpToolsEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'{enabled} of {total} tools enabled'**
+  String mcpToolsEnabled(int enabled, int total);
 }
 
 class _AppLocalizationsDelegate

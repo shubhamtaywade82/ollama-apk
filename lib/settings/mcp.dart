@@ -15,7 +15,7 @@ class ScreenSettingsMcp extends StatefulWidget {
 }
 
 class _ScreenSettingsMcpState extends State<ScreenSettingsMcp> {
-  Map<String, int> toolCounts = {};
+  Map<String, McpConnection> connections = {};
   bool connecting = false;
 
   @override
@@ -30,9 +30,7 @@ class _ScreenSettingsMcpState extends State<ScreenSettingsMcp> {
     if (!mounted) return;
     setState(() {
       connecting = false;
-      toolCounts = {
-        for (final c in connections) c.client.server.url: c.tools.length
-      };
+      this.connections = {for (final c in connections) c.client.server.url: c};
     });
   }
 
@@ -53,8 +51,13 @@ class _ScreenSettingsMcpState extends State<ScreenSettingsMcp> {
 
   String status(McpServer server) {
     final l10n = AppLocalizations.of(context)!;
-    final count = toolCounts[server.url];
-    if (count != null) return l10n.mcpToolCount(count);
+    final connection = connections[server.url];
+    if (connection != null) {
+      final enabled = connection.tools
+          .where((t) => isMcpToolAllowed(prefs!, server, t.name))
+          .length;
+      return l10n.mcpToolsEnabled(enabled, connection.tools.length);
+    }
     return mcpErrors[server.url] ?? (connecting ? '…' : '');
   }
 
@@ -97,13 +100,28 @@ class _ScreenSettingsMcpState extends State<ScreenSettingsMcp> {
                 padding: const EdgeInsets.only(right: 24),
                 child: const Icon(Icons.delete_rounded)),
             onDismissed: (_) => remove(server),
-            child: ListTile(
-              leading: Icon(toolCounts.containsKey(server.url)
+            child: ExpansionTile(
+              leading: Icon(connections.containsKey(server.url)
                   ? Icons.extension_rounded
                   : Icons.extension_off_rounded),
               title: Text(server.name),
               subtitle: Text('${server.url}\n${status(server)}'),
-              isThreeLine: true,
+              children: [
+                for (final tool
+                    in connections[server.url]?.tools ?? <McpTool>[])
+                  SwitchListTile(
+                      dense: true,
+                      title: Text(tool.name),
+                      subtitle: Text(tool.description,
+                          maxLines: 2, overflow: TextOverflow.ellipsis),
+                      value: isMcpToolAllowed(prefs!, server, tool.name),
+                      onChanged: (allowed) async {
+                        selectionHaptic();
+                        await setMcpToolAllowed(
+                            prefs!, server, tool.name, allowed);
+                        setState(() {});
+                      }),
+              ],
             ),
           ),
       ]),

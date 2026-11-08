@@ -52,7 +52,8 @@
     "mcpTokenNeedsHttps",
     "mcpToolCount",
     "hostsPublicHttpWarning",
-    "modelsOperationFailed"
+    "modelsOperationFailed",
+    "mcpToolsEnabled"
   ],
 
   "fa": [
@@ -108,7 +109,8 @@
     "mcpTokenNeedsHttps",
     "mcpToolCount",
     "hostsPublicHttpWarning",
-    "modelsOperationFailed"
+    "modelsOperationFailed",
+    "mcpToolsEnabled"
   ],
 
   "it": [
@@ -164,7 +166,8 @@
     "mcpTokenNeedsHttps",
     "mcpToolCount",
     "hostsPublicHttpWarning",
-    "modelsOperationFailed"
+    "modelsOperationFailed",
+    "mcpToolsEnabled"
   ],
 
   "tr": [
@@ -220,7 +223,8 @@
     "mcpTokenNeedsHttps",
     "mcpToolCount",
     "hostsPublicHttpWarning",
-    "modelsOperationFailed"
+    "modelsOperationFailed",
+    "mcpToolsEnabled"
   ],
 
   "zh": [
@@ -276,6 +280,7 @@
     "mcpTokenNeedsHttps",
     "mcpToolCount",
     "hostsPublicHttpWarning",
-    "modelsOperationFailed"
+    "modelsOperationFailed",
+    "mcpToolsEnabled"
   ]
 }

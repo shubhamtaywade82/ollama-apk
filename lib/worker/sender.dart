@@ -245,7 +245,8 @@ Future<String> send(String value, BuildContext context, Function setState,
           webApiKey: wantsWeb && canUseTools ? cloudApiKey : null,
           market: wantsMarket && canUseTools,
           mcp: wantsMcp && canUseTools
-              ? await connectMcpServers(httpClient)
+              ? allowedMcpConnections(
+                  prefs!, await connectMcpServers(httpClient))
               : const [],
           userText: value);
       final useTools = toolSet.tools.isNotEmpty;

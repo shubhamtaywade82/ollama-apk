@@ -860,7 +860,7 @@
     "settingsDescriptionMcp": "Give tool-capable models tools from remote MCP servers",
     "mcpAdd": "Add server",
     "mcpEnable": "Use MCP tools in chat",
-    "mcpEnableDescription": "Sent only to models that support tools. MCP tools may act on your behalf; add only servers you trust. Replies are not streamed while tools are on.",
+    "mcpEnableDescription": "Sent only to models that support tools. New servers' tools start off: expand a server to enable each tool you trust. Replies are not streamed while tools are on.",
     "mcpEmpty": "No MCP servers yet. Add a remote server URL (Streamable HTTP).",
     "mcpToken": "Bearer token (optional)",
     "mcpTokenNeedsHttps": "Use an https:// URL when sending a token",
@@ -878,6 +878,17 @@
         "placeholders": {
             "error": {
                 "type": "String"
+            }
+        }
+    },
+    "mcpToolsEnabled": "{enabled} of {total} tools enabled",
+    "@mcpToolsEnabled": {
+        "placeholders": {
+            "enabled": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
             }
         }
     }

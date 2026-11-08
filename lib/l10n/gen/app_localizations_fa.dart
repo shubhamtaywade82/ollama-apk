@@ -674,7 +674,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get mcpEnableDescription =>
-      'Sent only to models that support tools. MCP tools may act on your behalf; add only servers you trust. Replies are not streamed while tools are on.';
+      'Sent only to models that support tools. New servers\' tools start off: expand a server to enable each tool you trust. Replies are not streamed while tools are on.';
 
   @override
   String get mcpEmpty =>
@@ -704,5 +704,10 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String modelsOperationFailed(String error) {
     return 'Operation failed: $error';
+  }
+
+  @override
+  String mcpToolsEnabled(int enabled, int total) {
+    return '$enabled of $total tools enabled';
   }
 }
