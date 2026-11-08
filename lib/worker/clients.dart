@@ -89,7 +89,17 @@ Map<String, String> ollamaClientHeaders() {
 }
 
 llama.OllamaClient get ollamaClient {
-  final baseUrl = isCloudHost(host) ? '$cloudOrigin/api' : '${host ?? ''}/api';
+  final baseUrl = isCloudHost(host) ? cloudOrigin : host ?? '';
   return llama.OllamaClient(
-      headers: ollamaClientHeaders(), baseUrl: baseUrl, client: httpClient);
+      config: llama.OllamaConfig(
+          baseUrl: baseUrl,
+          defaultHeaders: ollamaClientHeaders(),
+          // The app fails over to the next host itself; client-side retries
+          // would only delay that.
+          retryPolicy: const llama.RetryPolicy(maxRetries: 0)),
+      httpClient: httpClient);
 }
+
+/// Ollama's keep_alive from the user's setting, in seconds.
+llama.KeepAlive get keepAliveSetting =>
+    llama.KeepAlive.number(int.parse(prefs!.getString("keepAlive") ?? "300"));

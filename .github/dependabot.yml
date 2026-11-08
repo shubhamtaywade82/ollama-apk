@@ -11,8 +11,18 @@ updates:
       # 2.x is a rewrite of the chat UI; needs a dedicated migration.
       - dependency-name: flutter_chat_ui
         update-types: ["version-update:semver-major"]
-      # Discontinued upstream; 0.7.7 fails analyze. Replace, don't bump.
-      - dependency-name: flutter_markdown
+      # Built on the standalone material_ui package, whose Widget and
+      # ColorScheme types do not match Flutter's own Material library.
+      - dependency-name: dynamic_color
+        update-types: ["version-update:semver-major"]
+      # These need win32 6, but bitsdojo_window (desktop title bar, last
+      # released at 0.1.6) pins win32 5. Upgrade together once it is replaced.
+      - dependency-name: file_picker
+        update-types: ["version-update:semver-major"]
+      - dependency-name: flutter_secure_storage
+        update-types: ["version-update:semver-major"]
+      - dependency-name: package_info_plus
+        update-types: ["version-update:semver-major"]
       # 13.x compiles against the Android 37 SDK, which build machines lack.
       - dependency-name: permission_handler
         update-types: ["version-update:semver-major"]

@@ -17,7 +17,7 @@ const maxCallsPerRound = 4;
 const maxToolResultChars = 8000;
 
 final webTools = [
-  const llama.Tool(
+  const llama.ToolDefinition(
       function: llama.ToolFunction(
           name: 'web_search',
           description: 'Search the web for current information.',
@@ -28,7 +28,7 @@ final webTools = [
         },
         'required': ['query']
       })),
-  const llama.Tool(
+  const llama.ToolDefinition(
       function: llama.ToolFunction(
           name: 'web_fetch',
           description: 'Fetch the readable text of a web page.',
@@ -41,14 +41,15 @@ final webTools = [
       })),
 ];
 
-typedef ModelCall = Future<llama.Message> Function(List<llama.Message> history);
+typedef ModelCall = Future<llama.ChatMessage> Function(
+    List<llama.ChatMessage> history);
 typedef ToolRunner = Future<String> Function(
     String name, Map<String, dynamic> arguments);
 
 /// Asks the model, runs any tools it calls, feeds results back, and repeats
 /// until it answers in plain text or [maxToolRounds] is reached.
 /// Appends every intermediate message to [history].
-Future<String> runToolLoop(List<llama.Message> history, ModelCall callModel,
+Future<String> runToolLoop(List<llama.ChatMessage> history, ModelCall callModel,
     ToolRunner runTool) async {
   for (var round = 0; round < maxToolRounds; round++) {
     final reply = await callModel(history);
@@ -64,7 +65,9 @@ Future<String> runToolLoop(List<llama.Message> history, ModelCall callModel,
           ? await _runSafely(runTool, function)
           : 'Not run: at most $maxCallsPerRound tool calls per turn. '
               'Request it again in the next turn if still needed.';
-      history.add(llama.Message(role: llama.MessageRole.tool, content: result));
+      // toolName and the call id let the model match results to calls.
+      history.add(llama.ChatMessage.tool(result,
+          toolName: function.name, toolCallId: call.id));
     }
   }
   return 'Stopped after $maxToolRounds tool rounds without a final answer.';
@@ -74,7 +77,7 @@ Future<String> runToolLoop(List<llama.Message> history, ModelCall callModel,
 Future<String> _runSafely(
     ToolRunner runTool, llama.ToolCallFunction function) async {
   try {
-    final result = await runTool(function.name, function.arguments);
+    final result = await runTool(function.name, function.arguments ?? {});
     return result.length > maxToolResultChars
         ? result.substring(0, maxToolResultChars)
         : result;
@@ -124,7 +127,7 @@ const klineIntervals = ['1m', '5m', '15m', '1h', '4h', '1d'];
 // Read-only on purpose: these tools only fetch public market data, so a
 // model can never place or cancel an order through the agent.
 final marketTools = [
-  const llama.Tool(
+  const llama.ToolDefinition(
       function: llama.ToolFunction(
           name: 'crypto_price',
           description:
@@ -136,7 +139,7 @@ final marketTools = [
         },
         'required': ['symbol']
       })),
-  const llama.Tool(
+  const llama.ToolDefinition(
       function: llama.ToolFunction(
           name: 'crypto_candles',
           description:
@@ -187,7 +190,7 @@ ToolRunner marketToolRunner(http.Client client) => (name, arguments) async {
 
 /// Tools and their runner for the enabled packs. A call to a tool outside
 /// the enabled packs is rejected rather than silently run.
-({List<llama.Tool> tools, ToolRunner run}) buildToolSet(http.Client client,
+({List<llama.ToolDefinition> tools, ToolRunner run}) buildToolSet(http.Client client,
     {String? webApiKey,
     bool market = false,
     String userText = '',

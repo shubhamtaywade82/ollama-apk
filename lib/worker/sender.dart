@@ -29,7 +29,7 @@ List<String> images = [];
 /// being sent now, like leftover [images].
 List<({String name, String text})> pendingFiles = [];
 
-Future<List<llama.Message>> getHistory([String? addToSystem]) async {
+Future<List<llama.ChatMessage>> getHistory([String? addToSystem]) async {
   var system = prefs?.getString("system") ?? "You are a helpful assistant";
   if (prefs!.getBool("noMarkdown") ?? false) {
     system +=
@@ -39,8 +39,8 @@ Future<List<llama.Message>> getHistory([String? addToSystem]) async {
     system += "\n$addToSystem";
   }
 
-  List<llama.Message> history = (prefs!.getBool("useSystem") ?? true)
-      ? [llama.Message(role: llama.MessageRole.system, content: system)]
+  List<llama.ChatMessage> history = (prefs!.getBool("useSystem") ?? true)
+      ? [llama.ChatMessage.system(system)]
       : [];
   images = [];
   pendingFiles = [];
@@ -55,7 +55,7 @@ Future<List<llama.Message>> getHistory([String? addToSystem]) async {
     }
     final json = jsonDecode(jsonEncode(message));
     if (json["text"] != null) {
-      history.add(llama.Message(
+      history.add(llama.ChatMessage(
           role: (message.author.id == user.id)
               ? llama.MessageRole.user
               : llama.MessageRole.assistant,
@@ -108,24 +108,21 @@ List getHistoryString([String? uuid]) {
 
 Future<String> getTitleAi(List history) async {
   final generated = await ollamaClient
-      .generateChatCompletion(
-        request: llama.GenerateChatCompletionRequest(
+.chat
+      .create(
+        request: llama.ChatRequest(
             model: model!,
             messages: [
-              const llama.Message(
-                  role: llama.MessageRole.system,
-                  content:
+              const llama.ChatMessage.system(
                       "Generate a three to six word title for the conversation provided by the user. If an object or person is very important in the conversation, put it in the title as well; keep the focus on the main subject. You must not put the assistant in the focus and you must not put the word 'assistant' in the title! Do preferably use title case. Use a formal tone, don't use dramatic words, like 'mystery' Use spaces between words, do not use camel case! You must not use markdown or any other formatting language! You must not use emojis or any other symbols! You must not use general clauses like 'assistance', 'help' or 'session' in your title! \n\n~~User Introduces Themselves~~ -> User Introduction\n~~User Asks for Help with a Problem~~ -> Problem Help\n~~User has a _**big**_ Problem~~ -> Big Problem"),
-              llama.Message(
-                  role: llama.MessageRole.user,
-                  content: "```\n${jsonEncode(history)}\n```")
+              llama.ChatMessage.user("```\n${jsonEncode(history)}\n```")
             ],
-            keepAlive: int.parse(prefs!.getString("keepAlive") ?? "300")),
+            keepAlive: keepAliveSetting),
       )
       .timeout(Duration(
           seconds:
               (10.0 * (prefs!.getDouble("timeoutMultiplier") ?? 1.0)).round()));
-  var title = generated.message.content;
+  var title = generated.message?.content ?? "";
   title = title.replaceAll("\n", " ");
 
   var terms = [
@@ -222,9 +219,8 @@ Future<String> send(String value, BuildContext context, Function setState,
 
   var history = await getHistory(addToSystem);
 
-  history.add(llama.Message(
-      role: llama.MessageRole.user,
-      content: withAttachments(value.trim(), pendingFiles),
+  history.add(llama.ChatMessage.user(
+      withAttachments(value.trim(), pendingFiles),
       images: (images.isNotEmpty) ? images : null));
   messages.insert(
       0,
@@ -255,10 +251,10 @@ Future<String> send(String value, BuildContext context, Function setState,
       final capabilities =
           (wantsWeb || wantsMarket || wantsMcp || wantsThinking)
               ? await modelCapabilities(model!)
-              : <llama.Capability>{};
+              : <String>{};
       // Sending tools or think to a model without the capability makes the
       // server reject the whole request, so both are gated per model.
-      final canUseTools = capabilities.contains(llama.Capability.tools);
+      final canUseTools = capabilities.contains(capabilityTools);
       final toolSet = buildToolSet(httpClient,
           webApiKey: wantsWeb && canUseTools ? cloudApiKey : null,
           market: wantsMarket && canUseTools,
@@ -269,26 +265,26 @@ Future<String> send(String value, BuildContext context, Function setState,
           userText: value);
       final useTools = toolSet.tools.isNotEmpty;
       final think =
-          wantsThinking && capabilities.contains(llama.Capability.thinking)
-              ? true
+          wantsThinking && capabilities.contains(capabilityThinking)
+              ? const llama.ThinkValue.enabled(true)
               : null;
       if (!useTools &&
           (prefs!.getString("requestType") ?? "stream") == "stream") {
-        final stream = ollamaClient
-            .generateChatCompletionStream(
-              request: llama.GenerateChatCompletionRequest(
+        final stream = ollamaClient.chat
+            .createStream(
+              request: llama.ChatRequest(
                   model: model!,
                   messages: history,
                   think: think,
-                  keepAlive: int.parse(prefs!.getString("keepAlive") ?? "300")),
+                  keepAlive: keepAliveSetting),
             )
             .timeout(Duration(
                 seconds: (30.0 * (prefs!.getDouble("timeoutMultiplier") ?? 1.0))
                     .round()));
 
         await for (final res in stream) {
-          text += (res.message.content);
-          thinking += res.message.thinking ?? "";
+          text += res.message?.content ?? "";
+          thinking += res.message?.thinking ?? "";
           for (var i = 0; i < messages.length; i++) {
             if (messages[i].id == newId) {
               messages.removeAt(i);
@@ -314,22 +310,27 @@ Future<String> send(String value, BuildContext context, Function setState,
           heavyHaptic();
         }
       } else {
-        Future<llama.Message> callModel(List<llama.Message> turns) async =>
-            (await ollamaClient
-                    .generateChatCompletion(
-                      request: llama.GenerateChatCompletionRequest(
-                          model: model!,
-                          messages: turns,
-                          think: think,
-                          tools: useTools ? toolSet.tools : null,
-                          keepAlive: int.parse(
-                              prefs!.getString("keepAlive") ?? "300")),
-                    )
-                    .timeout(Duration(
-                        seconds: (30.0 *
-                                (prefs!.getDouble("timeoutMultiplier") ?? 1.0))
-                            .round())))
-                .message;
+        Future<llama.ChatMessage> callModel(
+            List<llama.ChatMessage> turns) async {
+          final response = await ollamaClient.chat
+              .create(
+                request: llama.ChatRequest(
+                    model: model!,
+                    messages: turns,
+                    think: think,
+                    tools: useTools ? toolSet.tools : null,
+                    keepAlive: keepAliveSetting),
+              )
+              .timeout(Duration(
+                  seconds:
+                      (30.0 * (prefs!.getDouble("timeoutMultiplier") ?? 1.0))
+                          .round()));
+          // Keep content, thinking and tool calls so tool rounds can
+          // replay the assistant turn faithfully.
+          final message = response.message;
+          return llama.ChatMessage.assistant(message?.content ?? "",
+              thinking: message?.thinking, toolCalls: message?.toolCalls);
+        }
         // A copy, so a failover retry does not resend this attempt's tool turns.
         final turns = List.of(history);
         final reply = useTools

@@ -4,15 +4,15 @@ publish_to: 'none'
 version: 1.4.1+13
 
 environment:
-  sdk: '>=3.3.4 <4.0.0'
-  flutter: '>=3.29.0'
+  sdk: '>=3.12.0 <4.0.0'
+  flutter: '>=3.44.0'
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  ollama_dart: ^0.2.4
+  ollama_dart: ^4.1.0
   intl: any
   shared_preferences: ^2.2.3
   flutter_chat_ui: ^1.6.15
@@ -25,18 +25,18 @@ dependencies:
   visibility_detector: ^0.4.0+2
   http: ^1.2.1
   dartx: ^1.2.0
-  smooth_page_indicator: ^1.1.0
+  smooth_page_indicator: ^3.0.0
   transparent_image: ^2.0.1
   url_launcher: ^6.2.6
-  flutter_markdown: 0.7.6+2
-  file_picker: ^8.0.3
+  flutter_markdown_plus: ^1.0.5
+  file_picker: ^11.0.3
   file_selector: ^1.1.0
   bitsdojo_window: ^0.1.6
-  flutter_install_referrer: ^2.0.2
+  flutter_install_referrer: ^3.0.1
   package_info_plus: ^9.0.1
   version: ^3.0.2
   flutter_displaymode: ^0.7.0
-  duration_picker: ^1.2.0
+  duration_picker: ^2.0.0
   speech_to_text: ^7.5.0
   flutter_tts:
     git:

@@ -16,14 +16,14 @@ void main() {
   });
 
   test('should detect clip models without a metadata call', () async {
-    const entry = llama.Model(
+    const entry = llama.ModelSummary(
         model: 'llava:7b', details: llama.ModelDetails(families: ['clip']));
     expect(await supportsVisionInput(entry), isTrue);
   });
 
   test('should treat failed metadata as no vision instead of throwing',
       () async {
-    const entry = llama.Model(model: 'llama3:8b');
+    const entry = llama.ModelSummary(model: 'llama3:8b');
     expect(await supportsVisionInput(entry), isFalse);
   });
 }
@@ -59,8 +59,7 @@ void capabilityTests() {
     test('should read capabilities once and cache them', () async {
       final first = await modelCapabilities('qwen3:8b');
       await modelCapabilities('qwen3:8b');
-      expect(first,
-          containsAll([llama.Capability.tools, llama.Capability.thinking]));
+      expect(first, containsAll([capabilityTools, capabilityThinking]));
       expect(showCalls, 1);
     });
 

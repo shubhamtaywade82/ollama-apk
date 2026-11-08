@@ -105,7 +105,7 @@ void main() {
     final connection = (client: mcp, tools: await mcp.listTools());
     final set = buildToolSet(http.Client(), mcp: [connection]);
 
-    final name = set.tools.single.function!.name;
+    final name = set.tools.single.function.name;
     expect(name, startsWith('mcp_notes_search_notes_'));
     expect(await set.run(name, {'q': 'eggs'}), startsWith('found: eggs'));
     expect(await set.run('mcp_other_tool', {}), contains('not enabled'));

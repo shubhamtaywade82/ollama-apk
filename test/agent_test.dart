@@ -6,14 +6,17 @@ import 'package:http/testing.dart';
 import 'package:ollama_app/worker/agent.dart';
 import 'package:ollama_dart/ollama_dart.dart' as llama;
 
-llama.Message toolCall(String name, Map<String, dynamic> args) =>
-    llama.Message(role: llama.MessageRole.assistant, content: '', toolCalls: [
-      llama.ToolCall(
-          function: llama.ToolCallFunction(name: name, arguments: args))
-    ]);
+llama.ChatMessage toolCall(String name, Map<String, dynamic> args) =>
+    llama.ChatMessage(
+        role: llama.MessageRole.assistant,
+        content: '',
+        toolCalls: [
+          llama.ToolCall(
+              function: llama.ToolCallFunction(name: name, arguments: args))
+        ]);
 
 const answer =
-    llama.Message(role: llama.MessageRole.assistant, content: 'It is 21C.');
+    llama.ChatMessage(role: llama.MessageRole.assistant, content: 'It is 21C.');
 
 void main() {
   reviewFixTests();
@@ -23,7 +26,7 @@ void main() {
       toolCall('web_search', {'query': 'weather'}),
       answer
     ];
-    final history = <llama.Message>[];
+    final history = <llama.ChatMessage>[];
     final ranTools = <String>[];
     final result = await runToolLoop(history, (_) async => replies.removeAt(0),
         (name, args) async {
@@ -44,9 +47,9 @@ void main() {
       toolCall('web_fetch', {'url': 'x'}),
       answer
     ];
-    final history = <llama.Message>[];
+    final history = <llama.ChatMessage>[];
     await runToolLoop(history, (_) async => replies.removeAt(0),
-        (_, __) async => throw Exception('boom'));
+        (_, _) async => throw Exception('boom'));
     expect(history[1].content, contains('failed'));
   });
 
@@ -55,7 +58,7 @@ void main() {
     final result = await runToolLoop([], (_) async {
       calls++;
       return toolCall('web_search', {'query': 'again'});
-    }, (_, __) async => 'r');
+    }, (_, _) async => 'r');
     expect(calls, maxToolRounds);
     expect(result, contains('Stopped'));
   });
@@ -65,9 +68,9 @@ void main() {
       toolCall('web_fetch', {'url': 'x'}),
       answer
     ];
-    final history = <llama.Message>[];
+    final history = <llama.ChatMessage>[];
     await runToolLoop(history, (_) async => replies.removeAt(0),
-        (_, __) async => 'a' * (maxToolResultChars * 2));
+        (_, _) async => 'a' * (maxToolResultChars * 2));
     expect(history[1].content.length, maxToolResultChars);
   });
 
@@ -126,7 +129,7 @@ void marketToolTests() {
     });
 
     test('should expose no tool that can trade', () {
-      final names = marketTools.map((t) => t.function!.name);
+      final names = marketTools.map((t) => t.function.name);
       expect(names, ['crypto_price', 'crypto_candles']);
     });
 
@@ -196,7 +199,7 @@ void reviewFixTests() {
         'should answer every call in a batch of $batch, running at most '
         'maxCallsPerRound', () async {
       var ran = 0;
-      final reply = llama.Message(
+      final reply = llama.ChatMessage(
           role: llama.MessageRole.assistant,
           content: '',
           toolCalls: List.generate(
@@ -205,9 +208,9 @@ void reviewFixTests() {
                   function: llama.ToolCallFunction(
                       name: 'crypto_price', arguments: {}))));
       final replies = [if (batch > 0) reply, answer];
-      final history = <llama.Message>[];
+      final history = <llama.ChatMessage>[];
       final result = await runToolLoop(
-          history, (_) async => replies.removeAt(0), (_, __) async {
+          history, (_) async => replies.removeAt(0), (_, _) async {
         ran++;
         return 'r';
       });

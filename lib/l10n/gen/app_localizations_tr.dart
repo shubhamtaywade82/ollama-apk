@@ -257,16 +257,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String settingsHostInvalid(String type) {
-    String _temp0 = intl.Intl.selectLogic(
-      type,
-      {
-        'url': 'Geçersiz URL',
-        'host': 'Geçersiz Ana Bilgisayar',
-        'timeout': 'İstek Başarısız. Sunucu sorunları',
-        'ratelimit': 'Çok fazla istek',
-        'other': 'İstek Başarısız',
-      },
-    );
+    String _temp0 = intl.Intl.selectLogic(type, {
+      'url': 'Geçersiz URL',
+      'host': 'Geçersiz Ana Bilgisayar',
+      'timeout': 'İstek Başarısız. Sunucu sorunları',
+      'ratelimit': 'Çok fazla istek',
+      'other': 'İstek Başarısız',
+    });
     return 'Sorun: $_temp0';
   }
 
@@ -279,14 +276,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String settingsHostInvalidDetailed(String type) {
-    String _temp0 = intl.Intl.selectLogic(
-      type,
-      {
-        'url': 'Girdiğiniz URL geçersiz. Standart bir URL formatında değil.',
-        'other':
-            'Girdiğiniz ana bilgisayar geçersiz. Ulaşılamıyor. Lütfen ana bilgisayarı kontrol edin ve tekrar deneyin.',
-      },
-    );
+    String _temp0 = intl.Intl.selectLogic(type, {
+      'url': 'Girdiğiniz URL geçersiz. Standart bir URL formatında değil.',
+      'other':
+          'Girdiğiniz ana bilgisayar geçersiz. Ulaşılamıyor. Lütfen ana bilgisayarı kontrol edin ve tekrar deneyin.',
+    });
     return '$_temp0';
   }
 

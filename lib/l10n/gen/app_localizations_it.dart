@@ -259,16 +259,13 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String settingsHostInvalid(String type) {
-    String _temp0 = intl.Intl.selectLogic(
-      type,
-      {
-        'url': 'URL invalido',
-        'host': 'Host invalido',
-        'timeout': 'Richiesta fallita. Problema col server',
-        'ratelimit': 'Troppe richieste',
-        'other': 'Richiesta fallita',
-      },
-    );
+    String _temp0 = intl.Intl.selectLogic(type, {
+      'url': 'URL invalido',
+      'host': 'Host invalido',
+      'timeout': 'Richiesta fallita. Problema col server',
+      'ratelimit': 'Troppe richieste',
+      'other': 'Richiesta fallita',
+    });
     return 'Problema: $_temp0';
   }
 
@@ -281,15 +278,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String settingsHostInvalidDetailed(String type) {
-    String _temp0 = intl.Intl.selectLogic(
-      type,
-      {
-        'url':
-            'L\'URL inserito non è valido. Non è un formato URL standardizzato.',
-        'other':
-            'L\'host inserito non è valido. Non può essere raggiunto. Controlla l\'host e riprova.',
-      },
-    );
+    String _temp0 = intl.Intl.selectLogic(type, {
+      'url':
+          'L\'URL inserito non è valido. Non è un formato URL standardizzato.',
+      'other':
+          'L\'host inserito non è valido. Non può essere raggiunto. Controlla l\'host e riprova.',
+    });
     return '$_temp0';
   }
 

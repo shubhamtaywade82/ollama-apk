@@ -79,7 +79,7 @@ class _ScreenSettingsExportState extends State<ScreenSettingsExport> {
                             ], suggestedName: name))
                                 ?.path;
                           } catch (_) {
-                            path = await FilePicker.platform.saveFile(
+                            path = await FilePicker.saveFile(
                                 type: FileType.custom,
                                 allowedExtensions: ["json"],
                                 fileName: name,
@@ -151,8 +151,7 @@ class _ScreenSettingsExportState extends State<ScreenSettingsExport> {
                                                       .readAsString();
                                                 } catch (_) {
                                                   FilePickerResult? result =
-                                                      await FilePicker.platform
-                                                          .pickFiles(
+                                                      await FilePicker.pickFiles(
                                                               type: FileType
                                                                   .custom,
                                                               allowedExtensions: [

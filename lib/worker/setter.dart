@@ -24,17 +24,22 @@ import 'package:http/http.dart' as http;
 
 const _modelInfoTimeout = Duration(seconds: 10);
 
-final _capabilityCache = <String, Set<llama.Capability>>{};
+// Capability names as Ollama reports them in /api/show and /api/tags.
+const capabilityTools = "tools";
+const capabilityThinking = "thinking";
+const capabilityVision = "vision";
+
+final _capabilityCache = <String, Set<String>>{};
 
 /// Capabilities the server reports for [name]. Empty when the lookup fails,
 /// so a feature that needs one stays off instead of failing the request.
-Future<Set<llama.Capability>> modelCapabilities(String name) async {
+Future<Set<String>> modelCapabilities(String name) async {
   final key = "$host|$name";
   final cached = _capabilityCache[key];
   if (cached != null) return cached;
   try {
-    final details = await ollamaClient
-        .showModelInfo(request: llama.ModelInfoRequest(model: name))
+    final details = await ollamaClient.models
+        .show(request: llama.ShowRequest(model: name))
         .timeout(_modelInfoTimeout);
     return _capabilityCache[key] = (details.capabilities ?? []).toSet();
   } catch (_) {
@@ -44,13 +49,16 @@ Future<Set<llama.Capability>> modelCapabilities(String name) async {
 
 /// Whether [entry] accepts images. A slow or failing metadata call only
 /// hides the image button for that model; it never blocks the model list.
-Future<bool> supportsVisionInput(llama.Model entry) async {
+Future<bool> supportsVisionInput(llama.ModelSummary entry) async {
   if ((entry.details?.families ?? []).contains("clip")) return true;
+  // Newer servers list capabilities with the model; older ones need /show.
+  final listed = entry.capabilities;
+  if (listed != null) return listed.contains(capabilityVision);
   try {
-    final details = await ollamaClient
-        .showModelInfo(request: llama.ModelInfoRequest(model: entry.model!))
+    final details = await ollamaClient.models
+        .show(request: llama.ShowRequest(model: entry.model!))
         .timeout(_modelInfoTimeout);
-    return (details.capabilities ?? []).contains(llama.Capability.vision);
+    return (details.capabilities ?? []).contains(capabilityVision);
   } catch (_) {
     return false;
   }
@@ -71,7 +79,7 @@ void setModel(BuildContext context, Function setState) {
   setState(() {});
   void load() async {
     try {
-      var list = await ollamaClient.listModels().timeout(Duration(
+      var list = await ollamaClient.models.list().timeout(Duration(
           seconds:
               (10.0 * (prefs!.getDouble("timeoutMultiplier") ?? 1.0)).round()));
       final visionFlags = <bool>[];
@@ -374,7 +382,7 @@ void addModel(BuildContext context, Function setState) async {
       ratelimitError = false;
       alreadyExists = false;
       try {
-        var request = await ollamaClient.listModels().timeout(Duration(
+        var request = await ollamaClient.models.list().timeout(Duration(
             seconds: (10.0 * (prefs!.getDouble("timeoutMultiplier") ?? 1.0))
                 .round()));
         for (var element in request.models!) {
@@ -519,8 +527,8 @@ void addModel(BuildContext context, Function setState) async {
         });
       });
   try {
-    final stream = ollamaClient
-        .pullModelStream(request: llama.PullModelRequest(model: requestedModel))
+    final stream = ollamaClient.models
+        .pullStream(request: llama.PullRequest(model: requestedModel))
         .timeout(Duration(
             seconds: (10.0 * (prefs!.getDouble("timeoutMultiplier") ?? 1.0))
                 .round()));
@@ -549,7 +557,7 @@ void addModel(BuildContext context, Function setState) async {
     }
     bool exists = false;
     try {
-      var request = await ollamaClient.listModels().timeout(Duration(
+      var request = await ollamaClient.models.list().timeout(Duration(
           seconds:
               (10.0 * (prefs!.getDouble("timeoutMultiplier") ?? 1.0)).round()));
       for (var element in request.models!) {
@@ -620,7 +628,7 @@ void saveChat(String uuid, Function setState) async {
       history.add({
         "role": (messages[i].author == user) ? "user" : "assistant",
         "content": jsonDecode(jsonEncode(messages[i]))["text"],
-        if (thinking != null) "thinking": thinking,
+        "thinking": ?thinking,
       });
     } else {
       var uri = jsonDecode(jsonEncode(messages[i]))["uri"] as String;
