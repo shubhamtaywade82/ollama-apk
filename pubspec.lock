@@ -638,6 +638,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.0"
+  listen:
+    dependency: transitive
+    description:
+      name: listen
+      sha256: "47501a08016a43fcad79252439d723f50f14f88fa7bfd8a177e0a417e5c9e1f2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   logging:
     dependency: transitive
     description:
@@ -698,10 +706,10 @@ packages:
     dependency: "direct main"
     description:
       name: ollama_dart
-      sha256: e8c03590c6f751d8b986125e5bde270412174b6cc49a2bdf6a5b9ef2b3c5cf30
+      sha256: "55605625bb172718790dcf599753fa60767b9c9086dc3a44f72d8e3bbb44173a"
       url: "https://pub.dev"
     source: hosted
-    version: "4.1.0"
+    version: "5.0.0"
   package_config:
     dependency: transitive
     description:
@@ -1039,10 +1047,10 @@ packages:
     dependency: transitive
     description:
       name: test_api
-      sha256: "2a122cbe059f8b610d3a5415f42e255b6c17b1f21eee1d960f31080237fb4f11"
+      sha256: "0a10344e901e5b2e63819567951cb6a06673ed6b84f40462188ff5a0c41f371f"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.12"
+    version: "0.7.14"
   time:
     dependency: transitive
     description:
